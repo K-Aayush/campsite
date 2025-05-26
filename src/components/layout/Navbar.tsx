@@ -90,12 +90,12 @@ export default function Navbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800"
+            className="rounded-full text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800 cursor-pointer"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
           >
             {theme === "dark" ? (
-              <Sun className="h-5 w-5" />
+              <Sun className="h-5 w-5 text-orange-500" />
             ) : (
               <Moon className="h-5 w-5" />
             )}
@@ -139,12 +139,12 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800"
+              className="rounded-full text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800 cursor-pointer"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             >
               {theme === "dark" ? (
-                <Sun className="h-5 w-5" />
+                <Sun className="h-5 w-5 text-orange-500" />
               ) : (
                 <Moon className="h-5 w-5" />
               )}

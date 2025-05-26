@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
 import { motion } from "framer-motion";
+import React from "react";
+
+type ExperienceKey = "education" | "camping" | "wellness";
 
 interface BookingDropdownProps {
-  selectedExperience: string;
-  onSelect: (value: string) => void;
+  selectedExperience: ExperienceKey;
+  onSelect: (value: ExperienceKey) => void;
 }
 
 const experiences = [
@@ -26,8 +28,8 @@ const BookingDropdown: React.FC<BookingDropdownProps> = ({
     >
       <select
         value={selectedExperience}
-        onChange={(e) => onSelect(e.target.value)}
-        className="appearance-none w-full p-3 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+        onChange={(e) => onSelect(e.target.value as ExperienceKey)}
+        className="appearance-none w-full p-3 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer"
       >
         {experiences.map((exp) => (
           <option key={exp.value} value={exp.value}>

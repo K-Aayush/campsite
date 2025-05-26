@@ -21,7 +21,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <h3 className="text-lg font-semibold text-blue-500 dark:text-blue-400 mb-4">
+      <h3 className="text-lg font-semibold text-green-500 dark:text-green-400 mb-4">
         Your Selection
       </h3>
       <div className="space-y-2">
@@ -48,7 +48,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({
           <span className="font-semibold text-gray-800 dark:text-gray-100">
             Total:
           </span>
-          <span className="text-lg font-bold text-blue-500 dark:text-blue-400">
+          <span className="text-lg font-bold text-green-500 dark:text-green-400">
             NPR {totalPrice}
           </span>
         </div>
@@ -58,7 +58,7 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({
         whileTap={{ scale: 0.95 }}
         className="mt-4"
       >
-        <Button className="w-full bg-gradient-to-r from-blue-600 to-teal-400 text-white py-2 rounded-full font-semibold hover:shadow-xl">
+        <Button className="w-full bg-gradient-to-r from-green-600 to-green-400 text-white py-2 rounded-full font-semibold hover:shadow-xl">
           Book Now
         </Button>
       </motion.div>

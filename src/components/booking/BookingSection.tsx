@@ -72,7 +72,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
         {/* Content Section */}
         <div className="w-full lg:w-1/2 flex flex-col">
           <motion.h2
-            className="text-2xl md:text-3xl font-bold text-blue-500 dark:text-blue-400 mb-4"
+            className="text-2xl md:text-3xl font-bold text-green-500 dark:text-green-400 mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
@@ -85,7 +85,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
 
           {/* Package Selection */}
           <div className="mb-8">
-            <h3 className="text-lg md:text-xl font-semibold text-blue-500 dark:text-blue-400 mb-4">
+            <h3 className="text-lg md:text-xl font-semibold text-green-500 dark:text-green-400 mb-4">
               Select Your Package
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -103,7 +103,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
 
           {/* Duration Selection */}
           <div className="mb-8">
-            <h3 className="text-lg md:text-xl font-semibold text-blue-500 dark:text-blue-400 mb-4">
+            <h3 className="text-lg md:text-xl font-semibold text-green-500 dark:text-green-400 mb-4">
               Select Duration
             </h3>
             <div className="flex flex-wrap gap-3">
@@ -126,7 +126,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
             transition={{ duration: 0.4 }}
           >
             <motion.h3
-              className="text-lg md:text-xl font-semibold text-blue-500 dark:text-blue-400 mb-4"
+              className="text-lg md:text-xl font-semibold text-green-500 dark:text-green-400 mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
@@ -142,7 +142,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 + index * 0.05 }}
                 >
-                  <CheckCircle className="h-4 w-4 md:h-5 md:w-5 mr-2 mt-1 text-blue-500 dark:text-blue-400" />
+                  <CheckCircle className="h-4 w-4 md:h-5 md:w-5 mr-2 mt-1 text-green-500 dark:text-green-400" />
                   <span className="text-sm md:text-base text-gray-700 dark:text-gray-200">
                     {item}
                   </span>

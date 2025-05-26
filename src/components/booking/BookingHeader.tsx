@@ -21,7 +21,7 @@ const BookingHeader: React.FC<BookingHeaderProps> = ({
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
         {title}
       </h1>
-      <div className="w-24 h-1 mx-auto bg-gradient-to-r from-blue-600 to-teal-400 mb-6"></div>
+      <div className="w-24 h-1 mx-auto bg-gradient-to-r from-green-600 to-green-400 mb-6"></div>
       {description && (
         <p className="text-base md:text-lg text-gray-600 dark:text-gray-300">
           {description}
