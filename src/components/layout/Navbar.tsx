@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Menu, X, User, Bell, LogOut } from "lucide-react";
+import { Menu, X, User, Bell, LogOut, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "../ui/button";
+import { useTheme } from "next-themes";
 
 const navItems = [
   { id: 1, name: "Home", href: "/" },
@@ -18,9 +19,14 @@ const navItems = [
 export default function Navbar() {
   const pathName = usePathname();
   const { status } = useSession();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isAuthenticated = status === "authenticated";
-  console.log("isAuthenticated", status);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(() => {
     const currentItem = navItems.find((item) => item.href === pathName);
@@ -49,21 +55,23 @@ export default function Navbar() {
     return null;
   }
 
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <nav
-      className={`w-full  top-0 px-3 sm:px-5 md:px-7 lg:px-9 z-50 transition-all duration-300 py-5`}
-    >
-      <div className="  mx-auto flex items-center justify-between">
+    <nav className="w-full top-0 px-3 sm:px-5 md:px-7 lg:px-9 z-50 transition-all duration-300 py-5">
+      <div className="mx-auto flex items-center justify-between">
         <Link
           href={"/"}
-          className="flex  items-center gap-3 transition-all duration-300 hover:scale-105"
+          className="flex items-center gap-3 transition-all duration-300 hover:scale-105"
         >
           <p className="w-10 relative h-10 rounded-lg flex items-center justify-center text-white">
             <Image src={"/last-logo.png"} alt="real" fill />
           </p>
 
           <div>
-            <h1 className="text-xl  text-primary-color font-bold bg-clip-text">
+            <h1 className="text-xl text-primary-color font-bold bg-clip-text">
               Mayur
             </h1>
             <p className="text-xs text-gray-500">Wellbeing & Mindfulness</p>
@@ -73,7 +81,7 @@ export default function Navbar() {
         <div className="lg:hidden">
           <button
             onClick={toggleMenu}
-            className="flex items-center cursor-pointer justify-center p-2 rounded-lg bg-primary-tint text-primary-color shadow-md  hover:shadow-lg transition-all duration-300 focus:outline-none   focus:ring-opacity-50"
+            className="flex items-center cursor-pointer justify-center p-2 rounded-lg bg-primary-tint text-primary-color shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-opacity-50"
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
@@ -88,7 +96,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        <div className="hidden   lg:flex items-center space-x-8">
+        <div className="hidden lg:flex items-center space-x-8">
           <div className="flex space-x-6">
             {navItems.map((item) => (
               <Link
@@ -115,53 +123,65 @@ export default function Navbar() {
           </div>
         </div>
 
-        {isAuthenticated ? (
-          <div className="hidden lg:flex items-center space-x-3">
-            <button className="flex items-center space-x-1 text-primary-color px-4 py-3 rounded-lg hover:bg-green-100 cursor-pointer transition-all duration-200">
-              <Bell size={18} />
-            </button>
-            {/* <div className="flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-300 hover:bg-primary-tint cursor-pointer"> */}
-            <Link
-              href={"/profile"}
-              className=" bg-primary-ctext-primary-color  text-primary-color hover:bg-primary-tint px-4 py-3 rounded-lg flex items-center justify-center"
-            >
-              <User size={16} />
-            </Link>
-            {/* <span className="font-medium">{displayName}</span> */}
-            {/* </div> */}
-            <button
-              onClick={handleSignOut}
-              className="flex cursor-pointer items-center gap-2 bg-primary-color text-white px-4 py-2 rounded-full transition-all duration-300 hover:shadow-lg"
-            >
-              <LogOut size={16} />
-              <span className="font-medium">Sign out</span>
-            </button>
-          </div>
-        ) : (
-          <div className="hidden lg:flex items-center gap-3">
-            <Link
-              href={"/auth/login"}
-              className="text-primary-color block bg-white border-primary-color border-2 py-1.5 px-7 rounded-full font-medium hover:text-green-700 transition-colors"
-            >
-              Login
-            </Link>
-            <Link
-              href={"/auth/register"}
-              className="bg-primary-color font-medium py-2 px-7 rounded-full text-white shadow-sm hover:shadow-md transition-all duration-300"
-            >
-              Register
-            </Link>
-          </div>
-        )}
+        <div className="hidden lg:flex items-center space-x-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </Button>
+
+          {isAuthenticated ? (
+            <>
+              <button className="flex items-center space-x-1 text-primary-color px-4 py-3 rounded-lg hover:bg-green-100 cursor-pointer transition-all duration-200">
+                <Bell size={18} />
+              </button>
+              <Link
+                href={"/profile"}
+                className="bg-primary-ctext-primary-color text-primary-color hover:bg-primary-tint px-4 py-3 rounded-lg flex items-center justify-center"
+              >
+                <User size={16} />
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="flex cursor-pointer items-center gap-2 bg-primary-color text-white px-4 py-2 rounded-full transition-all duration-300 hover:shadow-lg"
+              >
+                <LogOut size={16} />
+                <span className="font-medium">Sign out</span>
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link
+                href={"/auth/login"}
+                className="text-primary-color block bg-white border-primary-color border-2 py-1.5 px-7 rounded-full font-medium hover:text-green-700 transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                href={"/auth/register"}
+                className="bg-primary-color font-medium py-2 px-7 rounded-full text-white shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                Register
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Mobile menu with animation */}
+      {/* Mobile menu */}
       <div
-        className={`lg:hidden   overflow-hidden transition-all duration-300 mt-3 ease-in-out ${
+        className={`lg:hidden overflow-hidden transition-all duration-300 mt-3 ease-in-out ${
           isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="flex flex-col space-y-2 my-4  rounded-lg shadow-lg">
+        <div className="flex flex-col space-y-2 my-4 rounded-lg shadow-lg">
           {navItems.map((item) => (
             <Link
               key={item.id}
@@ -181,13 +201,28 @@ export default function Navbar() {
             </Link>
           ))}
 
+          <div className="flex items-center justify-between px-3 py-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
+
           {isAuthenticated ? (
             <div className="flex flex-col space-y-3 pt-2 border-t border-gray-100">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2 bg-primary-tint px-3 py-2 rounded-lg transition-all duration-300 hover:bg-gray-200 cursor-pointer">
                   <Link
                     href={"/profile"}
-                    className="w-8 h-8 bg-primary-tint text-primary-color  rounded-full flex items-center justify-center"
+                    className="w-8 h-8 bg-primary-tint text-primary-color rounded-full flex items-center justify-center"
                   >
                     <User size={16} />
                   </Link>
