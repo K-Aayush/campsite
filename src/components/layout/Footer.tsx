@@ -1,163 +1,140 @@
 "use client";
-export type SubmenuItem = {
-  label: string;
-  href: string;
-};
-
-export type HeaderItem = {
-  label: string;
-  href: string;
-  submenu?: SubmenuItem[];
-};
-
-export const headerData: HeaderItem[] = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/about-us" },
-  { label: "Contact Us", href: "/contact-us" },
-  { label: "Blogs", href: "/blogs" },
-];
-
-import Image from "next/image";
-import Link from "next/link";
-
-const Logo: React.FC = () => {
-  return (
-    <Link
-      href="/"
-      className="flex items-center text-black dark:text-white font-semibold gap-4"
-    >
-      <Image
-        src="/last-logo.png"
-        alt="logo"
-        width={50}
-        height={50}
-        // style={{ width: "auto", height: "auto" }}
-        quality={100}
-      />
-      <p className="text-sm md:text-2xl "> Mayur Wellbeing</p>
-    </Link>
-  );
-};
 
 import React, { FC } from "react";
-
 import { Facebook, Instagram, Twitter } from "lucide-react";
-
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { headerData } from "./Header"; 
+import Logo from "./Logo";
 
 const Footer: FC = () => {
   const pathName = usePathname();
+
   if (
     pathName.toString().includes("auth") ||
-    pathName.toString().includes("profile")
-  )
+      pathName.toString().includes("profile")
+      ) {
     return null;
+  }
 
   const socialLinks = [
-    { icon: Facebook, href: "#" },
-    { icon: Instagram, href: "#" },
-    { icon: Twitter, href: "#" },
+    { label: "Facebook", icon: Facebook, href: "#" },
+    { label: "Instagram", icon: Instagram, href: "#" },
+    { label: "Twitter", icon: Twitter, href: "#" },
   ];
 
-  // Footer navigation sections data
   const footerSections = [
     {
       title: "Company",
       links: [
-        { label: "About", href: "#" },
+        { label: "About Us", href: "/about-us" },
         { label: "Careers", href: "#" },
-        { label: "Mobile", href: "#" },
-        { label: "Blog", href: "#" },
-        { label: "How we work?", href: "#" },
+        { label: "Blog", href: "/blogs" },
+        { label: "How we work", href: "#" },
       ],
     },
     {
-      title: "Information",
+    title: "Information",
       links: [
         { label: "Help/FAQ", href: "#" },
         { label: "Press", href: "#" },
-        { label: "Affiliates", href: "#" },
-        { label: "Hotel owners", href: "#" },
         { label: "Partners", href: "#" },
       ],
     },
     {
-      title: "More",
-      links: headerData.map((item) => ({ label: item.label, href: item.href })),
+      title: "Explore",
+      links: headerData.map((item) => ({
+        label: item.label,
+        href: item.href,
+      })),
     },
   ];
 
   const bottomLinks = [
-    { label: "Privacy policy", href: "#" },
-    { label: "Terms & conditions", href: "#" },
+    { label: "Privacy Policy", href: "#" },
+    { label: "Terms & Conditions", href: "#" },
   ];
 
   return (
-    <footer className="pt-16  bg-gray-100 ">
-      <div className="container mx-auto lg:max-w-screen-xl md:max-w-screen-md px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-5 lg:gap-20 md:gap-6 sm:gap-12 gap-6 pb-16">
-          {/* Logo and social media section */}
-          <div className="col-span-2">
+    <motion.footer
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="pt-16 pb-10 bg-gray-50 dark:bg-gray-900 relative overflow-hidden"
+    >
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <div className="absolute top-0 left-0 w-1/5 h-1/5 bg-green-200/10 dark:bg-green-500/10 rounded-full blur-4xl transform -translate-x-2/3 -translate-y-2/3" />
+        <div className="absolute bottom-0 right-0 w-1/4 h-1/4 bg-green-200/5 dark:bg-green-500/5 rounded-full blur-4xl transform translate-x-2/3 translate-y-2/3" />
+      </div>
+      <div className="container mx-auto px-4 lg:max-w-screen-xl relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 md:gap-12 lg:gap-16 pb-12">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="col-span-1 sm:col-span-2"
+          >
             <Logo />
-            <p className="text-base font-medium text-grey dark:text-white/50 mt-5 mb-16 max-w-70%">
-              Open an account in minutes, get full financial control for much
-              longer.
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-6 mb-8 max-w-md">
+              Discover wellness with Mayur. Join our community for mindfulness and sustainable living.
             </p>
-            <div className="flex gap-6 items-center">
-              {socialLinks.map(({ icon: Icon, href }, index) => (
+            <div className="flex gap-3 items-center">
+              {socialLinks.map(({ label, icon: Icon, href }, index) => (
                 <Link
                   key={index}
                   href={href}
-                  className="group bg-primary-tint  hover:bg-primary-color rounded-full shadow-xl p-3"
+                  className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-green-600 dark:hover:bg-green-500 hover:text-white transition-all duration-200 hover:scale-110"
+                  aria-label={label}
                 >
-                  <Icon
-                    size={16}
-                    className="group-hover:text-white text-black"
-                  />
+                  <Icon size={20} />
                 </Link>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {footerSections.map((section, index) => (
-            <div key={index}>
-              <h4 className="text-black dark:text-white mb-9 font-semibold text-xl">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 * (index + 1) }}
+              key={index}
+            >
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-6">
                 {section.title}
               </h4>
-              <ul>
+              <ul className="space-y-3">
                 {section.links.map((link, linkIndex) => (
-                  <li key={linkIndex} className="pb-5">
+                  <li key={linkIndex}>
                     <Link
                       href={link.href}
-                      className="text-black/70 dark:text-white/70 hover:text-primary dark:hover:text-primary text-base"
+                      className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 text-sm transition-all duration-200"
                     >
                       {link.label}
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        <div className="border-t border-grey/15 dark:border-white/15 py-10 flex justify-between items-center">
-          <p className="text-sm text-black/70 dark:text-white/70">
-            @2025 - Mayur Wellbeing. All Rights Reserved by{" "}
-            <Link href="https://nepatronix.org" className="hover:text-primary">
+        <div className="border-t border-gray-200 dark:border-gray-700 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            © 2025 Mayur Wellbeing. All Rights Reserved by{" "}
+            <Link
+              href="https://nepatronix.org"
+              className="text-green-600 dark:text-green-400 hover:underline"
+            >
               Nepatronix.org
             </Link>
           </p>
-
-          <div className="">
+          <div className="flex gap-4">
             {bottomLinks.map((link, index) => (
               <Link
                 key={index}
                 href={link.href}
-                className={`text-sm text-black/70 dark:text-white/70 px-5 hover:text-primary dark:hover:text-primary ${
-                  index === 0
-                    ? "border-r border-grey/15 dark:border-white/15"
-                    : ""
-                }`}
+                className="text-sm text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400"
               >
                 {link.label}
               </Link>
@@ -165,7 +142,7 @@ const Footer: FC = () => {
           </div>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };
 
