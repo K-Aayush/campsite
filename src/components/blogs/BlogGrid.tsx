@@ -5,18 +5,18 @@ import Link from "next/link";
 import React from "react";
 import { motion } from "framer-motion";
 
-interface Blog {
-  id: string;
-  slug: string | null;
-  title: string;
-  summary: string;
-  coverImage: string | null;
-  author: string;
-  dateCreated: string;
-}
-
 interface BlogGridProps {
-  blogs: Blog[];
+  blogs: {
+    id: string;
+    title: string;
+    slug: string | null;
+    description: string;
+    content: string;
+    coverImage: string | null;
+    published: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
 }
 
 const BlogGrid = ({ blogs }: BlogGridProps) => {
@@ -47,19 +47,19 @@ const BlogGrid = ({ blogs }: BlogGridProps) => {
           <div className="p-6">
             <div className="flex justify-between items-center mb-2 text-sm text-gray-600 dark:text-gray-400">
               <span>
-                {new Date(blog.dateCreated).toLocaleDateString("en-US", {
+                {new Date(blog.createdAt).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
                 })}
               </span>
-              <span>By {blog.author}</span>
+              <span>By {blog.published}</span>
             </div>
             <h2 className="text-xl font-semibold font-['Roboto'] text-gray-800 dark:text-gray-100 mb-3 line-clamp-2">
               {blog.title}
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
-              {blog.summary}
+              {blog.description}
             </p>
             <Link
               href={`/blogs/${blog.slug}`}
