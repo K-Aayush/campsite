@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { Menu, X, User, Bell, LogOut, Moon, Sun } from "lucide-react";
 import Link from "next/link";
@@ -7,11 +8,12 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { id: 1, name: "Home", href: "/" },
   { id: 2, name: "About Us", href: "/about-us" },
-  { id: 3, name: "Contact us", href: "/contact-us" },
+  { id: 3, name: "Contact Us", href: "/contact-us" },
   { id: 4, name: "Blogs", href: "/blogs" },
   { id: 5, name: "Book Now", href: "/booknow" },
 ];
@@ -19,19 +21,18 @@ const navItems = [
 export default function Navbar() {
   const pathName = usePathname();
   const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const isAuthenticated = status === "authenticated";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(() => {
     const currentItem = navItems.find((item) => item.href === pathName);
     return currentItem ? currentItem.id : 1;
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const currentItem = navItems.find((item) => item.href === pathName);
@@ -60,75 +61,38 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="w-full top-0 px-3 sm:px-5 md:px-7 lg:px-9 z-50 transition-all duration-300 py-5">
-      <div className="mx-auto flex items-center justify-between">
+    <nav className="fixed top-0 w-full px-4 sm:px-6 md:px-8 lg:px-10 z-50 bg-white dark:bg-gray-900 shadow-md transition-all duration-300 py-4">
+      <div className="container mx-auto flex items-center justify-between">
         <Link
-          href={"/"}
+          href="/"
           className="flex items-center gap-3 transition-all duration-300 hover:scale-105"
         >
-          <p className="w-10 relative h-10 rounded-lg flex items-center justify-center text-white">
-            <Image src={"/last-logo.png"} alt="real" fill />
-          </p>
-
+          <div className="relative w-12 h-12 rounded-lg overflow-hidden">
+            <Image
+              src="/last-logo.png"
+              alt="Mayur Logo"
+              fill
+              className="object-cover"
+              onError={() => console.error("Failed to load logo image")}
+            />
+          </div>
           <div>
-            <h1 className="text-xl text-primary-color font-bold bg-clip-text">
+            <h1 className="text-2xl font-bold text-green-600 dark:text-green-400">
               Mayur
             </h1>
-            <p className="text-xs text-gray-500">Wellbeing & Mindfulness</p>
+            <p className="text-xs text-gray-600 dark:text-gray-300">
+              Wellbeing & Mindfulness
+            </p>
           </div>
         </Link>
 
-        <div className="lg:hidden">
-          <button
-            onClick={toggleMenu}
-            className="flex items-center cursor-pointer justify-center p-2 rounded-lg bg-primary-tint text-primary-color shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-opacity-50"
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? (
-              <X size={24} strokeWidth={2.5} className="text-primary-color" />
-            ) : (
-              <Menu
-                size={24}
-                strokeWidth={2.5}
-                className="text-primary-color"
-              />
-            )}
-          </button>
-        </div>
-
-        <div className="hidden lg:flex items-center space-x-8">
-          <div className="flex space-x-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.id}
-                href={item.href}
-                className={`relative px-3 py-2 font-medium transition-all duration-300 ease-in-out
-                  ${
-                    activeItem === item.id
-                      ? "text-primary-color font-bold"
-                      : "text-gray-600 hover:text-primary-color font-bold"
-                  }`}
-              >
-                {item.name}
-                <span
-                  className={`absolute left-0 bottom-0 w-full h-0.5 rounded-full transition-transform duration-300 ease-in-out
-                    ${
-                      activeItem === item.id
-                        ? "scale-x-100 bg-primary-ctext-primary-color"
-                        : "scale-x-0 origin-left hover:scale-x-100 bg-primary-ctext-primary-color"
-                    }`}
-                />
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="hidden lg:flex items-center space-x-3">
+        <div className="lg:hidden flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full"
+            className="rounded-full text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
           >
             {theme === "dark" ? (
               <Sun className="h-5 w-5" />
@@ -136,77 +100,48 @@ export default function Navbar() {
               <Moon className="h-5 w-5" />
             )}
           </Button>
-
-          {isAuthenticated ? (
-            <>
-              <button className="flex items-center space-x-1 text-primary-color px-4 py-3 rounded-lg hover:bg-green-100 cursor-pointer transition-all duration-200">
-                <Bell size={18} />
-              </button>
-              <Link
-                href={"/profile"}
-                className="bg-primary-ctext-primary-color text-primary-color hover:bg-primary-tint px-4 py-3 rounded-lg flex items-center justify-center"
-              >
-                <User size={16} />
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="flex cursor-pointer items-center gap-2 bg-primary-color text-white px-4 py-2 rounded-full transition-all duration-300 hover:shadow-lg"
-              >
-                <LogOut size={16} />
-                <span className="font-medium">Sign out</span>
-              </button>
-            </>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link
-                href={"/auth/login"}
-                className="text-primary-color block bg-white border-primary-color border-2 py-1.5 px-7 rounded-full font-medium hover:text-green-700 transition-colors"
-              >
-                Login
-              </Link>
-              <Link
-                href={"/auth/register"}
-                className="bg-primary-color font-medium py-2 px-7 rounded-full text-white shadow-sm hover:shadow-md transition-all duration-300"
-              >
-                Register
-              </Link>
-            </div>
-          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMenu}
+            className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMenuOpen}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </Button>
         </div>
-      </div>
 
-      {/* Mobile menu */}
-      <div
-        className={`lg:hidden overflow-hidden transition-all duration-300 mt-3 ease-in-out ${
-          isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="flex flex-col space-y-2 my-4 rounded-lg shadow-lg">
-          {navItems.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              onClick={() => {
-                setActiveItem(item.id);
-                setIsMenuOpen(false);
-              }}
-              className={`relative transition-all duration-300 py-3
-                ${
+        <div className="hidden lg:flex items-center gap-8">
+          <div className="flex gap-6">
+            {navItems.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                className={`relative px-3 py-2 font-medium transition-all duration-300 text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 ${
                   activeItem === item.id
-                    ? "text-primary-color font-medium pl-5 border-l-2 border-primary-ctext-primary-color bg-green-50 rounded-r-lg"
-                    : "text-gray-600 hover:text-primary-color pl-3 hover:pl-3 hover:bg-green-50 hover:rounded-lg"
+                    ? "text-green-600 dark:text-green-400 font-bold"
+                    : ""
                 }`}
-            >
-              {item.name}
-            </Link>
-          ))}
-
-          <div className="flex items-center justify-between px-3 py-2">
+              >
+                {item.name}
+                <span
+                  className={`absolute left-0 bottom-0 w-full h-0.5 rounded-full bg-green-600 dark:bg-green-400 transition-transform duration-300 ${
+                    activeItem === item.id
+                      ? "scale-x-100"
+                      : "scale-x-0 hover:scale-x-100"
+                  }`}
+                />
+              </Link>
+            ))}
+          </div>
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full"
+              className="rounded-full text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
             >
               {theme === "dark" ? (
                 <Sun className="h-5 w-5" />
@@ -214,51 +149,125 @@ export default function Navbar() {
                 <Moon className="h-5 w-5" />
               )}
             </Button>
+            {isAuthenticated ? (
+              <>
+                <Button
+                  variant="ghost"
+                  className="text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-800 rounded-full"
+                  aria-label="Notifications"
+                >
+                  <Bell size={20} />
+                </Button>
+                <Link
+                  href="/profile"
+                  className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
+                  aria-label="User profile"
+                >
+                  <User size={20} />
+                </Link>
+                <Button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-2 bg-green-600 dark:bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-300"
+                >
+                  <LogOut size={16} />
+                  <span className="font-medium">Sign out</span>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="px-4 py-2 text-green-600 dark:text-green-400 border-2 border-green-600 dark:border-green-400 rounded-full hover:bg-green-50 dark:hover:bg-gray-800 transition-all duration-300 font-medium"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-full hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-300 font-medium"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
-
-          {isAuthenticated ? (
-            <div className="flex flex-col space-y-3 pt-2 border-t border-gray-100">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2 bg-primary-tint px-3 py-2 rounded-lg transition-all duration-300 hover:bg-gray-200 cursor-pointer">
-                  <Link
-                    href={"/profile"}
-                    className="w-8 h-8 bg-primary-tint text-primary-color rounded-full flex items-center justify-center"
-                  >
-                    <User size={16} />
-                  </Link>
-                </div>
-                <button className="flex items-center space-x-1 px-3 py-2 rounded-lg bg-primary-tint text-primary-color">
-                  <Bell size={18} />
-                </button>
-              </div>
-              <Button
-                onClick={handleSignOut}
-                className="flex cursor-pointer items-center justify-center gap-2 bg-primary-color text-white px-4 py-3 rounded-lg w-full transition-all duration-300 font-medium"
-              >
-                <LogOut size={16} />
-                <span>Sign out</span>
-              </Button>
-            </div>
-          ) : (
-            <div className="flex flex-col space-y-3 pt-3 border-t border-gray-100">
-              <Link
-                href={"/auth/login"}
-                className="text-primary-color font-bold text-center py-3 hover:bg-primary-tint rounded-lg transition-all"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                href={"/auth/register"}
-                className="bg-primary-color font-medium py-3 rounded-lg text-white text-center shadow-sm"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Register
-              </Link>
-            </div>
-          )}
         </div>
       </div>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="lg:hidden mt-4 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+          >
+            <div className="flex flex-col p-4">
+              {navItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => {
+                    setActiveItem(item.id);
+                    setIsMenuOpen(false);
+                  }}
+                  className={`py-3 px-4 rounded-lg transition-all duration-300 ${
+                    activeItem === item.id
+                      ? "text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-gray-800"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+              {isAuthenticated ? (
+                <div className="flex flex-col gap-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex justify-between items-center">
+                    <Link
+                      href="/profile"
+                      className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <User size={20} />
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      className="text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-800 rounded-full"
+                    >
+                      <Bell size={20} />
+                    </Button>
+                  </div>
+                  <Button
+                    onClick={handleSignOut}
+                    className="flex items-center justify-center gap-2 bg-green-600 dark:bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-300"
+                  >
+                    <LogOut size={16} />
+                    <span className="font-medium">Sign out</span>
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <Link
+                    href="/auth/login"
+                    className="py-2 px-4 text-green-600 dark:text-green-400 text-center rounded-lg hover:bg-green-50 dark:hover:bg-gray-800 transition-all duration-300 font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    className="py-2 px-4 bg-green-600 dark:bg-green-500 text-white text-center rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-300 font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
