@@ -4,7 +4,6 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 import { motion } from "framer-motion";
 
 interface Package {
@@ -45,13 +44,22 @@ interface DurationOptionProps {
 
 const BookingHeader = ({ title, description }: BookingHeaderProps) => {
   return (
-    <div className="max-w-3xl mx-auto text-center mb-12">
-      <h1 className="text-4xl md:text-5xl font-serif font-medium mb-6">
+    <motion.div
+      className="max-w-4xl mx-auto text-center mb-16"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
         {title}
       </h1>
-      <div className="w-24 h-1 mx-auto bg-primary-color mb-10"></div>
-      {description && <p className="text-gray-600">{description}</p>}
-    </div>
+      <div className="w-32 h-1 mx-auto bg-gradient-to-r from-blue-500 to-teal-400 mb-8"></div>
+      {description && (
+        <p className="text-lg text-gray-600 dark:text-gray-300">
+          {description}
+        </p>
+      )}
+    </motion.div>
   );
 };
 
@@ -62,117 +70,53 @@ const PackageOption = ({
   onClick,
 }: PackageOptionProps) => {
   return (
-    <button
+    <motion.button
       onClick={onClick}
-      className={`flex flex-col cursor-pointer items-center border-2 rounded-lg p-6 transition-all ${
+      className={`flex flex-col items-center rounded-lg p-6 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border ${
         isSelected
-          ? "border-primary-color bg-[#d6ede2] shadow-md"
-          : "border-gray-200 hover:border-primary-color hover:bg-[#d6ede2]/20"
+          ? "border-blue-500 shadow-lg"
+          : "border-gray-200 dark:border-gray-600 hover:border-blue-400 hover:shadow-md"
       }`}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
       <span
-        className={`text-xl font-medium mb-2 ${isSelected ? "text-primary-color" : "text-gray-700"}`}
+        className={`text-xl font-semibold mb-2 ${
+          isSelected ? "text-blue-500" : "text-gray-700 dark:text-gray-200"
+        }`}
       >
         {name}
       </span>
       <span
-        className={`font-serif ${isSelected ? "text-primary-color" : "text-gray-600"}`}
+        className={`font-semibold ${
+          isSelected ? "text-blue-500" : "text-gray-600 dark:text-gray-300"
+        }`}
       >
         NPR {price}/day
       </span>
-
       {isSelected && (
-        <div className="mt-3 bg-primary-color text-white text-xs px-3 py-1 rounded-full">
+        <div className="mt-3 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
           Selected
         </div>
       )}
-    </button>
+    </motion.button>
   );
 };
 
-// const PackageOption = ({
-//   name,
-//   price,
-//   isSelected,
-//   onClick,
-// }: PackageOptionProps) => {
-//   return (
-//     <motion.div
-//       whileHover={{ y: -5 }}
-//       whileTap={{ scale: 0.98 }}
-//       transition={{ type: "spring", stiffness: 300 }}
-//     >
-//       <button
-//         onClick={onClick}
-//         className={`relative flex flex-col items-center border-2 rounded-xl p-6 transition-all duration-300 ${
-//           isSelected
-//             ? "border-primary-color bg-gradient-to-b from-[#d6ede2] to-[#ebf7f2] shadow-lg"
-//             : "border-gray-200 hover:border-primary-color/50 bg-white hover:bg-[#f5fbf8]"
-//         } overflow-hidden`}
-//       >
-//         {/* Selected indicator ribbon */}
-//         {isSelected && (
-//           <motion.div
-//             initial={{ opacity: 0, y: -20 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             transition={{ delay: 0.2 }}
-//             className="absolute top-0 right-0 bg-primary-color text-white text-xs font-bold px-3 py-1 transform rotate-45 translate-x-8 -translate-y-1"
-//           >
-//             SELECTED
-//           </motion.div>
-//         )}
-
-//         <motion.div
-//           animate={isSelected ? { scale: 1.05 } : { scale: 1 }}
-//           transition={{ type: "spring", stiffness: 400 }}
-//         >
-//           <span
-//             className={`text-xl font-medium mb-2 ${
-//               isSelected ? "text-primary-color" : "text-gray-800"
-//             }`}
-//           >
-//             {name}
-//           </span>
-//         </motion.div>
-
-//         <div
-//           className={`font-serif text-lg font-semibold ${
-//             isSelected ? "text-primary-color" : "text-gray-600"
-//           }`}
-//         >
-//           NPR {price}/day
-//         </div>
-
-//         {/* Subtle shine effect on selected */}
-//         {isSelected && (
-//           <motion.div
-//             initial={{ x: -100, opacity: 0 }}
-//             animate={{ x: 200, opacity: 0.4 }}
-//             transition={{
-//               delay: 0.3,
-//               duration: 1.5,
-//               repeat: Infinity,
-//               repeatDelay: 3,
-//             }}
-//             className="absolute top-0 left-0 w-20 h-full bg-white/30 skew-x-12"
-//           />
-//         )}
-//       </button>
-//     </motion.div>
-//   );
-// };
 const DurationOption = ({ days, isSelected, onClick }: DurationOptionProps) => {
   return (
-    <Button
-      onClick={onClick}
-      className={`relative py-2 font-medium cursor-pointer px-6 rounded-md transition-all ${
-        isSelected
-          ? "bg-primary-color text-white"
-          : "bg-[#d6ede2] text-primary-color hover:bg-primary-color/20"
-      }`}
-    >
-      {days} {days === 1 ? "Day" : "Days"}
-    </Button>
+    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+      <Button
+        onClick={onClick}
+        className={`py-2 px-6 rounded-full font-semibold transition-all duration-300 ${
+          isSelected
+            ? "bg-gradient-to-r from-blue-500 to-teal-400 text-white"
+            : "bg-gray-100 dark:bg-gray-700 text-blue-500 hover:bg-blue-100 dark:hover:bg-gray-600"
+        }`}
+      >
+        {days} {days === 1 ? "Day" : "Days"}
+      </Button>
+    </motion.div>
   );
 };
 
@@ -187,35 +131,56 @@ const BookingSection = ({
   const [selectedPackage, setSelectedPackage] = useState(0);
   const [selectedDuration, setSelectedDuration] = useState(0);
 
-  // Calculate total price without discounts
   const basePrice = packages[selectedPackage].price;
   const days = durations[selectedDuration].days;
   const totalPrice = basePrice * days;
 
   return (
-    <div className="mb-32" id={title}>
-      <div className="flex flex-col md:flex-row w-full gap-12 items-center">
+    <motion.div
+      className="mb-24 relative"
+      id={title}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex flex-col lg:flex-row gap-12">
         {/* Image Section */}
-        <div className="w-full md:w-1/2 h-96 relative rounded-xl overflow-hidden shadow-lg">
-          <Image src={image} alt={title} fill className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end">
+        <motion.div
+          className="w-full lg:w-1/2 h-96 relative rounded-2xl overflow-hidden shadow-xl"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
             <div className="p-6">
-              <h2 className="text-3xl font-serif text-white mb-2">{title}</h2>
-              <div className="w-16 h-1 bg-white/80 mb-2"></div>
+              <h2 className="text-2xl font-bold text-white">{title}</h2>
+              <div className="w-16 h-1 bg-white/80 mt-2"></div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Content Section */}
-        <div className="w-full md:w-1/2 flex flex-col">
-          <h2 className="text-3xl font-serif mb-4 text-primary-color">
+        <div className="w-full lg:w-1/2 flex flex-col">
+          <motion.h2
+            className="text-3xl font-bold text-blue-500 dark:text-blue-400 mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
             {title}
-          </h2>
-          <p className="text-gray-600 mb-8">{description}</p>
+          </motion.h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-8">{description}</p>
 
           {/* Package Selection */}
           <div className="mb-8">
-            <h3 className="text-xl font-medium mb-4 text-primary-color">
+            <h3 className="text-xl font-semibold text-blue-500 dark:text-blue-400 mb-4">
               Select Your Package
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -229,28 +194,11 @@ const BookingSection = ({
                 />
               ))}
             </div>
-            {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {packages.map((pkg, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <PackageOption
-                    name={pkg.name}
-                    price={pkg.price}
-                    isSelected={selectedPackage === index}
-                    onClick={() => setSelectedPackage(index)}
-                  />
-                </motion.div>
-              ))}
-            </div> */}
           </div>
 
           {/* Duration Selection */}
           <div className="mb-8">
-            <h3 className="text-xl font-medium mb-4 text-primary-color">
+            <h3 className="text-xl font-semibold text-blue-500 dark:text-blue-400 mb-4">
               Select Duration
             </h3>
             <div className="flex flex-wrap gap-3">
@@ -265,169 +213,78 @@ const BookingSection = ({
             </div>
           </div>
 
-          {/* <div className="mb-8 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-            <h3 className="text-xl font-serif mb-4 text-primary-color">
-              {packages[selectedPackage].name} Package Privileges
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-              {privileges[selectedPackage].map((item, index) => (
-                <div key={index} className="flex items-start">
-                  <CheckCircle className="h-5 w-5 mr-3 mt-1 text-primary-color" />
-                  <span className="text-gray-700">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div> */}
-
-          {/* Privileges Section - with subtle animation */}
+          {/* Privileges Section */}
           <motion.div
-            layout
-            className="mb-8 bg-white p-6 rounded-xl border border-gray-100 shadow-sm"
+            className="mb-8 p-6 rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200 dark:border-gray-600 shadow-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.4 }}
           >
             <motion.h3
-              layout
-              className="text-xl font-serif mb-4 text-primary-color"
+              className="text-xl font-semibold text-blue-500 dark:text-blue-400 mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
               {packages[selectedPackage].name} Package Privileges
             </motion.h3>
-
-            <motion.div
-              layout
-              className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
               {privileges[selectedPackage].map((item, index) => (
                 <motion.div
                   key={`${selectedPackage}-${index}`}
-                  layout
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{
-                    opacity: 1,
-                    x: 0,
-                    transition: {
-                      delay: 0.3 + index * 0.05,
-                      type: "spring",
-                      stiffness: 100,
-                    },
-                  }}
-                  exit={{ opacity: 0, x: 10 }}
-                  transition={{ duration: 0.2 }}
                   className="flex items-start"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + index * 0.05 }}
                 >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{
-                      scale: 1,
-                      transition: {
-                        delay: 0.4 + index * 0.05,
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 15,
-                      },
-                    }}
-                  >
-                    <CheckCircle className="h-5 w-5 mr-3 mt-1 text-primary-color" />
-                  </motion.div>
-                  <motion.span
-                    className="text-gray-700"
-                    initial={{ opacity: 0 }}
-                    animate={{
-                      opacity: 1,
-                      transition: { delay: 0.5 + index * 0.05 },
-                    }}
-                  >
+                  <CheckCircle className="h-5 w-5 mr-3 mt-1 text-blue-500 dark:text-blue-400" />
+                  <span className="text-gray-700 dark:text-gray-200">
                     {item}
-                  </motion.span>
+                  </span>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
 
-          {/* <motion.div
-            layout
-            className="mb-8 bg-white p-6 rounded-xl border border-gray-100 shadow-sm"
+          {/* Total Price */}
+          <motion.div
+            className="p-6 rounded-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-gray-200 dark:border-gray-600"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.4 }}
           >
-            <h3 className="text-xl font-serif mb-4 text-primary-color">
-              {packages[selectedPackage].name} Package Privileges
-            </h3>
-
-            <motion.div
-              layout
-              className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"
-            >
-              <AnimatePresence mode="wait">
-                {privileges[selectedPackage].map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex items-start"
-                  >
-                    <CheckCircle className="h-5 w-5 mr-3 mt-1 text-primary-color" />
-                    <span className="text-gray-700">{item}</span>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
-          </motion.div> */}
-
-          {/* Total Price */}
-          <div className="mb-8 p-6 bg-[#d6ede2]/30 rounded-lg border border-[#d6ede2]">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-700">Package Price:</span>
-              <span className="text-gray-700">
+              <span className="text-gray-700 dark:text-gray-200">
+                Package Price:
+              </span>
+              <span className="text-gray-700 dark:text-gray-200">
                 NPR {basePrice} × {days} days
               </span>
             </div>
-            <div className="h-px bg-gray-200 my-3"></div>
+            <div className="h-px bg-gray-200 dark:bg-gray-600 my-3"></div>
             <div className="flex justify-between items-center">
-              <span className="font-medium text-gray-800">Total Price:</span>
-              <span className="text-xl font-serif text-primary-color font-medium">
+              <span className="font-semibold text-gray-800 dark:text-gray-100">
+                Total Price:
+              </span>
+              <span className="text-xl font-bold text-blue-500 dark:text-blue-400">
                 NPR {totalPrice}
               </span>
             </div>
-          </div>
+          </motion.div>
 
           {/* Book Now Button */}
-          <Button className="bg-primary-color cursor-pointer text-white py-3 px-8 rounded-md font-medium hover:opacity-90 transition-opacity shadow-sm">
-            Book Now
-          </Button>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button className="mt-6 bg-gradient-to-r from-blue-500 to-teal-400 text-white py-3 px-8 rounded-full font-semibold hover:shadow-xl transition-all duration-300">
+              Book Now
+            </Button>
+          </motion.div>
         </div>
       </div>
-
-      {/* Privileges Section */}
-      {/* <div className="mt-12 bg-white p-8 rounded-xl border border-gray-100 shadow-sm">
-        <h3 className="text-2xl font-serif mb-8 text-center text-primary-color">
-          {packages[selectedPackage].name} Package Privileges
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
-          {privileges[selectedPackage].map((item, index) => (
-            <div key={index} className="flex items-start">
-              <CheckCircle className="h-5 w-5 mr-3 mt-1 text-primary-color" />
-              <span className="text-gray-700">{item}</span>
-            </div>
-          ))}
-        </div>
-      </div> */}
-    </div>
+    </motion.div>
   );
 };
 
 const page = () => {
-  // Data for each section
   const educationData = {
     title: "Educational Adventures",
     description:
@@ -562,12 +419,11 @@ const page = () => {
 
   return (
     <MainLayoutWrapper>
-      <div className="py-16">
+      <div className="py-16 relative bg-gradient-to-br from-gray-100 to-teal-50 dark:from-gray-900 dark:to-gray-800">
         <BookingHeader
           title="Book Your Experience"
           description="Choose from our carefully curated experiences designed to nurture your well-being, connection with nature, and personal growth."
         />
-
         <BookingSection {...educationData} />
         <BookingSection {...campingData} />
         <BookingSection {...wellnessData} />
