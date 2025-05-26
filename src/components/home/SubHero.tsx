@@ -31,7 +31,7 @@ const SubHero = () => {
             className="text-center lg:text-left"
           >
             <h1
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-medium tracking-tight text-black dark:text-gray-100"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-green-600"
               style={{ lineHeight: "1.2" }}
             >
               A Sanctuary for Your
