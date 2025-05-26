@@ -16,7 +16,6 @@ interface Blog {
   published: boolean;
   createdAt: Date;
   updatedAt: Date;
-  author: string;
 }
 
 interface BlogContentProps {
@@ -52,7 +51,7 @@ const BlogContent = ({ blog, relatedBlogs }: BlogContentProps) => {
           <div className="flex justify-center items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
             <time>{formatDate(blog.createdAt)}</time>
             <span>•</span>
-            <span>By {blog.author}</span>
+            <span>By {blog.published}</span>
           </div>
         </header>
         {blog.coverImage && (
