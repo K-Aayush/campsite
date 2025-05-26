@@ -10,7 +10,6 @@ import {
   Shield,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import HomeContentCard from "../home/HomeContentCard";
 
 const faqItems = [
   {
@@ -59,33 +58,28 @@ const faqItems = [
 
 export default function FaqQuestionAnswer() {
   return (
-    <HomeContentCard
-      header="Frequently Asked Questions"
-      description="Find answers to common questions about our wellness programs"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {faqItems.map((item) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: item.id * 0.1 }}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all duration-300"
-          >
-            <div className="flex items-center justify-center mb-4">
-              <div className="text-green-600 dark:text-green-400 p-3 rounded-full bg-green-50 dark:bg-gray-900">
-                {item.icon}
-              </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {faqItems.map((item) => (
+        <motion.div
+          key={item.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: item.id * 0.1 }}
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all duration-300"
+        >
+          <div className="flex items-center justify-center mb-4">
+            <div className="text-green-600 dark:text-green-400 p-3 rounded-full bg-green-50 dark:bg-gray-900">
+              {item.icon}
             </div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 text-center">
-              {item.question}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
-              {item.answer}
-            </p>
-          </motion.div>
-        ))}
-      </div>
-    </HomeContentCard>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 text-center">
+            {item.question}
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
+            {item.answer}
+          </p>
+        </motion.div>
+      ))}
+    </div>
   );
 }
