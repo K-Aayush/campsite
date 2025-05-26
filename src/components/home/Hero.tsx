@@ -25,13 +25,13 @@ export default function Hero() {
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link
                 href="/book-now"
-                className="bg-primary-color hover:bg-primary-color/90 text-white px-8 py-3 rounded-full font-medium transition-colors"
+                className="bg-primary-color hover:bg-primary-color/80 text-white px-8 py-3 rounded-full font-medium transition-colors"
               >
                 Book Now
               </Link>
               <Link
                 href="/activities"
-                className="bg-white dark:bg-gray-800 text-primary-color border-2 border-primary-color px-8 py-3 rounded-full font-medium hover:bg-primary-tint transition-colors"
+                className="bg-white dark:bg-primary-tint text-primary-color border-2 border-primary-color dark:border-green-600 px-8 py-3 rounded-full font-medium hover:bg-primary-tint dark:hover:bg-primary-tint/90 transition-colors"
               >
                 Explore Activities
               </Link>

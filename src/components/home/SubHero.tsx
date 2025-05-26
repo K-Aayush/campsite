@@ -52,7 +52,7 @@ const SubHero = () => {
               </Link>
               <Link
                 href="/activities"
-                className="bg-white dark:bg-gray-800 text-primary-color border-2 border-primary-color px-8 py-3 rounded-full font-medium hover:bg-primary-tint transition-colors"
+                className="bg-white dark:bg-primary-tint text-primary-color border-2 border-primary-color dark:border-green-600 px-8 py-3 rounded-full font-medium hover:bg-primary-tint dark:hover:bg-primary-tint/90 transition-colors"
               >
                 Explore Activities
               </Link>

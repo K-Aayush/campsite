@@ -17,9 +17,9 @@ export default function Home() {
       <main className="">
         <div className=" ">
           <SubHero />
-          <Hero></Hero>
-          <KeyFeatures></KeyFeatures>
-          <OurVideos></OurVideos>
+          <Hero />
+          <KeyFeatures />
+          <OurVideos />
         </div>
       </main>
     </MainLayoutWrapper>
