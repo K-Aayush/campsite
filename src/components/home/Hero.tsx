@@ -15,7 +15,7 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
             className="text-center lg:text-left"
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-500 pb-6">
               Where Adventure, Nature and Well-being Come Together
             </h1>
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
@@ -25,13 +25,13 @@ export default function Hero() {
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link
                 href="/book-now"
-                className="bg-primary-color hover:bg-primary-color/90 text-white px-8 py-3 rounded-full font-medium transition-colors"
+                className="bg-primary-color hover:bg-primary-color/80 text-white px-8 py-3 rounded-full font-medium transition-colors"
               >
                 Book Now
               </Link>
               <Link
                 href="/activities"
-                className="bg-white dark:bg-gray-800 text-primary-color border-2 border-primary-color px-8 py-3 rounded-full font-medium hover:bg-primary-tint transition-colors"
+                className="bg-white dark:bg-primary-tint text-primary-color border-2 border-primary-color dark:border-green-600 px-8 py-3 rounded-full font-medium hover:bg-primary-tint dark:hover:bg-primary-tint/90 transition-colors"
               >
                 Explore Activities
               </Link>
@@ -57,8 +57,8 @@ export default function Hero() {
 
       {/* Background decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-1/3 h-1/3 bg-primary-tint/20 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-primary-tint/10 rounded-full blur-3xl transform translate-x-1/4 translate-y-1/4" />
+        <div className="absolute top-0 left-0 w-1/4 h-1/4 bg-primary-tint/15 rounded-full blur-4xl transform -translate-x-1/3 -translate-y-1/3" />
+        <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-primary-tint/8 rounded-full blur-4xl transform translate-x-1/3 translate-y-1/3" />
       </div>
     </div>
   );

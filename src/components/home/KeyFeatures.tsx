@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 import { CheckCircle } from "lucide-react";
@@ -5,6 +7,7 @@ import Image from "next/image";
 import HomeContentCard from "./HomeContentCard";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface WellnessOptionProps {
   title: string;
@@ -24,56 +27,69 @@ const WellnessOption: React.FC<WellnessOptionProps> = ({
   highlight = false,
 }) => {
   return (
-    <div
-      className={`h-full flex flex-col rounded-lg overflow-hidden transition-all duration-300 ${
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+      className={`flex flex-col rounded-xl overflow-hidden bg-white dark:bg-gray-800 border dark:border-gray-700 transition-all duration-300 ${
         highlight
-          ? "ring-2 ring-green-300 shadow-lg"
-          : "border border-green-100"
+          ? "ring-2 ring-green-300 dark:ring-green-500 shadow-lg"
+          : "border-gray-200"
       }`}
     >
-      <div className="relative h-72 w-full bg-green-50">
-        <Image src={image} alt={title} fill className="object-cover" />
+      <div className="relative h-64 w-full bg-gray-100 dark:bg-gray-700">
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-cover transition-transform duration-300"
+          onError={() =>
+            console.error(`Failed to load image for ${title}: ${image}`)
+          }
+        />
       </div>
-      <div className="p-5 bg-white flex-grow">
-        <h3 className="text-xl font-medium text-primary-color mb-2">{title}</h3>
-        <p className="text-gray-700 mb-4">{description}</p>
-
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium text-primary-color">
+      <div className="p-6 flex-grow">
+        <h3 className="text-xl font-semibold text-green-600 dark:text-green-400 mb-3">
+          {title}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+          {description}
+        </p>
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium text-green-600 dark:text-green-400">
             You will experience:
           </h4>
-          <ul className="space-y-2">
-            {features.map((feature, index) => (
-              <li key={index} className="flex items-start">
-                <CheckCircle className="flex-shrink-0 h-5 w-5 text-primary-color mr-2 mt-0.5" />
-                <span className="text-gray-700">{feature}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-5 flex gap-3 justify-between items-center">
+          {features.length > 0 ? (
+            <ul className="space-y-2">
+              {features.map((feature, index) => (
+                <li key={index} className="flex items-start">
+                  <CheckCircle className="flex-shrink-0 h-5 w-5 text-green-600 dark:text-green-400 mr-2 mt-0.5" />
+                  <span className="text-gray-600 dark:text-gray-300 text-sm">
+                    {feature}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
+              No features available
+            </p>
+          )}
+          <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-between items-center">
             <Link
-              href={"/booknow"}
-              className="
-              bg-primary-color
-              hover:bg-primary-color
-              cursor-pointer
-              text-white p-2
-              rounded 
-              text-nowrap
-              px-8"
+              href="/booknow"
+              className="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-6 py-2 rounded-full font-medium transition-colors text-sm"
             >
               Book Now
             </Link>
-            {/* <Button className="bg-primary-color hover:bg-primary-color cursor-pointer px-6">
-              Book Now
-            </Button> */}
-            <p className="text-primary-color italic text-sm">
+            <p className="text-green-600 dark:text-green-400 italic text-sm">
               Starting from NPR {startingFrom}
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

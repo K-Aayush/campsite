@@ -1,76 +1,70 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 const SubHero = () => {
   return (
-    <div className="  min-h-[80vh] grid md:grid-cols-2 ">
-      <div className="flex order-1   flex-col gap-4 justify-center px-4 py-16">
-        <h1
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-medium tracking-tight text-black"
-          style={{ lineHeight: "1.2" }}
-        >
-          A Sanctuary for Your
-          <br />
-          Mind, Body & Spirit
-        </h1>
-        <p className="text-gray-500 text-sm base:text-base md:text-lg max-w-lg">
-          Join thousands of people embracing mindfulness and relaxation.
-          Discover guided meditation and yoga sessions designed for all levels.
-        </p>
-        <div className="flex flex-wrap gap-3 mt-6">
-          <Link
-            href={"/booknow"}
-            className="px-8 py-2 cursor-pointer font-medium bg-primary-color text-white rounded-full  transition-colors flex items-center"
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-primary-tint/30 to-white dark:from-gray-900 dark:to-gray-800 mt-12">
+      <div className="container mx-auto px-4 py-32 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="relative h-[400px] lg:h-[600px] rounded-2xl overflow-hidden"
           >
-            Get Started
-            <svg
-              className="ml-2 w-4 h-4"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+            <Image
+              src="/image.avif"
+              alt="Meditation pose"
+              fill
+              className="object-cover"
+              priority
+            />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center lg:text-left"
+          >
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-500"
+              style={{ lineHeight: "1.2" }}
             >
-              <path
-                d="M3.33337 8H12.6667"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M8 3.33325L12.6667 7.99992L8 12.6666"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Link>
+              A Sanctuary for Your
+              <br />
+              Mind, Body & Spirit
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
+              Join thousands of people embracing mindfulness and relaxation.
+              Discover guided meditation and yoga sessions designed for all
+              levels.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+              <Link
+                href="/book-now"
+                className="bg-primary-color hover:bg-primary-color/90 text-white px-8 py-3 rounded-full font-medium transition-colors"
+              >
+                Book Now
+              </Link>
+              <Link
+                href="/activities"
+                className="bg-white dark:bg-primary-tint text-primary-color border-2 border-primary-color dark:border-green-600 px-8 py-3 rounded-full font-medium hover:bg-primary-tint dark:hover:bg-primary-tint/90 transition-colors"
+              >
+                Explore Activities
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </div>
-      {/* <div className=" flex order-0 items-center justify-center">
-        <div className="relative h-full min-h-[250px] min-w-[250px] text-center w-full rounded-2xl">
-          <Image
-            src={"/wellbeing-landing-image-removebg-preview.png"}
-            className="object-contain object-center bg-red-500  rounded-2xl"
-            alt="Meditation pose"
-            fill
-            priority
-            // sizes="(max-width: 768px) 100vw, 50vw"
-          />
-        </div>
-      </div> */}
-      <div className="flex order-0 rounded-xl  items-center justify-center w-full">
-        <div className="relative min-h-[300px]  min-w-[300px] rounded-2xl w-full h-full">
-          <Image
-            // src={"/wellbeing-landing-image-removebg-preview.png"}
-            src={"/image.avif"}
-            className="object-contain  w-full rounded-2xl object-center"
-            alt="Meditation pose"
-            fill
-            priority
-          />
-        </div>
+
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 w-1/5 h-1/5 bg-primary-tint/10 rounded-full blur-4xl transform -translate-x-2/3 -translate-y-2/3" />
+        <div className="absolute bottom-0 right-0 w-1/4 h-1/4 bg-primary-tint/5 rounded-full blur-4xl transform translate-x-2/3 translate-y-2/3" />
       </div>
     </div>
   );

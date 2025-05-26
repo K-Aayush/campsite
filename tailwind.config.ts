@@ -20,7 +20,7 @@ const config: Config = {
     },
     extend: {
       colors: {
-        "primary-color": "#0c422a",
+        "primary-color": "#00a63e",
         "primary-tint": "#d6ede2",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

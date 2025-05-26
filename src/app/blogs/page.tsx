@@ -1,69 +1,37 @@
 "use server";
 import MainLayoutWrapper from "@/components/commons/MainLayoutWrapper";
-import Image from "next/image";
-import Link from "next/link";
+
 import React from "react";
 import { db } from "../../../utils/db";
+import BlogGrid from "@/components/blogs/BlogGrid";
 
 const Page = async () => {
   const blogs = await db.blog.findMany({});
   console.log("here", blogs);
   return (
-    <MainLayoutWrapper
-      header="Latest Articles"
-      description="Insights and tutorials from our team of experts lorem 50fkjflksfja;lfsafjsdklfjsdkfjs"
-    >
-      <div className="  mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogs.map((blog: any) => (
-            <div
-              key={blog.id}
-              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
-            >
-              <div className="h-72 w-full relative overflow-hidden">
-                <Image
-                  src={
-                    blog?.coverImage?.startsWith("http") ||
-                    blog?.coverImage?.startsWith("/")
-                      ? blog.coverImage
-                      : "/image.avif" // fallback image you provide
-                  }
-                  alt={blog.title}
-                  fill
-                  className="object-cover transition-transform duration-500 hover:scale-105"
-                />
-              </div>
-
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-500">
-                    {blog.dateCreated}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    By {blog.author}
-                  </span>
-                </div>
-
-                <h2 className="text-xl font-semibold mb-3 text-gray-800 line-clamp-2">
-                  {blog.title}
-                </h2>
-
-                <p className="text-gray-600 mb-4 line-clamp-3">
-                  {blog.summary}
-                </p>
-
-                <Link
-                  href={`/blogs/${blog.slug}`}
-                  className="inline-flex items-center text-primary-color font-medium transition-colors"
-                >
-                  Read More →
-                </Link>
-              </div>
-            </div>
-          ))}
+    <div className="pt-16">
+      <MainLayoutWrapper
+        header="Latest Articles"
+        description="Explore insights, tips, and stories from our wellness experts to inspire your mindful journey."
+      >
+        <div className="relative py-16 bg-white dark:bg-gray-900 overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div className="absolute top-0 left-0 w-1/4 h-1/4 bg-green-200/15 dark:bg-green-500/20 rounded-full blur-4xl transform -translate-x-1/3 -translate-y-1/3" />
+            <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-green-200/8 dark:bg-green-800/10 rounded-full blur-4xl transform translate-x-1/3 translate-y-1/3" />
+          </div>
+          <div className="container mx-auto px-4 relative z-10">
+            {/* Blog Grid */}
+            {blogs.length === 0 ? (
+              <p className="text-gray-600 dark:text-gray-400">
+                No blogs found.
+              </p>
+            ) : (
+              <BlogGrid blogs={blogs} />
+            )}
+          </div>
         </div>
-      </div>
-    </MainLayoutWrapper>
+      </MainLayoutWrapper>
+    </div>
   );
 };
 
