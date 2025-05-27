@@ -5,10 +5,8 @@ import BookingHeader from "@/components/booking/BookingHeader";
 import BookingDropdown from "@/components/booking/BookingDropdown";
 import BookingSection from "@/components/booking/BookingSection";
 
-// Define the type for experience keys
 type ExperienceKey = "education" | "camping" | "wellness";
 
-// Define the structure for a single experience
 interface Experience {
   title: string;
   description: string;
@@ -18,7 +16,6 @@ interface Experience {
   privileges: string[][];
 }
 
-// Define the type for the experienceData object
 interface ExperienceData {
   education: Experience;
   camping: Experience;
@@ -30,7 +27,7 @@ const experienceData: ExperienceData = {
     title: "Educational Adventures",
     description:
       "Nurture young minds with our engaging educational programs that combine learning with fun in a natural environment.",
-    image: "/news.jpg",
+    image: "/children-education-two.avif",
     packages: [
       { name: "Basic", price: 3500 },
       { name: "Standard", price: 5000 },
@@ -73,7 +70,7 @@ const experienceData: ExperienceData = {
     title: "Camping Experiences",
     description:
       "Immerse yourself in nature with our thoughtfully designed camping programs for all skill levels and preferences.",
-    image: "/news.jpg",
+    image: "/campingthree.avif",
     packages: [
       { name: "Explorer", price: 5000 },
       { name: "Adventurer", price: 8000 },
@@ -116,7 +113,7 @@ const experienceData: ExperienceData = {
     title: "Senior Wellness Retreat",
     description:
       "Rejuvenate mind, body, and spirit in our peaceful sanctuary designed specifically for senior wellness and community.",
-    image: "/news.jpg",
+    image: "/wellbeing-image.jpeg",
     packages: [
       { name: "Serenity", price: 4500 },
       { name: "Harmony", price: 8000 },
