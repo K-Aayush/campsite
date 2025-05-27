@@ -101,6 +101,24 @@ export default function Navbar() {
               <Moon className="h-5 w-5" />
             )}
           </Button>
+          {isAuthenticated && (
+            <>
+              <Button
+                variant="ghost"
+                className="text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-800 rounded-full"
+                aria-label="Notifications"
+              >
+                <Bell size={20} />
+              </Button>
+              <Link
+                href="/profile"
+                className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
+                aria-label="User profile"
+              >
+                <User size={20} />
+              </Link>
+            </>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -224,21 +242,6 @@ export default function Navbar() {
 
               {isAuthenticated ? (
                 <div className="flex flex-col gap-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                  <div className="flex justify-between items-center">
-                    <Link
-                      href="/profile"
-                      className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <User size={20} />
-                    </Link>
-                    <Button
-                      variant="ghost"
-                      className="text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-800 rounded-full"
-                    >
-                      <Bell size={20} />
-                    </Button>
-                  </div>
                   <Button
                     onClick={handleSignOut}
                     className="flex items-center justify-center gap-2 bg-green-600 dark:bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-300"
