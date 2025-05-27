@@ -13,9 +13,10 @@ import { motion, AnimatePresence } from "framer-motion";
 const navItems = [
   { id: 1, name: "Home", href: "/" },
   { id: 2, name: "About Us", href: "/about-us" },
-  { id: 3, name: "Contact Us", href: "/contact-us" },
-  { id: 4, name: "Blogs", href: "/blogs" },
-  { id: 5, name: "Book Now", href: "/booknow" },
+  { id: 3, name: "Gallery", href: "/gallery" },
+  { id: 4, name: "Contact Us", href: "/contact-us" },
+  { id: 5, name: "Blogs", href: "/blogs" },
+  { id: 6, name: "Book Now", href: "/booknow" },
 ];
 
 export default function Navbar() {
