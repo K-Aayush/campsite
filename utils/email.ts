@@ -12,8 +12,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // === Nodemailer Setup ===
 const transporter = nodemailer.createTransport({
-  // host: process.env.NODEMAILER_HOST,
-  // port: process.env.NODEMAILER_PORT,
+  host: process.env.NODEMAILER_HOST,
+  port: Number(process.env.NODEMAILER_PORT),
   secure: true,
   auth: {
     user: process.env.NODEMAILER_SENDING_EMAIL_TO,
