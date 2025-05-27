@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Chart as ChartJS,
@@ -27,7 +28,7 @@ ChartJS.register(
 interface PaymentData {
   name: string;
   value: number;
-  icon: string; 
+  icon: string;
 }
 
 // Define payment data with explicit type
@@ -45,6 +46,10 @@ const data: PaymentData[] = [
 ];
 
 export default function PaymentHistory() {
+  const { theme } = useTheme(); 
+
+  const textColor = theme === "dark" ? "#e5e7eb" : "#1f2937"; 
+
   const chartData: ChartData = {
     labels: data.map((item) => `${item.icon} ${item.name}`),
     datasets: [
@@ -68,6 +73,9 @@ export default function PaymentHistory() {
         display: false,
       },
       tooltip: {
+        backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
+        titleColor: textColor,
+        bodyColor: textColor,
         callbacks: {
           label: function (context) {
             return `${context.parsed.x} payments`;
@@ -80,21 +88,30 @@ export default function PaymentHistory() {
         title: {
           display: true,
           text: "Number of Payments",
-          color: "#1f2937",
+          color: textColor,
         },
         ticks: {
-          color: "#1f2937",
+          color: textColor,
           stepSize: 1,
+        },
+        grid: {
+          color:
+            theme === "dark"
+              ? "rgba(255, 255, 255, 0.1)"
+              : "rgba(0, 0, 0, 0.1)",
         },
       },
       y: {
         title: {
           display: true,
           text: "Payment Method",
-          color: "#1f2937",
+          color: textColor,
         },
         ticks: {
-          color: "#1f2937",
+          color: textColor,
+        },
+        grid: {
+          display: false, // Disable y-axis grid for cleaner look
         },
       },
     },

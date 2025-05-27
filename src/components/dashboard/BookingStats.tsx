@@ -15,6 +15,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
+import { useTheme } from "next-themes";
 
 // Register Chart.js components
 ChartJS.register(
@@ -44,7 +45,9 @@ const chartdata: ChartDataPoint[] = [
 ];
 
 export default function BookingStats() {
-  // Define state type to allow null or ChartDataPoint
+  const { theme } = useTheme();
+
+  const textColor = theme === "dark" ? "#e5e7eb" : "#1f2937";
   const [value, setValue] = useState<ChartDataPoint | null>(null);
 
   const data: ChartData = {
@@ -69,7 +72,7 @@ export default function BookingStats() {
         display: true,
         position: "top",
         labels: {
-          color: "#1f2937",
+          color: textColor,
           font: { size: 14 },
         },
       },
@@ -86,18 +89,18 @@ export default function BookingStats() {
         title: {
           display: true,
           text: "Date",
-          color: "#1f2937",
+          color: textColor,
         },
-        ticks: { color: "#1f2937" },
+        ticks: { color: textColor },
       },
       y: {
         title: {
           display: true,
           text: "Bookings",
-          color: "#1f2937",
+          color: textColor,
         },
         ticks: {
-          color: "#1f2937",
+          color: textColor,
           callback: function (value) {
             return `${value}`;
           },
