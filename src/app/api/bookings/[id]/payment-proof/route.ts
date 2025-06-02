@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { db } from "../../../../../utils/db";
+import { db } from "../../../../../../utils/db";
 
 export async function POST(req: Request) {
   try {
