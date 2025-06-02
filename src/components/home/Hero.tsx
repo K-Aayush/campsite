@@ -42,7 +42,7 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative h-[400px] lg:h-[600px] rounded-2xl overflow-hidden"
+            className="relative h-[300px] lg:h-[500px] rounded-2xl overflow-hidden"
           >
             <Image
               src="/campingone.jpg"

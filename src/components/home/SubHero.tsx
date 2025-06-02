@@ -14,7 +14,7 @@ const SubHero = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative h-[400px] lg:h-[600px] rounded-2xl overflow-hidden"
+            className="relative h-[300px] lg:h-[500px] rounded-2xl overflow-hidden"
           >
             <Image
               src="/image.avif"
@@ -28,7 +28,7 @@ const SubHero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center lg:text-left"
+            className="text-center lg:text-left space-y-5"
           >
             <h1
               className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-500"
