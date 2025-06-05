@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { showToast } from "@/utils/Toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function AdminServicesPage() {
+export default function AdminServicesPage() { 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
