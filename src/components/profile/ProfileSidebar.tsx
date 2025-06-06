@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 // Define TypeScript interface for route item
 interface RouteItem {
@@ -29,8 +30,16 @@ interface RouteItem {
 const navigationRoutes: RouteItem[] = [
   { name: "Home", path: "/profile", icon: <Home size={20} /> },
   { name: "Settings", path: "/profile/settings", icon: <Settings size={20} /> },
-  { name: "Staffs", path: "/profile/staffs", icon: <Briefcase size={20} /> },
-  { name: "Tasks", path: "/profile/tasks", icon: <FileText size={20} /> },
+  {
+    name: "My Bookings",
+    path: "/profile/bookings",
+    icon: <FileText size={20} />,
+  },
+  {
+    name: "My Services",
+    path: "/profile/services",
+    icon: <Briefcase size={20} />,
+  },
   { name: "Account", path: "/profile/account", icon: <User size={20} /> },
   { name: "Blogs", path: "/profile/blogs", icon: <Briefcase size={20} /> },
   {
@@ -41,6 +50,14 @@ const navigationRoutes: RouteItem[] = [
   { name: "Orders", path: "/profile/orders", icon: <BarChart3 size={20} /> },
 ];
 
+const adminRoutes: RouteItem[] = [
+  { name: "Dashboard", path: "/admin", icon: <Home size={20} /> },
+  { name: "Services", path: "/admin/service", icon: <Briefcase size={20} /> },
+  { name: "Bookings", path: "/admin/bookings", icon: <FileText size={20} /> },
+  { name: "Users", path: "/admin/users", icon: <User size={20} /> },
+  { name: "Settings", path: "/admin/settings", icon: <Settings size={20} /> },
+];
+
 const BottomNavigation: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const navRef = useRef<HTMLDivElement>(null);
@@ -49,6 +66,9 @@ const BottomNavigation: React.FC = () => {
     right: false,
   });
   const [shouldExpand, setShouldExpand] = useState(false);
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+  const routes = isAdmin ? adminRoutes : navigationRoutes;
 
   // Check if content fits within the container and update indicators
   const updateScrollState = () => {
@@ -110,7 +130,7 @@ const BottomNavigation: React.FC = () => {
   };
 
   return (
-    <div className="fixed  bottom-0 border-2 rounded border-primary-color bg-white z-20 left-0 right-0 w-full shadow-lg border-t">
+    <div className="fixed bottom-0 border-2 rounded border-primary-color bg-white z-20 left-0 right-0 w-full shadow-lg border-t">
       <div className="relative flex items-center w-full">
         {/* Left scroll indicator */}
         {showIndicators.left && (
@@ -133,7 +153,7 @@ const BottomNavigation: React.FC = () => {
             WebkitOverflowScrolling: "touch",
           }}
         >
-          {navigationRoutes.map((route, index) => (
+          {routes.map((route, index) => (
             <Link
               key={index}
               href={route.path}
@@ -171,11 +191,14 @@ const BottomNavigation: React.FC = () => {
 
 const SidebarNavigation: React.FC = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+  const routes = isAdmin ? adminRoutes : navigationRoutes;
 
   return (
     <div className="py-4 bg-white w-full">
       <nav className="space-y-1.5">
-        {navigationRoutes.map((route, index) => {
+        {routes.map((route, index) => {
           const isActive = pathname === route.path;
 
           return (
