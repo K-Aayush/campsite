@@ -39,6 +39,8 @@ export async function POST(req: Request) {
         description: data.description,
         price: data.price,
         image: data.image,
+        isBookable: data.isBookable,
+        depositPercentage: data.depositPercentage,
       },
     });
 

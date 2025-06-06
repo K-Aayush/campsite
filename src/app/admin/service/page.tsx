@@ -6,17 +6,36 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { showToast } from "@/utils/Toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ServiceFormValues, serviceSchema } from "@/utils/schema";
 
-export default function AdminServicesPage() { 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [image, setImage] = useState("");
+export default function AdminServicesPage() {
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState<any[]>([]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<ServiceFormValues>({
+    resolver: zodResolver(serviceSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: "",
+      image: "",
+      isBookable: true,
+      depositPercentage: "20",
+    },
+  });
+
+  const onSubmit = async (data: ServiceFormValues) => {
     setLoading(true);
 
     try {
@@ -24,20 +43,16 @@ export default function AdminServicesPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
-          description,
-          price: parseFloat(price),
-          image,
+          ...data,
+          price: parseFloat(data.price),
+          depositPercentage: parseFloat(data.depositPercentage),
         }),
       });
 
       if (!response.ok) throw new Error("Failed to add service");
 
       showToast("success", { title: "Service added successfully" });
-      setName("");
-      setDescription("");
-      setPrice("");
-      setImage("");
+      form.reset();
       fetchServices();
     } catch (error) {
       console.error(error);
@@ -68,52 +83,107 @@ export default function AdminServicesPage() {
           <CardTitle>Add New Service</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Description
-              </label>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Price</label>
-              <Input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price</FormLabel>
+                    <FormControl>
+                      <Input type="number" step="0.01" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Image URL
-              </label>
-              <Input
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-                placeholder="Enter image URL"
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Image URL</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter image URL" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <Button type="submit" disabled={loading}>
-              {loading ? "Adding..." : "Add Service"}
-            </Button>
-          </form>
+              <FormField
+                control={form.control}
+                name="isBookable"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Available for Booking</FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="depositPercentage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Deposit Percentage</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="1"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" disabled={loading}>
+                {loading ? "Adding..." : "Add Service"}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
 
@@ -133,6 +203,11 @@ export default function AdminServicesPage() {
                 {service.description}
               </p>
               <p className="font-bold">NPR {service.price}</p>
+              {!service.isBookable && (
+                <span className="inline-block bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded mt-2">
+                  Not Available for Booking
+                </span>
+              )}
             </CardContent>
           </Card>
         ))}

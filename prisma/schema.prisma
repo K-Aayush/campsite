@@ -73,14 +73,16 @@ model Wallet {
 }
 
 model Service {
-  id          String    @id @default(cuid()) @map("_id")
-  name        String
-  description String
-  price       Float
-  image       String?
-  bookings    Booking[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                String    @id @default(cuid()) @map("_id")
+  name              String
+  description       String
+  price             Float
+  image             String?
+  isBookable        Boolean   @default(true)
+  depositPercentage Float     @default(20)
+  bookings          Booking[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model Blog {
