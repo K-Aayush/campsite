@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ServiceFormValues, serviceSchema } from "@/utils/schema";
+import { ServiceFormValues, serviceSchema } from "../../../../schemas";
 
 export default function AdminServicesPage() {
   const [loading, setLoading] = useState(false);

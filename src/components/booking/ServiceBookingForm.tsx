@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
@@ -45,7 +43,7 @@ export default function ServiceBookingForm({
   const form = useForm({
     defaultValues: {
       startDate: new Date(),
-      endDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Next day
+      endDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
     },
   });
 
