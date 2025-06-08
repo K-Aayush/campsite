@@ -19,7 +19,6 @@ export async function GET() {
 
     const bookings = await db.booking.findMany({
       where: { userId: user.id },
-      include: { payment: true },
       orderBy: { createdAt: "desc" },
     });
 
