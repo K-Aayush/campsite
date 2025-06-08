@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { db } from "../../../../utils/db";
+import { db } from "../../../../../utils/db";
 
 export async function GET() {
   try {
@@ -9,20 +9,38 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Verify admin role
     const user = await db.user.findUnique({
       where: { email: session.user.email },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user || user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const bookings = await db.booking.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        service: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
-    return NextResponse.json(bookings);
+    return NextResponse.json({
+      success: true,
+      bookings,
+    });
   } catch (error) {
     console.error("Error fetching bookings:", error);
     return NextResponse.json(

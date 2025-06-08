@@ -23,6 +23,7 @@ import { CalendarIcon } from "lucide-react";
 import { showToast } from "@/utils/Toast";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Input } from "@/components/ui/input";
 
 interface ServiceBookingFormProps {
   service: {
@@ -37,6 +38,7 @@ export default function ServiceBookingForm({
   service,
 }: ServiceBookingFormProps) {
   const [loading, setLoading] = useState(false);
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -57,9 +59,18 @@ export default function ServiceBookingForm({
       return;
     }
 
+    if (!paymentProof) {
+      showToast("error", {
+        title: "Payment proof required",
+        description: "Please upload your payment proof",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await fetch("/api/bookings/create", {
+      // First create the booking
+      const bookingResponse = await fetch("/api/bookings/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,18 +83,42 @@ export default function ServiceBookingForm({
         }),
       });
 
-      if (!response.ok) {
+      if (!bookingResponse.ok) {
         throw new Error("Failed to create booking");
       }
 
-      const bookingData = await response.json();
-      showToast("success", { title: "Booking created successfully" });
+      const bookingData = await bookingResponse.json();
+
+      // Then upload the payment proof
+      const formData = new FormData();
+      formData.append("paymentProof", paymentProof);
+      formData.append("bookingId", bookingData.booking.id);
+
+      const uploadResponse = await fetch("/api/bookings/payment-proof", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload payment proof");
+      }
+
+      showToast("success", {
+        title: "Booking created successfully",
+        description: "Your booking is pending admin approval",
+      });
       router.push(`/dashboard/bookings/${bookingData.booking.id}`);
     } catch (error) {
       console.error(error);
       showToast("error", { title: "Failed to create booking" });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setPaymentProof(e.target.files[0]);
     }
   };
 
@@ -185,7 +220,20 @@ export default function ServiceBookingForm({
           </p>
         </div>
 
-        <Button type="submit" disabled={loading} className="w-full">
+        <div className="space-y-2">
+          <FormLabel>Payment Proof</FormLabel>
+          <Input
+            type="file"
+            accept="image/*,.pdf"
+            onChange={handleFileChange}
+            className="cursor-pointer"
+          />
+          <p className="text-xs text-gray-500">
+            Please upload a screenshot or photo of your payment confirmation
+          </p>
+        </div>
+
+        <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Processing..." : "Book Now"}
         </Button>
       </form>
