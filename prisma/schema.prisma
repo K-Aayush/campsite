@@ -24,9 +24,17 @@ enum BookingStatus {
 
 enum PaymentStatus {
   PENDING
-  PAID
-  FAILED
+  PENDING_APPROVAL
+  CONFIRMED
+  REJECTED
   REFUNDED
+}
+
+enum PaymentMethod {
+  ESEWA
+  KHALTI
+  CASH
+  BANK_TRANSFER
 }
 
 model User {
@@ -110,18 +118,20 @@ model Gallery {
 }
 
 model Booking {
-  id            String        @id @default(cuid()) @map("_id")
+  id            String         @id @default(cuid()) @map("_id")
   userId        String
   serviceId     String
   startDate     DateTime
   endDate       DateTime
   totalAmount   Float
   depositAmount Float
-  status        BookingStatus @default(PENDING)
-  paymentStatus PaymentStatus @default(PENDING)
+  status        BookingStatus  @default(PENDING)
+  paymentStatus PaymentStatus  @default(PENDING)
+  paymentMethod PaymentMethod?
   paymentProof  String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  paymentNotes  String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   service Service @relation(fields: [serviceId], references: [id])
