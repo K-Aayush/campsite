@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { db } from "../../../../../utils/db";
-import { writeFile } from "fs/promises";
-import { join } from "path";
+import { storage } from "@/utils/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export async function POST(req: Request) {
   try {
@@ -36,26 +36,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Create unique filename
+    // Upload file to Firebase Storage
     const bytes = await paymentProof.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const filename = `${bookingId}-${Date.now()}-${paymentProof.name}`;
-    const uploadDir = join(
-      process.cwd(),
-      "public",
-      "uploads",
-      "payment-proofs"
-    );
-    const filepath = join(uploadDir, filename);
 
-    // Save file
-    await writeFile(filepath, buffer);
+    const filename = `payment-proofs/${bookingId}-${Date.now()}-${paymentProof.name}`;
+    const storageRef = ref(storage, filename);
 
-    // Update booking with payment proof path
+    await uploadBytes(storageRef, buffer);
+    const downloadURL = await getDownloadURL(storageRef);
+
+    // Update booking with payment proof
     const updatedBooking = await db.booking.update({
       where: { id: bookingId },
       data: {
-        paymentProof: `/uploads/payment-proofs/${filename}`,
+        paymentProof: downloadURL,
         paymentStatus: "PENDING_APPROVAL",
       },
     });
