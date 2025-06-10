@@ -8,7 +8,7 @@ import { getUserByEmail } from "../../../utils/usersQuery";
 
 const options: NextAuthOptions = {
   pages: {
-    signIn: "/",
+    signIn: "/auth/login",
     error: "/auth/error",
   },
   session: {
@@ -60,7 +60,23 @@ const options: NextAuthOptions = {
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
+      // Check if user is admin and redirect to admin dashboard
+      if (url.includes("/admin") || url === "/") {
+        return `${baseUrl}/admin`;
+      }
       return url.startsWith(baseUrl) ? url : baseUrl;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.role = token.role;
+      }
+      return session;
     },
   },
 };
