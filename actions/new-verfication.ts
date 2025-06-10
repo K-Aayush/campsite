@@ -38,7 +38,7 @@ export const newVerification = async (token: string) => {
     },
   });
 
-  await db.verificationtoken.delete({
+  await db.verificationToken.delete({
     where: { id: existingToken.id },
   });
 

@@ -18,10 +18,68 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const { serviceId, startDate, endDate, totalAmount } = data;
+    const { serviceId, startDate, endDate, totalAmount, depositAmount } = data;
 
-    // Calculate deposit amount (e.g., 20% of total)
-    const depositAmount = totalAmount * 0.2;
+    // Validate required fields
+    if (!serviceId || !startDate || !endDate || !totalAmount) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Verify service exists and is bookable
+    const service = await db.service.findUnique({
+      where: { id: serviceId },
+    });
+
+    if (!service) {
+      return NextResponse.json({ error: "Service not found" }, { status: 404 });
+    }
+
+    if (!service.isBookable) {
+      return NextResponse.json(
+        { error: "Service is not available for booking" },
+        { status: 400 }
+      );
+    }
+
+    // Check for date conflicts
+    const conflictingBooking = await db.booking.findFirst({
+      where: {
+        serviceId,
+        status: {
+          in: ["PENDING", "CONFIRMED"],
+        },
+        OR: [
+          {
+            AND: [
+              { startDate: { lte: new Date(startDate) } },
+              { endDate: { gte: new Date(startDate) } },
+            ],
+          },
+          {
+            AND: [
+              { startDate: { lte: new Date(endDate) } },
+              { endDate: { gte: new Date(endDate) } },
+            ],
+          },
+          {
+            AND: [
+              { startDate: { gte: new Date(startDate) } },
+              { endDate: { lte: new Date(endDate) } },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (conflictingBooking) {
+      return NextResponse.json(
+        { error: "Service is already booked for the selected dates" },
+        { status: 400 }
+      );
+    }
 
     const booking = await db.booking.create({
       data: {
@@ -30,9 +88,16 @@ export async function POST(req: Request) {
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         totalAmount,
-        depositAmount,
+        depositAmount: depositAmount || totalAmount * 0.2,
         status: "PENDING",
         paymentStatus: "PENDING",
+      },
+      include: {
+        service: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 

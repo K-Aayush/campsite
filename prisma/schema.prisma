@@ -94,15 +94,17 @@ model Service {
 }
 
 model Blog {
-  id        String   @id @default(cuid()) @map("_id")
-  title     String
-  content   String
-  image     String?
-  published Boolean  @default(false)
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid()) @map("_id")
+  title       String
+  slug        String?  @unique
+  description String
+  content     String
+  coverImage  String?
+  published   Boolean  @default(false)
+  authorId    String?
+  author      User?    @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Gallery {
