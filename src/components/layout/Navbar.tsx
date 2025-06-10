@@ -13,10 +13,10 @@ import { motion, AnimatePresence } from "framer-motion";
 const navItems = [
   { id: 1, name: "Home", href: "/" },
   { id: 2, name: "About Us", href: "/about-us" },
-  { id: 3, name: "Gallery", href: "/gallery" },
-  { id: 4, name: "Contact Us", href: "/contact-us" },
-  { id: 5, name: "Blogs", href: "/blogs" },
-  { id: 6, name: "Book Now", href: "/booknow" },
+  { id: 3, name: "Services", href: "/services" },
+  { id: 4, name: "Gallery", href: "/gallery" },
+  { id: 5, name: "Contact Us", href: "/contact-us" },
+  { id: 6, name: "Blogs", href: "/blogs" },
 ];
 
 export default function Navbar() {
@@ -52,7 +52,8 @@ export default function Navbar() {
 
   if (
     pathName.toString().includes("auth") ||
-    pathName.toString().includes("profile")
+    pathName.toString().includes("profile") ||
+    pathName.toString().includes("admin")
   ) {
     return null;
   }
@@ -111,9 +112,9 @@ export default function Navbar() {
                 <Bell size={20} />
               </Button>
               <Link
-                href="/profile"
+                href="/my-bookings"
                 className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
-                aria-label="User profile"
+                aria-label="My bookings"
               >
                 <User size={20} />
               </Link>
@@ -178,9 +179,9 @@ export default function Navbar() {
                   <Bell size={20} />
                 </Button>
                 <Link
-                  href="/profile"
+                  href="/my-bookings"
                   className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
-                  aria-label="User profile"
+                  aria-label="My bookings"
                 >
                   <User size={20} />
                 </Link>
@@ -242,6 +243,13 @@ export default function Navbar() {
 
               {isAuthenticated ? (
                 <div className="flex flex-col gap-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <Link
+                    href="/my-bookings"
+                    className="py-2 px-4 text-green-600 dark:text-green-400 text-center rounded-lg hover:bg-green-50 dark:hover:bg-gray-800 transition-all duration-300 font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    My Bookings
+                  </Link>
                   <Button
                     onClick={handleSignOut}
                     className="flex items-center justify-center gap-2 bg-green-600 dark:bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-300"
