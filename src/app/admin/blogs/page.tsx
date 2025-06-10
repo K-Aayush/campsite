@@ -13,12 +13,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import FileUpload from "@/components/admin/FileUpload";
 
 interface Blog {
   id: string;
   title: string;
   content: string;
-  image: string | null;
+  coverImage: string | null;
   published: boolean;
   createdAt: string;
 }
@@ -27,7 +29,7 @@ export default function AdminBlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState("");
+  const [coverImage, setCoverImage] = useState("");
   const [loading, setLoading] = useState(false);
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
 
@@ -63,7 +65,7 @@ export default function AdminBlogsPage() {
         body: JSON.stringify({
           title,
           content,
-          image,
+          image: coverImage,
         }),
       });
 
@@ -75,10 +77,7 @@ export default function AdminBlogsPage() {
           : "Blog created successfully",
       });
 
-      setTitle("");
-      setContent("");
-      setImage("");
-      setEditingBlog(null);
+      resetForm();
       fetchBlogs();
     } catch (error) {
       console.log(error);
@@ -88,11 +87,18 @@ export default function AdminBlogsPage() {
     }
   };
 
+  const resetForm = () => {
+    setTitle("");
+    setContent("");
+    setCoverImage("");
+    setEditingBlog(null);
+  };
+
   const handleEdit = (blog: Blog) => {
     setEditingBlog(blog);
     setTitle(blog.title);
     setContent(blog.content);
-    setImage(blog.image || "");
+    setCoverImage(blog.coverImage || "");
   };
 
   const handleDelete = async (id: string) => {
@@ -132,113 +138,123 @@ export default function AdminBlogsPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold">
         {editingBlog ? "Edit Blog" : "Create New Blog"}
       </h1>
 
-      <form onSubmit={handleSubmit} className="max-w-2xl space-y-4 mb-8">
-        <div>
-          <label className="block text-sm font-medium mb-1">Title</label>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {editingBlog ? "Edit Blog Post" : "Create New Blog Post"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium mb-2">Title</label>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                placeholder="Enter blog title"
+              />
+            </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Content</label>
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            className="min-h-[200px]"
-          />
-        </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Content</label>
+              <Textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                required
+                className="min-h-[200px]"
+                placeholder="Write your blog content here..."
+              />
+            </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Image URL</label>
-          <Input
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            placeholder="https://example.com/image.jpg"
-          />
-        </div>
+            <FileUpload
+              label="Cover Image"
+              acceptedTypes="image/*"
+              maxSize={5}
+              uploadPath="blogs"
+              currentFile={coverImage}
+              onUploadComplete={(url) => setCoverImage(url)}
+            />
 
-        <div className="flex gap-2">
-          <Button type="submit" disabled={loading}>
-            {loading
-              ? "Saving..."
-              : editingBlog
-                ? "Update Blog"
-                : "Create Blog"}
-          </Button>
-          {editingBlog && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setEditingBlog(null);
-                setTitle("");
-                setContent("");
-                setImage("");
-              }}
-            >
-              Cancel Edit
-            </Button>
-          )}
-        </div>
-      </form>
-
-      <h2 className="text-xl font-bold mb-4">All Blogs</h2>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {blogs.map((blog) => (
-            <TableRow key={blog.id}>
-              <TableCell>{blog.title}</TableCell>
-              <TableCell>
-                <Button
-                  variant={blog.published ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleTogglePublish(blog.id, blog.published)}
-                >
-                  {blog.published ? "Published" : "Draft"}
+            <div className="flex gap-4">
+              <Button type="submit" disabled={loading} className="min-w-32">
+                {loading
+                  ? "Saving..."
+                  : editingBlog
+                    ? "Update Blog"
+                    : "Create Blog"}
+              </Button>
+              {editingBlog && (
+                <Button type="button" variant="outline" onClick={resetForm}>
+                  Cancel Edit
                 </Button>
-              </TableCell>
-              <TableCell>
-                {new Date(blog.createdAt).toLocaleDateString()}
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEdit(blog)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDelete(blog.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              )}
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All Blogs</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {blogs.map((blog) => (
+                <TableRow key={blog.id}>
+                  <TableCell className="font-medium">{blog.title}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant={blog.published ? "default" : "outline"}
+                      size="sm"
+                      onClick={() =>
+                        handleTogglePublish(blog.id, blog.published)
+                      }
+                    >
+                      {blog.published ? "Published" : "Draft"}
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(blog.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(blog)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(blog.id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
