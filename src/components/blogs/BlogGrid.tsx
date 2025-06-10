@@ -53,7 +53,6 @@ const BlogGrid = ({ blogs }: BlogGridProps) => {
                   year: "numeric",
                 })}
               </span>
-              <span>By {blog.published}</span>
             </div>
             <h2 className="text-xl font-semibold font-['Roboto'] text-gray-800 dark:text-gray-100 mb-3 line-clamp-2">
               {blog.title}
