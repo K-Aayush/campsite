@@ -18,7 +18,16 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const { serviceId, startDate, endDate, totalAmount, depositAmount } = data;
+    const {
+      serviceId,
+      packageName,
+      packagePrice,
+      startDate,
+      endDate,
+      duration,
+      totalAmount,
+      depositAmount,
+    } = data;
 
     // Validate required fields
     if (!serviceId || !startDate || !endDate || !totalAmount) {
@@ -85,8 +94,11 @@ export async function POST(req: Request) {
       data: {
         userId: user.id,
         serviceId,
+        packageName: packageName || null,
+        packagePrice: packagePrice || null,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
+        duration: duration || 1,
         totalAmount,
         depositAmount: depositAmount || totalAmount * 0.2,
         status: "PENDING",

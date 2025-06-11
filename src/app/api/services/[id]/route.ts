@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { db } from "../../../../../utils/db";
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const service = await db.service.findUnique({
       where: {
@@ -24,7 +27,10 @@ export async function GET({ params }: { params: { id: string } }) {
   }
 }
 
-export async function DELETE({ params }: { params: { id: string } }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {

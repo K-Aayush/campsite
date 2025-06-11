@@ -48,7 +48,7 @@ export const serviceSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters"),
   price: z
     .string()
-    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
+    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, {
       message: "Price must be a positive number",
     }),
   image: z.string().url("Must be a valid URL").optional().or(z.literal("")),
@@ -62,4 +62,5 @@ export const serviceSchema = z.object({
       message: "Deposit percentage must be between 0 and 100",
     }
   ),
+  category: z.string().optional(),
 });
