@@ -33,6 +33,20 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
+
+    // Parse packages if they exist
+    let packages = [];
+    if (data.packages && typeof data.packages === "string") {
+      try {
+        packages = JSON.parse(data.packages);
+      } catch (e) {
+        console.log(e);
+        packages = [];
+      }
+    } else if (Array.isArray(data.packages)) {
+      packages = data.packages;
+    }
+
     const service = await db.service.create({
       data: {
         name: data.name,
@@ -41,6 +55,9 @@ export async function POST(req: Request) {
         image: data.image,
         isBookable: data.isBookable,
         depositPercentage: data.depositPercentage,
+        category: data.category || "general",
+        packages: JSON.stringify(packages),
+        durations: JSON.stringify(data.durations || 1),
       },
     });
 
