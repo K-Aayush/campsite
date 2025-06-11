@@ -52,9 +52,6 @@ model User {
   accounts              Account[]
   blogs                 Blog[]
   gallery               Gallery[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Account {

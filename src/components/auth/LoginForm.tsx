@@ -87,47 +87,6 @@ const LoginForm = () => {
     });
   };
 
-  // const handleSubmit = (values: z.infer<typeof loginSchema>) => {
-  //   setError("");
-  //   setSuccess("");
-
-  //   startTransition(async () => {
-  //     // Step 1: Call server action
-  //     const result = await login(values);
-
-  //     // Step 2: Handle server result
-  //     if (result?.error) {
-  //       setError(result.error);
-  //       return;
-  //     }
-
-  //     if (result?.message) {
-  //       setSuccess(result.message);
-  //       return;
-  //     }
-
-  //     if (result?.twoFactor) {
-  //       setTwoFactor(true);
-  //       return;
-  //     }
-
-  //     // Step 3: Proceed with signIn
-  //     const signInResult = await signIn("credentials", {
-  //       email: values.email,
-  //       password: values.password,
-  //       code: values.code,
-  //       redirect: false,
-  //       callbackUrl: callbackUrl || "/profile",
-  //     });
-
-  //     if (!signInResult?.ok) {
-  //       setError(signInResult?.error || "Invalid credentials.");
-  //     } else {
-  //       window.location.href = signInResult.url || "/profile";
-  //     }
-  //   });
-  // };
-
   return (
     <CardWrapper
       headerLabel="Welcome back"
