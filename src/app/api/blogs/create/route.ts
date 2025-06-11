@@ -21,6 +21,16 @@ export async function POST(req: NextRequest) {
 
     console.log("blogs create", title, description, content, image);
 
+    if (!title || !description || !content) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Title, description, and content are required.",
+        },
+        { status: 400 }
+      );
+    }
+
     const baseSlug = slugify(title);
 
     let slug = baseSlug;
@@ -36,7 +46,7 @@ export async function POST(req: NextRequest) {
         slug,
         description,
         content,
-        coverImage: image ? image : null, // you might want to handle image upload
+        coverImage: image ? image : null,
       },
     });
 

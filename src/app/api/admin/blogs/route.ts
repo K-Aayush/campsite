@@ -47,11 +47,33 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
+
+    // Generate slug from title
+    const generateSlug = (title: string) => {
+      return title
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9 -]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+    };
+
+    const baseSlug = generateSlug(data.title);
+    let slug = baseSlug;
+    let suffix = 1;
+
+    // Ensure unique slug
+    while (await db.blog.findUnique({ where: { slug } })) {
+      slug = `${baseSlug}-${suffix++}`;
+    }
+
     const blog = await db.blog.create({
       data: {
         title: data.title,
+        slug: slug,
+        description: data.description || data.title,
         content: data.content,
-        coverImage: data.coverImage,
+        coverImage: data.image || data.coverImage,
         authorId: user.id,
       },
     });

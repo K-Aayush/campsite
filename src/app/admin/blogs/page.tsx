@@ -19,6 +19,7 @@ import FileUpload from "@/components/admin/FileUpload";
 interface Blog {
   id: string;
   title: string;
+  description: string;
   content: string;
   coverImage: string | null;
   published: boolean;
@@ -28,6 +29,7 @@ interface Blog {
 export default function AdminBlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,6 +53,22 @@ export default function AdminBlogsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!title.trim()) {
+      showToast("error", { title: "Title is required" });
+      return;
+    }
+
+    if (!description.trim()) {
+      showToast("error", { title: "Description is required" });
+      return;
+    }
+
+    if (!content.trim()) {
+      showToast("error", { title: "Content is required" });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -64,6 +82,7 @@ export default function AdminBlogsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
+          description,
           content,
           image: coverImage,
         }),
@@ -89,6 +108,7 @@ export default function AdminBlogsPage() {
 
   const resetForm = () => {
     setTitle("");
+    setDescription("");
     setContent("");
     setCoverImage("");
     setEditingBlog(null);
@@ -97,6 +117,7 @@ export default function AdminBlogsPage() {
   const handleEdit = (blog: Blog) => {
     setEditingBlog(blog);
     setTitle(blog.title);
+    setDescription(blog.description);
     setContent(blog.content);
     setCoverImage(blog.coverImage || "");
   };
@@ -152,7 +173,9 @@ export default function AdminBlogsPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Title</label>
+              <label className="block text-sm font-medium mb-2">
+                Title <span className="text-red-500">*</span>
+              </label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -162,12 +185,27 @@ export default function AdminBlogsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Content</label>
+              <label className="block text-sm font-medium mb-2">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                className="min-h-[100px]"
+                placeholder="Enter a brief description of your blog post..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Content <span className="text-red-500">*</span>
+              </label>
               <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 required
-                className="min-h-[200px]"
+                className="min-h-[300px]"
                 placeholder="Write your blog content here..."
               />
             </div>
@@ -208,6 +246,7 @@ export default function AdminBlogsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Title</TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead>Actions</TableHead>
@@ -217,6 +256,9 @@ export default function AdminBlogsPage() {
               {blogs.map((blog) => (
                 <TableRow key={blog.id}>
                   <TableCell className="font-medium">{blog.title}</TableCell>
+                  <TableCell className="max-w-xs">
+                    <p className="truncate">{blog.description}</p>
+                  </TableCell>
                   <TableCell>
                     <Button
                       variant={blog.published ? "default" : "outline"}

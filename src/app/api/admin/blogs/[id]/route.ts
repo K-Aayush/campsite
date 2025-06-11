@@ -25,8 +25,9 @@ export async function PUT(
       where: { id: params.id },
       data: {
         title: data.title,
+        description: data.description,
         content: data.content,
-        image: data.image,
+        coverImage: data.image || data.coverImage,
       },
     });
 
