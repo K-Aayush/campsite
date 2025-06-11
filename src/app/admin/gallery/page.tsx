@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +13,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import FileUpload from "@/components/admin/FileUpload";
+
+interface GalleryItem {
+  id: string;
+  title: string;
+  description: string;
+  type: "image" | "video";
+  url: string;
+  createdAt: string;
+}
 
 export default function AdminGalleryPage() {
   const [title, setTitle] = useState("");
@@ -20,10 +30,32 @@ export default function AdminGalleryPage() {
   const [type, setType] = useState<"image" | "video">("image");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<GalleryItem[]>([]);
+
+  useEffect(() => {
+    fetchGalleryItems();
+  }, []);
+
+  const fetchGalleryItems = async () => {
+    try {
+      const response = await fetch("/api/admin/gallery");
+      if (!response.ok) throw new Error("Failed to fetch gallery items");
+      const data = await response.json();
+      setItems(data);
+    } catch (error) {
+      console.error(error);
+      showToast("error", { title: "Failed to fetch gallery items" });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!url) {
+      showToast("error", { title: "Please upload a file first" });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -41,9 +73,7 @@ export default function AdminGalleryPage() {
       if (!response.ok) throw new Error("Failed to add gallery item");
 
       showToast("success", { title: "Gallery item added successfully" });
-      setTitle("");
-      setDescription("");
-      setUrl("");
+      resetForm();
       fetchGalleryItems();
     } catch (error) {
       console.error(error);
@@ -53,19 +83,16 @@ export default function AdminGalleryPage() {
     }
   };
 
-  const fetchGalleryItems = async () => {
-    try {
-      const response = await fetch("/api/admin/gallery");
-      if (!response.ok) throw new Error("Failed to fetch gallery items");
-      const data = await response.json();
-      setItems(data);
-    } catch (error) {
-      console.error(error);
-      showToast("error", { title: "Failed to fetch gallery items" });
-    }
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setUrl("");
+    setType("image");
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this gallery item?")) return;
+
     try {
       const response = await fetch(`/api/admin/gallery/${id}`, {
         method: "DELETE",
@@ -82,36 +109,38 @@ export default function AdminGalleryPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Manage Gallery</h1>
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold">Manage Gallery</h1>
 
-      <Card className="mb-8">
+      <Card>
         <CardHeader>
           <CardTitle>Add New Gallery Item</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-1">Title</label>
+              <label className="block text-sm font-medium mb-2">Title</label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
+                placeholder="Enter title"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Description
               </label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                placeholder="Enter description (optional)"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Type</label>
+              <label className="block text-sm font-medium mb-2">Type</label>
               <Select
                 value={type}
                 onValueChange={(value: "image" | "video") => setType(value)}
@@ -126,17 +155,20 @@ export default function AdminGalleryPage() {
               </Select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">URL</label>
-              <Input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder={`Enter ${type} URL`}
-                required
-              />
-            </div>
+            <FileUpload
+              label={`Upload ${type}`}
+              acceptedTypes={type === "image" ? "image/*" : "video/*"}
+              maxSize={type === "image" ? 5 : 50}
+              uploadPath="gallery"
+              currentFile={url}
+              onUploadComplete={(uploadedUrl) => setUrl(uploadedUrl)}
+            />
 
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading || !url}
+              className="min-w-32"
+            >
               {loading ? "Adding..." : "Add Gallery Item"}
             </Button>
           </form>
@@ -161,9 +193,12 @@ export default function AdminGalleryPage() {
                 />
               )}
               <h3 className="font-semibold mb-2">{item.title}</h3>
-              <p className="text-sm text-gray-600 mb-4">{item.description}</p>
+              {item.description && (
+                <p className="text-sm text-gray-600 mb-4">{item.description}</p>
+              )}
               <Button
                 variant="destructive"
+                size="sm"
                 onClick={() => handleDelete(item.id)}
               >
                 Delete

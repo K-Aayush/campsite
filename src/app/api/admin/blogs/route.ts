@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       data: {
         title: data.title,
         content: data.content,
-        image: data.image,
+        coverImage: data.coverImage,
         authorId: user.id,
       },
     });
