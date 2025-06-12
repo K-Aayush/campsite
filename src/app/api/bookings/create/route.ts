@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { db } from "../../../../../utils/db";
+import { sendBookingNotificationToAdmin } from "../../../../../utils/email";
 
 export async function POST(req: Request) {
   try {
@@ -90,17 +91,23 @@ export async function POST(req: Request) {
       );
     }
 
+    // Calculate final amounts - use service base price if no package
+    const finalPackagePrice = packagePrice || service.price;
+    const finalTotalAmount = totalAmount || finalPackagePrice * (duration || 1);
+    const finalDepositAmount =
+      depositAmount || (finalTotalAmount * service.depositPercentage) / 100;
+
     const booking = await db.booking.create({
       data: {
         userId: user.id,
         serviceId,
-        packageName: packageName || null,
-        packagePrice: packagePrice || null,
+        packageName: packageName || "Base Service",
+        packagePrice: finalPackagePrice,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         duration: duration || 1,
-        totalAmount,
-        depositAmount: depositAmount || totalAmount * 0.2,
+        totalAmount: finalTotalAmount,
+        depositAmount: finalDepositAmount,
         status: "PENDING",
         paymentStatus: "PENDING",
       },
@@ -110,8 +117,32 @@ export async function POST(req: Request) {
             name: true,
           },
         },
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
       },
     });
+
+    // Send notification email to admin
+    try {
+      await sendBookingNotificationToAdmin({
+        bookingId: booking.id,
+        userName: user.name || "Unknown User",
+        userEmail: user.email || "",
+        serviceName: service.name,
+        packageName: booking.packageName || "Base Service",
+        startDate: booking.startDate,
+        endDate: booking.endDate,
+        totalAmount: booking.totalAmount,
+        depositAmount: booking.depositAmount,
+      });
+    } catch (emailError) {
+      console.error("Failed to send admin notification:", emailError);
+      // Don't fail the booking if email fails
+    }
 
     return NextResponse.json({
       success: true,

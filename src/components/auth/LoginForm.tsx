@@ -29,10 +29,6 @@ import { signIn } from "next-auth/react";
 const LoginForm = () => {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
-  // const urlError =
-  //   searchParams.get("error") === "OAuthAccountNotLinked"
-  //     ? "Email already in use with different provider!"
-  //     : "";
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
@@ -49,7 +45,6 @@ const LoginForm = () => {
     setSuccess("");
 
     startTransition(() => {
-      // login(values)
       login(values, callbackUrl)
         .then(async (data) => {
           console.log("data", data);
@@ -68,15 +63,28 @@ const LoginForm = () => {
               email: email,
               password: password,
               redirect: false,
-              callbackUrl: callbackUrl || "/profile",
+              callbackUrl: callbackUrl || "/",
             });
 
             if (signInResult?.ok && signInResult?.url) {
-              window.location.href = signInResult.url;
+              // Check if user is admin and redirect accordingly
+              try {
+                const response = await fetch("/api/admin/check-access");
+                const adminData = await response.json();
+
+                if (adminData.isAdmin) {
+                  window.location.href = "/admin";
+                } else {
+                  window.location.href = signInResult.url;
+                }
+              } catch (error) {
+                console.log(error);
+                // If admin check fails, use default redirect
+                window.location.href = signInResult.url;
+              }
             } else {
               setError("Invalid credentials.");
             }
-            // setSuccess(data.success);
           }
 
           if (data?.twoFactor) {
