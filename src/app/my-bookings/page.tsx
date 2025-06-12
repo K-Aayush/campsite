@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { showToast } from "@/utils/Toast";
 import Image from "next/image";
-import { Eye } from "lucide-react";
+import { Eye, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 interface Booking {
@@ -41,6 +41,7 @@ export default function MyBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated" && session?.user?.email) {
@@ -67,6 +68,13 @@ export default function MyBookingsPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchBookings();
+    setRefreshing(false);
+    showToast("success", { title: "Bookings refreshed" });
   };
 
   const handleCancel = async (bookingId: string) => {
@@ -205,10 +213,28 @@ export default function MyBookingsPage() {
     <div className="container mx-auto p-4 sm:p-6 max-w-7xl mt-32">
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">My Bookings</CardTitle>
-          <CardDescription className="text-gray-500 dark:text-gray-400">
-            View and manage your booking history
-          </CardDescription>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="text-lg font-semibold">
+                My Bookings
+              </CardTitle>
+              <CardDescription className="text-gray-500 dark:text-gray-400">
+                View and manage your booking history
+              </CardDescription>
+            </div>
+            <Button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
