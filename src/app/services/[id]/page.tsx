@@ -97,9 +97,22 @@ export default function BookServicePage() {
       const packages = parsePackages(data.packages);
       const durations = parseDurations(data.durations);
 
-      if (packages.length > 0) setSelectedPackage(packages[0]);
-      if (durations.length > 0) setSelectedDuration(durations[0]);
-      else setSelectedDuration(null);
+      if (packages.length > 0) {
+        setSelectedPackage(packages[0]);
+      } else {
+        // Create a default package using service base price
+        setSelectedPackage({
+          name: "Base Service",
+          price: data.price,
+          features: ["Standard service features"],
+        });
+      }
+
+      if (durations.length > 0) {
+        setSelectedDuration(durations[0]);
+      } else {
+        setSelectedDuration({ days: 1, label: "1 Day" });
+      }
     } catch (error) {
       console.error(error);
       showToast("error", { title: "Failed to load service" });
@@ -167,12 +180,14 @@ export default function BookServicePage() {
   };
 
   const calculateTotal = () => {
-    if (!selectedPackage || !selectedDuration) return 0;
+    if (!selectedPackage || !selectedDuration) {
+      return service?.price || 0;
+    }
     return selectedPackage.price * selectedDuration.days;
   };
 
   const calculateDeposit = () => {
-    if (!service || !selectedPackage || !selectedDuration) return 0;
+    if (!service) return 0;
     return (calculateTotal() * service.depositPercentage) / 100;
   };
 
@@ -289,6 +304,26 @@ export default function BookServicePage() {
   const packages = parsePackages(service.packages);
   const durations = parseDurations(service.durations);
 
+  // If no packages, create a default one with service base price
+  const displayPackages =
+    packages.length > 0
+      ? packages
+      : [
+          {
+            name: "Base Service",
+            price: service.price,
+            features: [
+              "Standard service features",
+              "Professional guidance",
+              "All basic amenities",
+            ],
+          },
+        ];
+
+  // If no durations, create a default one
+  const displayDurations =
+    durations.length > 0 ? durations : [{ days: 1, label: "1 Day" }];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 pt-20">
       <div className="container mx-auto px-4 py-8">
@@ -354,7 +389,7 @@ export default function BookServicePage() {
               </CardContent>
             </Card>
 
-            {packages.length > 0 && (
+            {displayPackages.length > 0 && (
               <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="text-2xl text-green-600 dark:text-green-400">
@@ -365,7 +400,7 @@ export default function BookServicePage() {
                   <Select
                     value={selectedPackage?.name}
                     onValueChange={(value) => {
-                      const pkg = packages.find((p) => p.name === value);
+                      const pkg = displayPackages.find((p) => p.name === value);
                       setSelectedPackage(pkg || null);
                     }}
                   >
@@ -373,7 +408,7 @@ export default function BookServicePage() {
                       <SelectValue placeholder="Select a package" />
                     </SelectTrigger>
                     <SelectContent>
-                      {packages.map((pkg, index) => (
+                      {displayPackages.map((pkg, index) => (
                         <SelectItem key={index} value={pkg.name}>
                           <div className="flex items-center justify-between w-full">
                             <span className="font-medium">{pkg.name}</span>
@@ -426,7 +461,7 @@ export default function BookServicePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {durations.length > 0 ? (
+                {displayDurations.length > 0 ? (
                   <div>
                     <Label className="text-base font-medium mb-3 block">
                       Duration
@@ -434,7 +469,7 @@ export default function BookServicePage() {
                     <Select
                       value={selectedDuration?.days.toString() || ""}
                       onValueChange={(value) => {
-                        const duration = durations.find(
+                        const duration = displayDurations.find(
                           (d) => d.days.toString() === value
                         );
                         setSelectedDuration(duration || null);
@@ -444,7 +479,7 @@ export default function BookServicePage() {
                         <SelectValue placeholder="Select duration" />
                       </SelectTrigger>
                       <SelectContent>
-                        {durations.map((duration, index) => (
+                        {displayDurations.map((duration, index) => (
                           <SelectItem
                             key={index}
                             value={duration.days.toString()}
@@ -463,9 +498,7 @@ export default function BookServicePage() {
                     <Label className="text-base font-medium mb-3 block">
                       Duration
                     </Label>
-                    <p className="text-sm text-gray-500">
-                      No durations available for this service.
-                    </p>
+                    <p className="text-sm text-gray-500">Default: 1 Day</p>
                   </div>
                 )}
 
