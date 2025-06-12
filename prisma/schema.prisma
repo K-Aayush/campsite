@@ -142,7 +142,7 @@ model Booking {
   updatedAt     DateTime       @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  service Service @relation(fields: [serviceId], references: [id])
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
