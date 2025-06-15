@@ -83,12 +83,15 @@ export default function ServicesPage() {
         console.error("Parsed packages is not an array:", parsed);
         return [];
       }
+      // Filter out invalid packages (empty names, zero prices, etc.)
       return parsed.filter(
         (item): item is Package =>
           typeof item === "object" &&
           item !== null &&
           typeof item.name === "string" &&
+          item.name.trim() !== "" &&
           typeof item.price === "number" &&
+          item.price > 0 &&
           Array.isArray(item.features)
       );
     } catch {
@@ -203,10 +206,13 @@ export default function ServicesPage() {
           {filteredServices.map((service, index) => {
             const packages = parsePackages(service.packages);
             const durations = parseDurations(service.durations);
-            const minPackagePrice =
+
+            // Show base price if no valid packages, otherwise show minimum package price
+            const displayPrice =
               packages.length > 0
                 ? Math.min(...packages.map((p) => p.price))
                 : service.price;
+
             const maxDuration =
               durations.length > 0
                 ? Math.max(...durations.map((d) => d.days))
@@ -255,14 +261,6 @@ export default function ServicesPage() {
                       )}
                     </div>
 
-                    {/* Rating */}
-                    {/* <div className="absolute top-4 right-4 flex items-center gap-1 bg-cream-50/90 dark:bg-gray-800/90 backdrop-blur-md px-3 py-1 rounded-full">
-                      <Star className="h-4 w-4 fill-gold-400 text-gold-400" />
-                      <span className="text-sm font-medium text-gray-900 dark:text-cream-50">
-                        4.8
-                      </span>
-                    </div> */}
-
                     {/* Quick Info */}
                     <div className="absolute bottom-4 left-4 right-4">
                       <h3 className="text-cream-50 font-serif font-bold text-2xl mb-2 line-clamp-1">
@@ -286,7 +284,7 @@ export default function ServicesPage() {
                       {service.description}
                     </p>
 
-                    {/* Package Preview */}
+                    {/* Package Preview - Only show if packages exist */}
                     {packages.length > 0 && (
                       <div className="mb-6">
                         <h4 className="text-base font-medium text-green-600 dark:text-green-400 mb-3">
@@ -315,13 +313,13 @@ export default function ServicesPage() {
                       </div>
                     )}
 
-                    {/* Features Preview */}
+                    {/* Features Preview - Only show if packages exist and have features */}
                     {packages.length > 0 &&
                       packages[0].features.length > 0 &&
                       packages[0].features[0] !== "" && (
                         <div className="mb-6">
                           <h4 className="text-base font-medium mb-3 text-gray-700 dark:text-cream-100">
-                            Includes:
+                            Package Features:
                           </h4>
                           <div className="space-y-2">
                             {packages[0].features
@@ -350,13 +348,14 @@ export default function ServicesPage() {
                     <div className="border-t border-cream-200 dark:border-gray-700 pt-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-3xl font-bold text-green-600 dark:text-green-400">
-                          NPR {minPackagePrice.toLocaleString()}
+                          NPR {displayPrice.toLocaleString()}
                         </span>
                         <span className="text-sm text-gray-500 dark:text-cream-300">
                           per day
                         </span>
                       </div>
                       <p className="text-sm text-gray-500 dark:text-cream-300">
+                        {packages.length > 0 ? "Starting from" : "Base price"} •
                         Deposit: {service.depositPercentage}% required
                       </p>
                     </div>
