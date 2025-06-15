@@ -4,8 +4,9 @@ import { db } from "../../../../../../utils/db";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
@@ -21,7 +22,7 @@ export async function DELETE(
     }
 
     await db.gallery.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true });

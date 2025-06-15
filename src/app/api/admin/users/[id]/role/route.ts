@@ -4,8 +4,10 @@ import { db } from "../../../../../../../utils/db";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
+
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
@@ -28,7 +30,7 @@ export async function PUT(
     }
 
     const updatedUser = await db.user.update({
-      where: { id: params.id },
+      where: { id },
       data: { role },
     });
 

@@ -5,9 +5,9 @@ import { db } from "../../../../../utils/db";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const id = (await params).id;
+  const { id } = await context.params;
   try {
     const blog = await db.blog.delete({
       where: { id },

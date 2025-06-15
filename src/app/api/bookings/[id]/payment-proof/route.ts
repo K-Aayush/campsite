@@ -22,15 +22,21 @@ export async function POST(req: Request) {
 
     // Calculate deposit amount (e.g., 20% of total)
     const depositAmount = totalAmount * 0.2;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const duration = Math.ceil(
+      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
     const booking = await db.booking.create({
       data: {
         userId: user.id,
         serviceId,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        startDate: start,
+        endDate: end,
         totalAmount,
         depositAmount,
+        duration,
         status: "PENDING",
         paymentStatus: "PENDING",
       },

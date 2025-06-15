@@ -4,8 +4,10 @@ import { db } from "../../../../../utils/db";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
+
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
@@ -13,8 +15,7 @@ export async function GET(
     }
 
     const booking = await db.booking.findUnique({
-      where: { id: params.id },
-      include: { payment: true },
+      where: { id },
     });
 
     if (!booking) {
@@ -33,8 +34,10 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
+
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
@@ -45,7 +48,7 @@ export async function PUT(
     const { status } = data;
 
     const booking = await db.booking.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
     });
 

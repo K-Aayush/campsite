@@ -5,9 +5,10 @@ import { sendBookingStatusUpdateToUser } from "../../../../../../utils/email";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const session = await getServerSession();
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -26,7 +27,7 @@ export async function PUT(
     const { status } = data;
 
     const booking = await db.booking.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
       include: {
         user: {

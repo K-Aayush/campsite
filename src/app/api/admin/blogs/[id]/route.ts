@@ -4,8 +4,9 @@ import { db } from "../../../../../../utils/db";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
@@ -22,7 +23,7 @@ export async function PUT(
 
     const data = await req.json();
     const blog = await db.blog.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: data.title,
         description: data.description,
@@ -43,8 +44,9 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
@@ -60,7 +62,7 @@ export async function DELETE(
     }
 
     await db.blog.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true });

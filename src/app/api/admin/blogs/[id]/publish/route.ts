@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { db } from "../../../../../../../utils/db";
 
-export async function PUT(req: Request, context: { params: { id: string } }) {
+export async function PUT(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
@@ -19,7 +23,7 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
 
     const data = await req.json();
     const blog = await db.blog.update({
-      where: { id: context.params.id },
+      where: { id },
       data: {
         published: data.published,
       },
