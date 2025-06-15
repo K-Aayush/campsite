@@ -17,6 +17,11 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Get current month start
+    const currentMonth = new Date();
+    currentMonth.setDate(1);
+    currentMonth.setHours(0, 0, 0, 0);
+
     // Fetch all stats in parallel
     const [
       totalBookings,
@@ -25,19 +30,36 @@ export async function GET() {
       totalBlogs,
       pendingBookings,
       confirmedBookings,
+      completedBookings,
+      monthlyBookings,
     ] = await Promise.all([
       db.booking.count(),
       db.user.count(),
       db.service.count(),
       db.blog.count(),
       db.booking.count({ where: { status: "PENDING" } }),
+      db.booking.count({ where: { status: "CONFIRMED" } }),
       db.booking.findMany({
-        where: { status: "CONFIRMED" },
+        where: {
+          OR: [{ status: "CONFIRMED" }, { status: "COMPLETED" }],
+        },
+        select: { totalAmount: true },
+      }),
+      db.booking.findMany({
+        where: {
+          createdAt: { gte: currentMonth },
+          OR: [{ status: "CONFIRMED" }, { status: "COMPLETED" }],
+        },
         select: { totalAmount: true },
       }),
     ]);
 
-    const totalRevenue = confirmedBookings.reduce(
+    const totalRevenue = completedBookings.reduce(
+      (sum, booking) => sum + booking.totalAmount,
+      0
+    );
+
+    const monthlyRevenue = monthlyBookings.reduce(
       (sum, booking) => sum + booking.totalAmount,
       0
     );
@@ -49,6 +71,8 @@ export async function GET() {
       totalBlogs,
       totalRevenue,
       pendingBookings,
+      monthlyRevenue,
+      confirmedBookings,
     });
   } catch (error) {
     console.error("Error fetching dashboard stats:", error);

@@ -9,35 +9,38 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Verify admin role
     const user = await db.user.findUnique({
       where: { email: session.user.email },
     });
 
-    if (user?.role !== "ADMIN") {
+    if (!user || user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const users = await db.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        emailVerified: true,
-
-        _count: {
+    const recentBookings = await db.booking.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
           select: {
-            bookings: true,
+            name: true,
+            email: true,
+          },
+        },
+        service: {
+          select: {
+            name: true,
           },
         },
       },
     });
 
-    return NextResponse.json(users);
+    return NextResponse.json(recentBookings);
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error fetching recent bookings:", error);
     return NextResponse.json(
-      { error: "Failed to fetch users" },
+      { error: "Failed to fetch recent bookings" },
       { status: 500 }
     );
   }

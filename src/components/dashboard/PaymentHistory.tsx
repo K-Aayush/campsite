@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -13,6 +14,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Register Chart.js components
 ChartJS.register(
@@ -24,31 +26,48 @@ ChartJS.register(
   Legend
 );
 
-// Define the type for payment data
 interface PaymentData {
   name: string;
   value: number;
   icon: string;
 }
 
-// Define payment data with explicit type
-const data: PaymentData[] = [
-  {
-    name: "eSewa",
-    value: 0,
-    icon: "💳",
-  },
-  {
-    name: "Khalti",
-    value: 0,
-    icon: "💳",
-  },
-];
+interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor: string;
+    borderColor: string;
+    borderWidth: number;
+    borderRadius: number;
+  }[];
+}
 
 export default function PaymentHistory() {
-  const { theme } = useTheme(); 
+  const { theme } = useTheme();
+  const [data, setData] = useState<PaymentData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const textColor = theme === "dark" ? "#e5e7eb" : "#1f2937"; 
+  const textColor = theme === "dark" ? "#e5e7eb" : "#1f2937";
+
+  useEffect(() => {
+    fetchPaymentStats();
+  }, []);
+
+  const fetchPaymentStats = async () => {
+    try {
+      const response = await fetch("/api/admin/payment-stats");
+      if (response.ok) {
+        const paymentStats = await response.json();
+        setData(paymentStats);
+      }
+    } catch (error) {
+      console.error("Error fetching payment stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const chartData: ChartData = {
     labels: data.map((item) => `${item.icon} ${item.name}`),
@@ -111,11 +130,26 @@ export default function PaymentHistory() {
           color: textColor,
         },
         grid: {
-          display: false, // Disable y-axis grid for cleaner look
+          display: false,
         },
       },
     },
   };
+
+  if (loading) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            Payment Methods Used
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="h-[12rem]">
+          <Skeleton className="h-full w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full">
@@ -125,21 +159,14 @@ export default function PaymentHistory() {
         </CardTitle>
       </CardHeader>
       <CardContent className="h-[12rem]">
-        <Chart type="bar" data={chartData} options={options} />
+        {data.length === 0 || data.every((item) => item.value === 0) ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">No payment data available</p>
+          </div>
+        ) : (
+          <Chart type="bar" data={chartData} options={options} />
+        )}
       </CardContent>
     </Card>
   );
-}
-
-// Define Chart.js types for data and options
-interface ChartData {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    backgroundColor: string;
-    borderColor: string;
-    borderWidth: number;
-    borderRadius: number;
-  }[];
 }

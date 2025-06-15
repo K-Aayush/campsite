@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Chart as ChartJS,
@@ -16,6 +16,7 @@ import {
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
 import { useTheme } from "next-themes";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Register Chart.js components
 ChartJS.register(
@@ -29,37 +30,70 @@ ChartJS.register(
   Filler
 );
 
-// Define the type for chart data
 interface ChartDataPoint {
   date: string;
-  Bookings: number;
+  bookings: number;
+  revenue: number;
 }
 
-// Define chartdata with explicit type
-const chartdata: ChartDataPoint[] = [
-  { date: "Jan 23", Bookings: 0 },
-  { date: "Feb 23", Bookings: 10 },
-  { date: "Mar 23", Bookings: 25 },
-  { date: "Apr 23", Bookings: 15 },
-  { date: "May 23", Bookings: 30 },
-];
+interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    borderColor: string;
+    backgroundColor: string;
+    fill: boolean;
+    tension: number;
+    yAxisID?: string;
+  }[];
+}
 
 export default function BookingStats() {
   const { theme } = useTheme();
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const textColor = theme === "dark" ? "#e5e7eb" : "#1f2937";
-  const [value, setValue] = useState<ChartDataPoint | null>(null);
+
+  useEffect(() => {
+    fetchBookingStats();
+  }, []);
+
+  const fetchBookingStats = async () => {
+    try {
+      const response = await fetch("/api/admin/booking-stats");
+      if (response.ok) {
+        const data = await response.json();
+        setChartData(data);
+      }
+    } catch (error) {
+      console.error("Error fetching booking stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const data: ChartData = {
-    labels: chartdata.map((item) => item.date),
+    labels: chartData.map((item) => item.date),
     datasets: [
       {
         label: "Bookings",
-        data: chartdata.map((item) => item.Bookings),
+        data: chartData.map((item) => item.bookings),
         borderColor: "#16a34a",
         backgroundColor: "rgba(22, 163, 74, 0.2)",
         fill: true,
         tension: 0.4,
+        yAxisID: "y",
+      },
+      {
+        label: "Revenue (NPR)",
+        data: chartData.map((item) => item.revenue),
+        borderColor: "#2563eb",
+        backgroundColor: "rgba(37, 99, 235, 0.2)",
+        fill: false,
+        tension: 0.4,
+        yAxisID: "y1",
       },
     ],
   };
@@ -67,6 +101,10 @@ export default function BookingStats() {
   const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: {
+      mode: "index" as const,
+      intersect: false,
+    },
     plugins: {
       legend: {
         display: true,
@@ -79,7 +117,11 @@ export default function BookingStats() {
       tooltip: {
         callbacks: {
           label: function (context) {
-            return `${context.parsed.y} bookings`;
+            if (context.datasetIndex === 0) {
+              return `${context.parsed.y} bookings`;
+            } else {
+              return `NPR ${context.parsed.y.toLocaleString()}`;
+            }
           },
         },
       },
@@ -94,6 +136,9 @@ export default function BookingStats() {
         ticks: { color: textColor },
       },
       y: {
+        type: "linear" as const,
+        display: true,
+        position: "left" as const,
         title: {
           display: true,
           text: "Bookings",
@@ -106,38 +151,59 @@ export default function BookingStats() {
           },
         },
       },
-    },
-    onClick: (event, elements) => {
-      if (elements.length > 0) {
-        const index = elements[0].index;
-        const selectedData = chartdata[index];
-        setValue(selectedData);
-      }
+      y1: {
+        type: "linear" as const,
+        display: true,
+        position: "right" as const,
+        title: {
+          display: true,
+          text: "Revenue (NPR)",
+          color: textColor,
+        },
+        ticks: {
+          color: textColor,
+          callback: function (value) {
+            return `${Number(value).toLocaleString()}`;
+          },
+        },
+        grid: {
+          drawOnChartArea: false,
+        },
+      },
     },
   };
+
+  if (loading) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            Booking Statistics
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="h-[18rem]">
+          <Skeleton className="h-full w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">
-          Booking Statistics
+          Booking Statistics & Revenue
         </CardTitle>
       </CardHeader>
       <CardContent className="h-[18rem]">
-        <Chart type="line" data={data} options={options} />
+        {chartData.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">No data available</p>
+          </div>
+        ) : (
+          <Chart type="line" data={data} options={options} />
+        )}
       </CardContent>
     </Card>
   );
-}
-
-interface ChartData {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    borderColor: string;
-    backgroundColor: string;
-    fill: boolean;
-    tension: number;
-  }[];
 }

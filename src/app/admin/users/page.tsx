@@ -13,7 +13,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { showToast } from "@/utils/Toast";
-import { format } from "date-fns";
 
 interface User {
   id: string;
@@ -21,7 +20,6 @@ interface User {
   email: string;
   role: "ADMIN" | "USER";
   emailVerified: Date | null;
-  createdAt: Date;
   _count: {
     bookings: number;
   };
@@ -91,7 +89,9 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Users Management</h1>
-        <div className="text-sm text-gray-600">Total Users: {users.length}</div>
+        <div className="text-sm text-gray-600 dark:text-gray-300">
+          Total Users: {users.length}
+        </div>
       </div>
 
       <Card>
@@ -131,9 +131,7 @@ export default function AdminUsersPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>{user._count.bookings}</TableCell>
-                  <TableCell>
-                    {format(new Date(user.createdAt), "MMM dd, yyyy")}
-                  </TableCell>
+
                   <TableCell>
                     <Button
                       size="sm"

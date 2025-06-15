@@ -29,7 +29,7 @@ export async function PUT(
       where: { id: params.id },
       data: {
         paymentStatus: approved ? "CONFIRMED" : "REJECTED",
-        status: approved ? "CONFIRMED" : "PENDING",
+        status: approved ? "CONFIRMED" : "REJECTED",
       },
       include: {
         user: {
