@@ -24,14 +24,13 @@ export async function GET() {
         email: true,
         role: true,
         emailVerified: true,
-        createdAt: true,
+
         _count: {
           select: {
             bookings: true,
           },
         },
       },
-      orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json(users);

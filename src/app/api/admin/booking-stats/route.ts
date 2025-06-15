@@ -41,7 +41,7 @@ export async function GET() {
     } = {};
 
     bookings.forEach((booking) => {
-      const monthKey = booking.createdAt.toISOString().slice(0, 7); // YYYY-MM format
+      const monthKey = booking.createdAt.toISOString().slice(0, 7);
 
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = { bookings: 0, revenue: 0 };
