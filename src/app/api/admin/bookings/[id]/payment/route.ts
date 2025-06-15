@@ -5,8 +5,9 @@ import { sendBookingStatusUpdateToUser } from "../../../../../../../utils/email"
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
@@ -26,7 +27,7 @@ export async function PUT(
     const { approved } = data;
 
     const booking = await db.booking.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         paymentStatus: approved ? "CONFIRMED" : "REJECTED",
         status: approved ? "CONFIRMED" : "REJECTED",
