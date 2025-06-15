@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Chart as ChartJS,
   LineElement,
+  LineController,
   PointElement,
   LinearScale,
   CategoryScale,
@@ -20,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // Register Chart.js components
 ChartJS.register(
+  LineController,
   LineElement,
   PointElement,
   LinearScale,
