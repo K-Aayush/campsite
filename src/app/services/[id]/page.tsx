@@ -97,16 +97,11 @@ export default function BookServicePage() {
       const packages = parsePackages(data.packages);
       const durations = parseDurations(data.durations);
 
-      if (packages.length > 0) {
+      // Only set default package if packages exist and are valid
+      if (packages.length > 0 && packages[0].name && packages[0].price > 0) {
         setSelectedPackage(packages[0]);
-      } else {
-        // Create a default package using service base price
-        setSelectedPackage({
-          name: "Base Service",
-          price: data.price,
-          features: ["Standard service features"],
-        });
       }
+      // If no valid packages, don't set any package (user can book at base price)
 
       if (durations.length > 0) {
         setSelectedDuration(durations[0]);
@@ -133,12 +128,15 @@ export default function BookServicePage() {
         console.error("Parsed packages is not an array:", parsed);
         return [];
       }
+      // Filter out invalid packages (empty names, zero prices, etc.)
       const validPackages = parsed.filter(
         (item): item is Package =>
           typeof item === "object" &&
           item !== null &&
           typeof item.name === "string" &&
+          item.name.trim() !== "" &&
           typeof item.price === "number" &&
+          item.price > 0 &&
           Array.isArray(item.features)
       );
       return validPackages;
@@ -180,10 +178,12 @@ export default function BookServicePage() {
   };
 
   const calculateTotal = () => {
-    if (!selectedPackage || !selectedDuration) {
-      return service?.price || 0;
-    }
-    return selectedPackage.price * selectedDuration.days;
+    if (!service) return 0;
+
+    const basePrice = selectedPackage ? selectedPackage.price : service.price;
+    const duration = selectedDuration ? selectedDuration.days : 1;
+
+    return basePrice * duration;
   };
 
   const calculateDeposit = () => {
@@ -205,7 +205,7 @@ export default function BookServicePage() {
   };
 
   const handleBooking = async () => {
-    if (!selectedPackage || !selectedDuration || !startDate || !paymentProof) {
+    if (!selectedDuration || !startDate || !paymentProof) {
       showToast("error", {
         title: "Missing information",
         description: "Please fill all required fields and upload payment proof",
@@ -222,8 +222,10 @@ export default function BookServicePage() {
         },
         body: JSON.stringify({
           serviceId: service!.id,
-          packageName: selectedPackage.name,
-          packagePrice: selectedPackage.price,
+          packageName: selectedPackage ? selectedPackage.name : "Base Service",
+          packagePrice: selectedPackage
+            ? selectedPackage.price
+            : service!.price,
           startDate: startDate,
           endDate: calculateEndDate(),
           duration: selectedDuration.days,
@@ -304,21 +306,8 @@ export default function BookServicePage() {
   const packages = parsePackages(service.packages);
   const durations = parseDurations(service.durations);
 
-  // If no packages, create a default one with service base price
-  const displayPackages =
-    packages.length > 0
-      ? packages
-      : [
-          {
-            name: "Base Service",
-            price: service.price,
-            features: [
-              "Standard service features",
-              "Professional guidance",
-              "All basic amenities",
-            ],
-          },
-        ];
+  // Use actual packages if they exist, otherwise don't show package selection
+  const displayPackages = packages.length > 0 ? packages : [];
 
   // If no durations, create a default one
   const displayDurations =
@@ -389,78 +378,108 @@ export default function BookServicePage() {
               </CardContent>
             </Card>
 
+            {/* Package Selection - Only show if packages exist */}
             {displayPackages.length > 0 && (
               <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="text-2xl text-green-600 dark:text-green-400">
-                    Choose Your Package
+                    Choose Your Package (Optional)
                   </CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    You can book at base price or choose a package for
+                    additional features
+                  </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Select
-                    value={selectedPackage?.name}
-                    onValueChange={(value) => {
-                      const pkg = displayPackages.find((p) => p.name === value);
-                      setSelectedPackage(pkg || null);
-                    }}
-                  >
-                    <SelectTrigger className="w-full h-12 text-lg">
-                      <SelectValue placeholder="Select a package" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {displayPackages.map((pkg, index) => (
-                        <SelectItem key={index} value={pkg.name}>
-                          <div className="flex items-center justify-between w-full">
-                            <span className="font-medium">{pkg.name}</span>
-                            <span className="text-green-600 font-bold ml-4">
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* Base Service Option */}
+                    <div
+                      onClick={() => setSelectedPackage(null)}
+                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        selectedPackage === null
+                          ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                          : "border-gray-200 dark:border-gray-600 hover:border-green-300"
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 dark:text-white">
+                            Base Service
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Standard service features
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                            NPR {service.price.toLocaleString()}/day
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Package Options */}
+                    {displayPackages.map((pkg, index) => (
+                      <div
+                        key={index}
+                        onClick={() => setSelectedPackage(pkg)}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          selectedPackage?.name === pkg.name
+                            ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                            : "border-gray-200 dark:border-gray-600 hover:border-green-300"
+                        }`}
+                      >
+                        <div className="flex justify-between items-center mb-3">
+                          <div>
+                            <h4 className="font-semibold text-gray-900 dark:text-white">
+                              {pkg.name}
+                            </h4>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-lg font-bold text-green-600 dark:text-green-400">
                               NPR {pkg.price.toLocaleString()}/day
                             </span>
                           </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {selectedPackage && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="mt-6 p-6 bg-gradient-to-r from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-xl"
-                    >
-                      <h4 className="text-lg font-semibold text-green-700 dark:text-green-300 mb-4">
-                        {selectedPackage.name} Package Includes:
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-3">
-                        {selectedPackage.features.map((feature, index) => (
-                          <div key={index} className="flex items-start gap-2">
-                            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-700 dark:text-gray-200 text-sm">
-                              {feature}
-                            </span>
-                          </div>
-                        ))}
+                        </div>
+                        {pkg.features &&
+                          pkg.features.length > 0 &&
+                          pkg.features[0] !== "" && (
+                            <div className="grid md:grid-cols-2 gap-2">
+                              {pkg.features
+                                .slice(0, 4)
+                                .map((feature, featureIndex) => (
+                                  <div
+                                    key={featureIndex}
+                                    className="flex items-start gap-2"
+                                  >
+                                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                                      {feature}
+                                    </span>
+                                  </div>
+                                ))}
+                              {pkg.features.length > 4 && (
+                                <p className="text-sm text-gray-500 dark:text-gray-400 col-span-2">
+                                  +{pkg.features.length - 4} more features
+                                </p>
+                              )}
+                            </div>
+                          )}
                       </div>
-                    </motion.div>
-                  )}
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             )}
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="lg:col-span-1"
-          >
-            <Card className="sticky top-24 border-0 shadow-xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
+            {/* Duration Selection */}
+            <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-2xl text-center text-gray-900 dark:text-white">
-                  Complete Your Booking
+                <CardTitle className="text-2xl text-green-600 dark:text-green-400">
+                  Select Duration
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                 {displayDurations.length > 0 ? (
                   <div>
                     <Label className="text-base font-medium mb-3 block">
@@ -501,7 +520,23 @@ export default function BookServicePage() {
                     <p className="text-sm text-gray-500">Default: 1 Day</p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="lg:col-span-1"
+          >
+            <Card className="sticky top-24 border-0 shadow-xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-2xl text-center text-gray-900 dark:text-white">
+                  Complete Your Booking
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
                 <div>
                   <Label className="text-base font-medium mb-3 block">
                     Start Date
@@ -567,16 +602,18 @@ export default function BookServicePage() {
                 <div className="border-t pt-6 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">
-                      Package:
+                      Service:
                     </span>
-                    <span className="font-medium">{selectedPackage?.name}</span>
+                    <span className="font-medium">
+                      {selectedPackage ? selectedPackage.name : "Base Service"}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">
                       Duration:
                     </span>
                     <span className="font-medium">
-                      {selectedDuration?.label}
+                      {selectedDuration?.label || "1 Day"}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -584,7 +621,11 @@ export default function BookServicePage() {
                       Price per day:
                     </span>
                     <span className="font-medium">
-                      NPR {selectedPackage?.price.toLocaleString()}
+                      NPR{" "}
+                      {(selectedPackage
+                        ? selectedPackage.price
+                        : service.price
+                      ).toLocaleString()}
                     </span>
                   </div>
                   <div className="border-t pt-3">
@@ -606,11 +647,7 @@ export default function BookServicePage() {
                 <Button
                   onClick={handleBooking}
                   disabled={
-                    booking ||
-                    !selectedPackage ||
-                    !selectedDuration ||
-                    !startDate ||
-                    !paymentProof
+                    booking || !selectedDuration || !startDate || !paymentProof
                   }
                   className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 transition-all duration-300"
                 >
