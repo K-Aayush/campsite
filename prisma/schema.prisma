@@ -146,6 +146,15 @@ model Booking {
   service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 }
 
+model NewsletterSubscriber {
+  id           String   @id @default(cuid()) @map("_id")
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model VerificationToken {
   id      String   @id @default(cuid()) @map("_id")
   email   String
