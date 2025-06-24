@@ -78,7 +78,7 @@ const WellnessOption: React.FC<WellnessOptionProps> = ({
           )}
           <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-between items-center">
             <Link
-              href="/booknow"
+              href="/services"
               className="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-6 py-2 rounded-full font-medium transition-colors text-sm"
             >
               Book Now

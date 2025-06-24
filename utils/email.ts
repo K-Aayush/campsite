@@ -64,7 +64,7 @@ const sendViaResend = async ({
   });
 };
 
-const sendEmail = async ({
+export const sendEmail = async ({
   to,
   subject,
   html,
