@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Phone,
   Mail,
@@ -17,8 +17,80 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import MainLayoutWrapper from "@/components/commons/MainLayoutWrapper";
 import { motion } from "framer-motion";
+import { showToast } from "@/utils/Toast";
 
 const ContactPage = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (
+      !formData.name.trim() ||
+      !formData.email.trim() ||
+      !formData.message.trim()
+    ) {
+      showToast("error", { title: "Please fill in all required fields" });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showToast("success", {
+          title: "Message sent successfully!",
+          description: "We'll get back to you within 24-48 hours.",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        showToast("error", {
+          title: data.error || "Failed to send message",
+          description: "Please try again later.",
+        });
+      }
+    } catch (error) {
+      console.error("Contact form error:", error);
+      showToast("error", {
+        title: "Something went wrong",
+        description: "Please try again later.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="pt-16">
       <MainLayoutWrapper
@@ -132,20 +204,25 @@ const ContactPage = () => {
                     <h2 className="text-2xl font-semibold font-['Roboto'] text-gray-800 dark:text-gray-100 mb-6">
                       Send Us a Message
                     </h2>
-                    <form className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <label
                             htmlFor="name"
                             className="text-sm font-medium text-gray-800 dark:text-gray-100"
                           >
-                            Name
+                            Name <span className="text-red-500">*</span>
                           </label>
                           <Input
                             id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
                             placeholder="Your name"
                             className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-100 focus:ring-green-600 dark:focus:ring-green-400 focus:border-green-600 dark:focus:border-green-400 rounded-lg"
                             aria-required="true"
+                            disabled={loading}
+                            required
                           />
                         </div>
                         <div className="space-y-2">
@@ -153,14 +230,19 @@ const ContactPage = () => {
                             htmlFor="email"
                             className="text-sm font-medium text-gray-800 dark:text-gray-100"
                           >
-                            Email
+                            Email <span className="text-red-500">*</span>
                           </label>
                           <Input
                             id="email"
+                            name="email"
                             type="email"
+                            value={formData.email}
+                            onChange={handleChange}
                             placeholder="your.email@example.com"
                             className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-100 focus:ring-green-600 dark:focus:ring-green-400 focus:border-green-600 dark:focus:border-green-400 rounded-lg"
                             aria-required="true"
+                            disabled={loading}
+                            required
                           />
                         </div>
                       </div>
@@ -173,8 +255,12 @@ const ContactPage = () => {
                         </label>
                         <Input
                           id="subject"
-                          placeholder="What’s this about?"
+                          name="subject"
+                          value={formData.subject}
+                          onChange={handleChange}
+                          placeholder="What's this about?"
                           className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-100 focus:ring-green-600 dark:focus:ring-green-400 focus:border-green-600 dark:focus:border-green-400 rounded-lg"
+                          disabled={loading}
                         />
                       </div>
                       <div className="space-y-2">
@@ -182,20 +268,26 @@ const ContactPage = () => {
                           htmlFor="message"
                           className="text-sm font-medium text-gray-800 dark:text-gray-100"
                         >
-                          Message
+                          Message <span className="text-red-500">*</span>
                         </label>
                         <Textarea
                           id="message"
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
                           placeholder="Your message..."
                           className="min-h-[150px] bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-100 focus:ring-green-600 dark:focus:ring-green-400 focus:border-green-600 dark:focus:border-green-400 rounded-lg"
                           aria-required="true"
+                          disabled={loading}
+                          required
                         />
                       </div>
                       <Button
                         type="submit"
-                        className="bg-green-600 dark:bg-green-800 text-white hover:bg-green-700 dark:hover:bg-green-700 font-medium rounded-lg py-3 px-8 flex items-center gap-2 transition-all duration-300"
+                        disabled={loading}
+                        className="bg-green-600 dark:bg-green-800 text-white hover:bg-green-700 dark:hover:bg-green-700 font-medium rounded-lg py-3 px-8 flex items-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Send Message
+                        {loading ? "Sending..." : "Send Message"}
                         <Send className="h-4 w-4" />
                       </Button>
                     </form>
