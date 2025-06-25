@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Phone,
   Mail,
@@ -8,7 +8,6 @@ import {
   Facebook,
   Instagram,
   Twitter,
-  Linkedin,
   Send,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,21 @@ import MainLayoutWrapper from "@/components/commons/MainLayoutWrapper";
 import { motion } from "framer-motion";
 import { showToast } from "@/utils/Toast";
 
+interface SocialMedia {
+  facebook: string;
+  instagram: string;
+  twitter: string;
+}
+
+interface ContactSettings {
+  siteName: string;
+  siteDescription: string;
+  contactEmail: string;
+  contactPhone: string;
+  address: string;
+  socialMedia: SocialMedia;
+}
+
 const ContactPage = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -27,6 +41,36 @@ const ContactPage = () => {
     message: "",
   });
   const [loading, setLoading] = useState(false);
+  const [contactInfo, setContactInfo] = useState<ContactSettings>({
+    siteName: "Mayur Wellness",
+    siteDescription: "Where Adventure, Nature and Well-being Come Together",
+    contactEmail: "contact@mayurwellness.com",
+    contactPhone: "(123) 456-7890",
+    address: "123 Forest Path, Tranquil Valley, TV 45678",
+    socialMedia: {
+      facebook: "",
+      instagram: "",
+      twitter: "",
+    },
+  });
+
+  useEffect(() => {
+    // Fetch contact settings for display
+    const fetchContactInfo = async () => {
+      try {
+        const response = await fetch("/api/admin/settings");
+        if (response.ok) {
+          const data = await response.json();
+          setContactInfo(data);
+        }
+      } catch (error) {
+        console.error("Error fetching contact info:", error);
+        // Keep default values if fetch fails
+      }
+    };
+
+    fetchContactInfo();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -95,7 +139,7 @@ const ContactPage = () => {
     <div className="pt-16">
       <MainLayoutWrapper
         header="Get in Touch"
-        description="Have questions or want to learn more? Reach out using the form below or our contact details."
+        description={contactInfo.siteDescription}
       >
         <div className="relative py-16 bg-white dark:bg-gray-900 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
@@ -126,7 +170,7 @@ const ContactPage = () => {
                             Phone
                           </h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            (123) 456-7890
+                            {contactInfo.contactPhone}
                           </p>
                         </div>
                       </div>
@@ -139,7 +183,7 @@ const ContactPage = () => {
                             Email
                           </h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            contact@mayurwellness.com
+                            {contactInfo.contactEmail}
                           </p>
                         </div>
                       </div>
@@ -152,11 +196,7 @@ const ContactPage = () => {
                             Address
                           </h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            123 Forest Path
-                            <br />
-                            Tranquil Valley, TV 45678
-                            <br />
-                            United States
+                            {contactInfo.address}
                           </p>
                         </div>
                       </div>
@@ -170,20 +210,36 @@ const ContactPage = () => {
                     </h2>
                     <div className="flex gap-3">
                       {[
-                        { icon: Facebook, href: "#", label: "Facebook" },
-                        { icon: Instagram, href: "#", label: "Instagram" },
-                        { icon: Twitter, href: "#", label: "Twitter" },
-                        { icon: Linkedin, href: "#", label: "LinkedIn" },
-                      ].map(({ icon: Icon, href, label }, index) => (
-                        <a
-                          key={index}
-                          href={href}
-                          className="bg-green-50 dark:bg-gray-800 p-3 rounded-full text-green-600 dark:text-green-400 hover:bg-green-600 dark:hover:bg-green-500 hover:text-white transition-all duration-300 hover:scale-110"
-                          aria-label={label}
-                        >
-                          <Icon className="h-5 w-5" />
-                        </a>
-                      ))}
+                        {
+                          icon: Facebook,
+                          href: contactInfo.socialMedia.facebook,
+                          label: "Facebook",
+                        },
+                        {
+                          icon: Instagram,
+                          href: contactInfo.socialMedia.instagram,
+                          label: "Instagram",
+                        },
+                        {
+                          icon: Twitter,
+                          href: contactInfo.socialMedia.twitter,
+                          label: "Twitter",
+                        },
+                      ].map(
+                        ({ icon: Icon, href, label }, index) =>
+                          href && (
+                            <a
+                              key={index}
+                              href={href}
+                              className="bg-green-50 dark:bg-gray-800 p-3 rounded-full text-green-600 dark:text-green-400 hover:bg-green-600 dark:hover:bg-green-500 hover:text-white transition-all duration-300 hover:scale-110"
+                              aria-label={label}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Icon className="h-5 w-5" />
+                            </a>
+                          )
+                      )}
                     </div>
                     <p className="mt-6 text-sm text-gray-600 dark:text-gray-400">
                       Follow us for wellness tips, events, and promotions.
@@ -245,23 +301,23 @@ const ContactPage = () => {
                             required
                           />
                         </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="subject"
-                          className="text-sm font-medium text-gray-800 dark:text-gray-100"
-                        >
-                          Subject
-                        </label>
-                        <Input
-                          id="subject"
-                          name="subject"
-                          value={formData.subject}
-                          onChange={handleChange}
-                          placeholder="What's this about?"
-                          className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-100 focus:ring-green-600 dark:focus:ring-green-400 focus:border-green-600 dark:focus:border-green-400 rounded-lg"
-                          disabled={loading}
-                        />
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="subject"
+                            className="text-sm font-medium text-gray-800 dark:text-gray-100"
+                          >
+                            Subject
+                          </label>
+                          <Input
+                            id="subject"
+                            name="subject"
+                            value={formData.subject}
+                            onChange={handleChange}
+                            placeholder="What's this about?"
+                            className="bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-100 focus:ring-green-600 dark:focus:ring-green-400 focus:border-green-600 dark:focus:border-green-400 rounded-lg"
+                            disabled={loading}
+                          />
+                        </div>
                       </div>
                       <div className="space-y-2">
                         <label
