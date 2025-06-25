@@ -7,7 +7,7 @@ import BlogGrid from "@/components/blogs/BlogGrid";
 
 const Page = async () => {
   try {
-    const blogs = await db.blog.findMany({});
+    const blogs = (await db.blog.findMany({})) || [];
     return (
       <div className="pt-16">
         <MainLayoutWrapper

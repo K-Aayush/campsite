@@ -189,3 +189,15 @@ model TwoFactorConfirmation {
 
   @@unique([userId])
 }
+
+model Settings {
+  id              String   @id @default(cuid()) @map("_id")
+  siteName        String   @default("Mayur Wellness")
+  siteDescription String   @default("Where Adventure, Nature and Well-being Come Together")
+  contactEmail    String   @default("contact@mayurwellness.com")
+  contactPhone    String   @default("(123) 456-7890")
+  address         String   @default("123 Forest Path, Tranquil Valley, TV 45678")
+  socialMedia     String   @default("{\"facebook\":\"\",\"instagram\":\"\",\"twitter\":\"\"}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
