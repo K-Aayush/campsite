@@ -1,4 +1,3 @@
-"use server";
 import MainLayoutWrapper from "@/components/commons/MainLayoutWrapper";
 import React from "react";
 import { db } from "../../../utils/db";
