@@ -22,6 +22,13 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "Googlebot",
         allow: "/",
         disallow: ["/admin/", "/api/", "/auth/", "/my-bookings/", "/private/"],
+        crawlDelay: 1,
+      },
+      {
+        userAgent: "Bingbot",
+        allow: "/",
+        disallow: ["/admin/", "/api/", "/auth/", "/my-bookings/", "/private/"],
+        crawlDelay: 1,
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

@@ -24,11 +24,11 @@ interface ContactSettings {
 const Footer: FC = () => {
   const pathName = usePathname();
   const [contactInfo, setContactInfo] = useState<ContactSettings>({
-    siteName: "",
-    siteDescription: "",
-    contactEmail: "",
-    contactPhone: "",
-    address: "",
+    siteName: "Campsite Nepal",
+    siteDescription: "Nepal's Premier Campsite & Wellness Retreat Center",
+    contactEmail: "contact@campsitenepal.com",
+    contactPhone: "(123) 456-7890",
+    address: "123 Forest Path, Tranquil Valley, Nepal",
     socialMedia: {
       facebook: "",
       instagram: "",
@@ -80,14 +80,6 @@ const Footer: FC = () => {
   ].filter((link) => link.href); // Only include links with valid URLs
 
   const footerSections = [
-    // {
-    //   title: "Information",
-    //   links: [
-    //     { label: "Help/FAQ", href: "#" },
-    //     { label: "Press", href: "#" },
-    //     { label: "Partners", href: "#" },
-    //   ],
-    // },
     {
       title: "Explore",
       links: headerData.map((item) => ({
@@ -110,7 +102,7 @@ const Footer: FC = () => {
       </div>
       <div className="container mx-auto px-4 lg:max-w-screen-xl relative z-10">
         <div className="flex flex-col sm:flex-row  justify-between gap-8 lg:gap-16 pb-12">
-          {/* Left Column: Mayur Wellness Contact Information */}
+          {/* Left Column: Campsite Nepal Contact Information */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -119,7 +111,8 @@ const Footer: FC = () => {
           >
             <Logo />
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-6 mb-4 max-w-md">
-              {contactInfo.siteDescription}
+              {contactInfo.siteDescription} - Experience the best camping in
+              Nepal with adventure, wellness, and nature.
             </p>
 
             {/* Contact Information */}
@@ -143,7 +136,7 @@ const Footer: FC = () => {
                   key={index}
                   href={href}
                   className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-green-600 dark:hover:bg-green-500 hover:text-white transition-all duration-200 hover:scale-110"
-                  aria-label={label}
+                  aria-label={`${label} - Campsite Nepal`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -184,7 +177,8 @@ const Footer: FC = () => {
 
         <div className="border-t border-gray-200 dark:border-gray-700 py-6 flex justify-center text-center items-center gap-4">
           <p className="text-sm flex gap-1 text-center text-gray-600 dark:text-gray-400">
-            © 2025 {contactInfo.siteName}. All Rights Reserved by
+            © 2025 Campsite Nepal - Best Camping in Nepal. All Rights Reserved
+            by
             <Link
               href="https://nepatronix.org"
               className="text-green-600 dark:text-green-400 hover:underline"

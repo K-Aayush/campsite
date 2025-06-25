@@ -22,37 +22,44 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://mayurwellness.com"
+    process.env.NEXT_PUBLIC_APP_URL || "https://campsitenepal.com"
   ),
   title: {
-    default: "Mayur Wellness - Premium Wellness Retreat & Mindfulness Center",
-    template: "%s | Mayur Wellness",
+    default: "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
+    template: "%s | Campsite Nepal",
   },
   description:
-    "Experience transformative wellness at Mayur Wellness. Premium meditation retreats, yoga sessions, nature therapy, and mindfulness programs. Book your wellness journey today.",
+    "Experience Nepal's premier campsite and wellness retreat center. Offering camping, meditation, yoga, nature therapy, and adventure activities in the heart of Nepal. Book your transformative outdoor experience today.",
   keywords: [
-    "wellness retreat",
-    "meditation center",
-    "yoga retreat",
-    "mindfulness programs",
-    "nature therapy",
-    "wellness camp",
-    "spiritual retreat",
-    "mental health wellness",
-    "holistic healing",
-    "stress relief programs",
-    "wellness tourism",
-    "meditation classes",
-    "yoga classes",
-    "wellness packages",
-    "health retreat",
-    "Nepal wellness",
-    "mindfulness retreat",
-    "wellness center",
+    "campsite nepal",
+    "camping nepal",
+    "nepal campsite",
+    "best campsite nepal",
+    "camping in nepal",
+    "nepal camping sites",
+    "outdoor camping nepal",
+    "adventure camping nepal",
+    "wellness retreat nepal",
+    "meditation camp nepal",
+    "yoga retreat nepal",
+    "nature camping nepal",
+    "himalayan camping",
+    "nepal adventure camp",
+    "eco camping nepal",
+    "family camping nepal",
+    "group camping nepal",
+    "trekking camp nepal",
+    "wilderness camping nepal",
+    "mountain camping nepal",
+    "forest camping nepal",
+    "camping experience nepal",
+    "nepal outdoor activities",
+    "camping holidays nepal",
+    "camping vacation nepal",
   ],
-  authors: [{ name: "Mayur Wellness Team" }],
-  creator: "Mayur Wellness",
-  publisher: "Mayur Wellness",
+  authors: [{ name: "Campsite Nepal Team" }],
+  creator: "Campsite Nepal",
+  publisher: "Campsite Nepal",
   robots: {
     index: true,
     follow: true,
@@ -68,26 +75,26 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_APP_URL,
-    siteName: "Mayur Wellness",
-    title: "Mayur Wellness - Premium Wellness Retreat & Mindfulness Center",
+    siteName: "Campsite Nepal",
+    title: "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
     description:
-      "Transform your life with our premium wellness retreats, meditation programs, and nature therapy sessions. Expert-led mindfulness experiences in Nepal.",
+      "Discover Nepal's premier campsite offering camping, wellness retreats, meditation, yoga, and adventure activities. Experience the best outdoor camping in Nepal.",
     images: [
       {
         url: "/wellbeing-landing-image.jpeg",
         width: 1200,
         height: 630,
-        alt: "Mayur Wellness - Premium Wellness Retreat Center",
+        alt: "Campsite Nepal - Premier Camping and Wellness Retreat Center",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    site: "@mayurwellness",
-    creator: "@mayurwellness",
-    title: "Mayur Wellness - Premium Wellness Retreat",
+    site: "@campsitenepal",
+    creator: "@campsitenepal",
+    title: "Campsite Nepal - Best Camping & Wellness Retreat",
     description:
-      "Transform your life with our premium wellness retreats and mindfulness programs in Nepal.",
+      "Experience Nepal's premier campsite with camping, wellness retreats, and adventure activities in the heart of Nepal.",
     images: ["/wellbeing-landing-image.jpeg"],
   },
   icons: {
@@ -106,7 +113,13 @@ export const metadata: Metadata = {
     yandex: "your-yandex-verification-code",
     yahoo: "your-yahoo-verification-code",
   },
-  category: "Health & Wellness",
+  category: "Travel & Tourism",
+  other: {
+    "geo.region": "NP",
+    "geo.placename": "Nepal",
+    "geo.position": "27.6772;85.3155",
+    ICBM: "27.6772, 85.3155",
+  },
 };
 
 export default function RootLayout({
@@ -134,6 +147,18 @@ export default function RootLayout({
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
+        />
+        <meta name="geo.region" content="NP" />
+        <meta name="geo.placename" content="Nepal" />
+        <meta name="geo.position" content="27.6772;85.3155" />
+        <meta name="ICBM" content="27.6772, 85.3155" />
+        <meta name="language" content="English" />
+        <meta name="distribution" content="global" />
+        <meta name="rating" content="general" />
+        <meta name="revisit-after" content="1 days" />
+        <meta
+          name="classification"
+          content="Travel, Tourism, Camping, Wellness"
         />
       </head>
       <body

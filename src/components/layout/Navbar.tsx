@@ -72,7 +72,7 @@ export default function Navbar() {
           <div className="relative w-12 h-12 rounded-lg overflow-hidden">
             <Image
               src="/last-logo.png"
-              alt="Mayur Logo"
+              alt="Campsite Nepal Logo - Best Camping in Nepal"
               fill
               className="object-cover"
               onError={() => console.error("Failed to load logo image")}
@@ -80,10 +80,10 @@ export default function Navbar() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-green-600 dark:text-green-400">
-              Mayur
+              Campsite Nepal
             </h1>
             <p className="text-xs text-gray-600 dark:text-gray-300">
-              Wellbeing & Mindfulness
+              Best Camping & Wellness
             </p>
           </div>
         </Link>
@@ -153,13 +153,6 @@ export default function Navbar() {
             </Button>
             {isAuthenticated ? (
               <>
-                {/* <Button
-                  variant="ghost"
-                  className="text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-800 rounded-full"
-                  aria-label="Notifications"
-                >
-                  <Bell size={20} />
-                </Button> */}
                 <Link
                   href="/my-bookings"
                   className="p-2 rounded-full bg-green-50 flex gap-2 items-center dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"

@@ -19,38 +19,48 @@ export interface SEOConfig {
 }
 
 export const defaultSEO: SEOConfig = {
-  title: "Mayur Wellness - Premium Wellness Retreat & Mindfulness Center",
+  title: "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
   description:
-    "Experience transformative wellness at Mayur Wellness. Premium meditation retreats, yoga sessions, nature therapy, and mindfulness programs. Book your wellness journey today.",
+    "Experience Nepal's premier campsite and wellness retreat center. Offering camping, meditation, yoga, nature therapy, and adventure activities. Book your transformative outdoor camping experience in Nepal today.",
   keywords: [
-    "wellness retreat",
-    "meditation center",
-    "yoga retreat",
-    "mindfulness programs",
-    "nature therapy",
-    "wellness camp",
-    "spiritual retreat",
-    "mental health wellness",
-    "holistic healing",
-    "stress relief programs",
-    "wellness tourism",
-    "meditation classes",
-    "yoga classes",
-    "wellness packages",
-    "health retreat",
+    "campsite nepal",
+    "camping nepal",
+    "nepal campsite",
+    "best campsite nepal",
+    "camping in nepal",
+    "nepal camping sites",
+    "outdoor camping nepal",
+    "adventure camping nepal",
+    "wellness retreat nepal",
+    "meditation camp nepal",
+    "yoga retreat nepal",
+    "nature camping nepal",
+    "himalayan camping",
+    "nepal adventure camp",
+    "eco camping nepal",
+    "family camping nepal",
+    "group camping nepal",
+    "trekking camp nepal",
+    "wilderness camping nepal",
+    "mountain camping nepal",
+    "forest camping nepal",
+    "camping experience nepal",
+    "nepal outdoor activities",
+    "camping holidays nepal",
+    "camping vacation nepal",
   ],
   openGraph: {
     type: "website",
-    title: "Mayur Wellness - Premium Wellness Retreat & Mindfulness Center",
+    title: "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
     description:
-      "Transform your life with our premium wellness retreats, meditation programs, and nature therapy sessions. Expert-led mindfulness experiences.",
+      "Discover Nepal's premier campsite offering camping, wellness retreats, meditation, yoga, and adventure activities in the heart of Nepal.",
     image: "/wellbeing-landing-image.jpeg",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mayur Wellness - Premium Wellness Retreat",
+    title: "Campsite Nepal - Best Camping & Wellness Retreat",
     description:
-      "Transform your life with our premium wellness retreats and mindfulness programs.",
+      "Experience Nepal's premier campsite with camping, wellness retreats, and adventure activities in the heart of Nepal.",
     image: "/wellbeing-landing-image.jpeg",
   },
 };
@@ -68,12 +78,12 @@ export const generateStructuredData = (type: string, data: any) => {
 export const organizationStructuredData = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Mayur Wellness",
-  alternateName: "Mayur Wellbeing",
-  url: process.env.NEXT_PUBLIC_APP_URL || "https://mayurwellness.com",
+  name: "Campsite Nepal",
+  alternateName: ["Nepal Campsite", "Camping Nepal", "Best Campsite Nepal"],
+  url: process.env.NEXT_PUBLIC_APP_URL || "https://campsitenepal.com",
   logo: `${process.env.NEXT_PUBLIC_APP_URL}/last-logo.png`,
   description:
-    "Premium wellness retreat center offering meditation, yoga, nature therapy, and mindfulness programs for holistic healing and personal transformation.",
+    "Nepal's premier campsite and wellness retreat center offering camping, meditation, yoga, nature therapy, and adventure activities for transformative outdoor experiences.",
   address: {
     "@type": "PostalAddress",
     streetAddress: "123 Forest Path",
@@ -85,12 +95,13 @@ export const organizationStructuredData = {
     "@type": "ContactPoint",
     telephone: "(123) 456-7890",
     contactType: "customer service",
-    email: "contact@mayurwellness.com",
+    email: "contact@campsitenepal.com",
+    availableLanguage: ["English", "Nepali"],
   },
   sameAs: [
-    "https://facebook.com/mayurwellness",
-    "https://instagram.com/mayurwellness",
-    "https://twitter.com/mayurwellness",
+    "https://facebook.com/campsitenepal",
+    "https://instagram.com/campsitenepal",
+    "https://twitter.com/campsitenepal",
   ],
   serviceArea: {
     "@type": "Country",
@@ -98,43 +109,64 @@ export const organizationStructuredData = {
   },
   hasOfferCatalog: {
     "@type": "OfferCatalog",
-    name: "Wellness Services",
+    name: "Camping & Wellness Services",
     itemListElement: [
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Meditation Retreat",
-          description: "Guided meditation sessions in natural settings",
+          name: "Camping Experience",
+          description:
+            "Premium camping facilities and outdoor adventures in Nepal",
         },
       },
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Yoga Classes",
-          description: "Professional yoga instruction for all levels",
+          name: "Wellness Retreat",
+          description: "Meditation, yoga, and nature therapy programs",
         },
       },
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Nature Therapy",
-          description: "Healing through connection with nature",
+          name: "Adventure Activities",
+          description: "Outdoor adventures and nature-based activities",
         },
       },
     ],
   },
+  keywords:
+    "campsite nepal, camping nepal, nepal campsite, best campsite nepal, camping in nepal, wellness retreat nepal, adventure camping nepal",
+  foundingDate: "1995",
+  areaServed: {
+    "@type": "Country",
+    name: "Nepal",
+  },
+  makesOffer: [
+    {
+      "@type": "Offer",
+      name: "Camping Services",
+      description: "Premium camping experiences in Nepal",
+    },
+    {
+      "@type": "Offer",
+      name: "Wellness Programs",
+      description: "Meditation, yoga, and wellness retreats",
+    },
+  ],
 };
 
 export const websiteStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Mayur Wellness",
-  url: process.env.NEXT_PUBLIC_APP_URL || "https://mayurwellness.com",
+  name: "Campsite Nepal",
+  alternateName: ["Nepal Campsite", "Camping Nepal"],
+  url: process.env.NEXT_PUBLIC_APP_URL || "https://campsitenepal.com",
   description:
-    "Premium wellness retreat center offering meditation, yoga, and mindfulness programs",
+    "Nepal's premier campsite and wellness retreat center offering camping, meditation, yoga, and adventure activities",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -142,5 +174,13 @@ export const websiteStructuredData = {
       urlTemplate: `${process.env.NEXT_PUBLIC_APP_URL}/search?q={search_term_string}`,
     },
     "query-input": "required name=search_term_string",
+  },
+  keywords:
+    "campsite nepal, camping nepal, nepal campsite, best campsite nepal, camping in nepal",
+  inLanguage: "en-US",
+  copyrightYear: "2025",
+  copyrightHolder: {
+    "@type": "Organization",
+    name: "Campsite Nepal",
   },
 };
