@@ -1,0 +1,27 @@
+{
+  "name": "Mayur Wellness - Premium Wellness Retreat Center",
+  "short_name": "Mayur Wellness",
+  "description": "Transform your life at Nepal's premier wellness retreat center. Experience guided meditation, yoga, nature therapy, and mindfulness programs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/last-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/last-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["health", "lifestyle", "wellness"],
+  "lang": "en",
+  "dir": "ltr"
+}
