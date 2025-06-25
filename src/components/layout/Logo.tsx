@@ -12,7 +12,7 @@ const Logo: React.FC = () => {
       <div className="relative w-12 h-12 rounded-lg overflow-hidden">
         <Image
           src="/last-logo.png"
-          alt="Mayur Wellbeing Logo"
+          alt="Campsite Nepal Logo - Best Camping in Nepal"
           fill
           className="object-cover"
           quality={100}
@@ -20,7 +20,7 @@ const Logo: React.FC = () => {
         />
       </div>
       <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-        Mayur Wellbeing
+        Campsite Nepal
       </p>
     </Link>
   );

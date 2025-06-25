@@ -1,7 +1,7 @@
 {
-  "name": "Mayur Wellness - Premium Wellness Retreat Center",
-  "short_name": "Mayur Wellness",
-  "description": "Transform your life at Nepal's premier wellness retreat center. Experience guided meditation, yoga, nature therapy, and mindfulness programs.",
+  "name": "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
+  "short_name": "Campsite Nepal",
+  "description": "Experience Nepal's premier campsite and wellness retreat center. Offering camping, meditation, yoga, nature therapy, and adventure activities.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -21,7 +21,9 @@
       "purpose": "any"
     }
   ],
-  "categories": ["health", "lifestyle", "wellness"],
+  "categories": ["travel", "tourism", "camping", "wellness", "outdoor"],
   "lang": "en",
-  "dir": "ltr"
+  "dir": "ltr",
+  "scope": "/"
+ 
 }
