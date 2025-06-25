@@ -1,7 +1,7 @@
 {
-  "name": "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
+  "name": "Campsite Nepal - Best Camping Sites & Ground in Nepal | Camp Nepal",
   "short_name": "Campsite Nepal",
-  "description": "Experience Nepal's premier campsite and wellness retreat center. Offering camping, meditation, yoga, nature therapy, and adventure activities.",
+  "description": "Experience Nepal's premier campsite and camping ground. Offering the best camping sites near Kathmandu, jungle camping, wild camping, and adventure activities.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -21,9 +21,9 @@
       "purpose": "any"
     }
   ],
-  "categories": ["travel", "tourism", "camping", "wellness", "outdoor"],
+  "categories": ["travel", "tourism", "camping", "adventure", "outdoor", "nepal"],
   "lang": "en",
   "dir": "ltr",
-  "scope": "/"
- 
+  "scope": "/",
+  "keywords": "campsite nepal, camping site in nepal, camping ground nepal, camping sites near kathmandu, camp nepal, camping in jungle in nepal, nepal camping places, wild camping nepal, adventure camping nepal"
 }
