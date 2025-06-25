@@ -81,7 +81,7 @@ const WellnessOption: React.FC<WellnessOptionProps> = ({
               href="/services"
               className="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-6 py-2 rounded-full font-medium transition-colors text-sm"
             >
-              Book Now
+              Book Camping Now
             </Link>
             <p className="text-green-600 dark:text-green-400 italic text-sm">
               Starting from NPR {startingFrom}
@@ -96,48 +96,49 @@ const WellnessOption: React.FC<WellnessOptionProps> = ({
 const WellnessJourney = () => {
   const options = [
     {
-      title: "Nature Education",
+      title: "Jungle Camping Adventure",
       image: "/children-education-two.avif",
       startingFrom: 3500,
-      description: "Learn through immersive outdoor experiences",
+      description:
+        "Experience wild camping and jungle camping in Nepal's pristine forests",
       features: [
-        "Guided ecological walks",
-        "Wildlife spotting techniques",
+        "Guided jungle camping expeditions",
+        "Wildlife spotting and nature walks",
         "Sustainable camping practices",
-        "Nature journaling sessions",
+        "Adventure camping activities",
       ],
     },
     {
-      title: "Camping Together",
+      title: "Adventure Camping Near Kathmandu",
       image: "/campingthree.avif",
       startingFrom: 5000,
-      description: "Reconnect with others around the campfire",
+      description: "Best camping sites near Kathmandu for outdoor adventures",
       features: [
-        "Group camping adventures",
-        "Team-building activities",
-        "Shared meal preparation",
-        "Evening storytelling circles",
+        "Premium camping ground facilities",
+        "Group camping and team activities",
+        "Adventure sports and outdoor games",
+        "Campfire nights and storytelling",
       ],
       highlight: true,
     },
     {
-      title: "Social Wellbeing",
+      title: "Wild Camping Experience",
       image: "/wellbeing-image.jpeg",
       startingFrom: 4500,
-      description: "Build meaningful connections in nature",
+      description: "Authentic wild camping and nature immersion in Nepal",
       features: [
-        "Mindfulness exercises",
-        "Community sharing circles",
-        "Collaborative outdoor tasks",
-        "Reflective group discussions",
+        "Remote camping locations",
+        "Wilderness survival skills",
+        "Nature photography sessions",
+        "Eco-friendly camping practices",
       ],
     },
   ];
 
   return (
     <HomeContentCard
-      header="Our Features"
-      description="Pathways to personal growth through various program"
+      header="Our Camping Experiences"
+      description="Discover the best camping sites and adventure activities in Nepal"
     >
       <div className="grid gap-6 md:grid-cols-3">
         {options.map((option, index) => (

@@ -19,48 +19,63 @@ export interface SEOConfig {
 }
 
 export const defaultSEO: SEOConfig = {
-  title: "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
+  title: "Campsite Nepal - Best Camping Sites & Ground in Nepal | Camp Nepal",
   description:
-    "Experience Nepal's premier campsite and wellness retreat center. Offering camping, meditation, yoga, nature therapy, and adventure activities. Book your transformative outdoor camping experience in Nepal today.",
+    "Discover Nepal's premier campsite and camping ground. Experience the best camping sites near Kathmandu, jungle camping in Nepal, wild camping, and adventure camping. Book your camping experience today!",
   keywords: [
     "campsite nepal",
+    "camping site in nepal",
+    "camp site meaning in nepali",
+    "camping ground nepal",
+    "abc campsite nepal",
+    "camping sites near kathmandu",
+    "camp nepal",
+    "camping nepali",
+    "nepal camping places",
+    "campsite meaning in nepali",
+    "camp meaning in nepali",
     "camping nepal",
-    "nepal campsite",
-    "best campsite nepal",
+    "camping in jungle in nepal",
+    "camping near ktm",
+    "livenepal camping",
+    "camping meaning in nepali",
+    "camping vlog nepal",
+    "camping vlog nepali",
+    "nepal camping",
+    "camping site near by",
+    "wild camping site near me",
+    "camping sites in kathmandu",
     "camping in nepal",
-    "nepal camping sites",
+    "camping places in nepal",
+    "best campsite nepal",
+    "nepal adventure camping",
     "outdoor camping nepal",
-    "adventure camping nepal",
-    "wellness retreat nepal",
-    "meditation camp nepal",
-    "yoga retreat nepal",
-    "nature camping nepal",
-    "himalayan camping",
-    "nepal adventure camp",
-    "eco camping nepal",
     "family camping nepal",
     "group camping nepal",
-    "trekking camp nepal",
-    "wilderness camping nepal",
+    "eco camping nepal",
     "mountain camping nepal",
     "forest camping nepal",
-    "camping experience nepal",
-    "nepal outdoor activities",
+    "himalayan camping nepal",
     "camping holidays nepal",
     "camping vacation nepal",
+    "wilderness camping nepal",
+    "nature camping nepal",
+    "camping experience nepal",
+    "nepal outdoor activities",
+    "trekking camp nepal",
   ],
   openGraph: {
     type: "website",
-    title: "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
+    title: "Campsite Nepal - Best Camping Sites & Ground in Nepal | Camp Nepal",
     description:
-      "Discover Nepal's premier campsite offering camping, wellness retreats, meditation, yoga, and adventure activities in the heart of Nepal.",
+      "Discover Nepal's premier campsite offering the best camping sites near Kathmandu, jungle camping, wild camping, and adventure activities in Nepal.",
     image: "/wellbeing-landing-image.jpeg",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Campsite Nepal - Best Camping & Wellness Retreat",
+    title: "Campsite Nepal - Best Camping Sites & Ground in Nepal",
     description:
-      "Experience Nepal's premier campsite with camping, wellness retreats, and adventure activities in the heart of Nepal.",
+      "Experience Nepal's premier campsite with the best camping sites near Kathmandu, jungle camping, and adventure activities in Nepal.",
     image: "/wellbeing-landing-image.jpeg",
   },
 };
@@ -79,11 +94,21 @@ export const organizationStructuredData = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Campsite Nepal",
-  alternateName: ["Nepal Campsite", "Camping Nepal", "Best Campsite Nepal"],
+  alternateName: [
+    "Nepal Campsite",
+    "Camping Nepal",
+    "Best Campsite Nepal",
+    "Camp Nepal",
+    "Camping Ground Nepal",
+    "Camping Sites Near Kathmandu",
+    "Nepal Camping Places",
+    "Camping in Jungle in Nepal",
+    "Wild Camping Nepal",
+  ],
   url: process.env.NEXT_PUBLIC_APP_URL || "https://campsitenepal.com",
   logo: `${process.env.NEXT_PUBLIC_APP_URL}/last-logo.png`,
   description:
-    "Nepal's premier campsite and wellness retreat center offering camping, meditation, yoga, nature therapy, and adventure activities for transformative outdoor experiences.",
+    "Nepal's premier campsite and camping ground offering the best camping sites near Kathmandu, jungle camping in Nepal, wild camping, adventure camping, and outdoor activities for transformative camping experiences.",
   address: {
     "@type": "PostalAddress",
     streetAddress: "123 Forest Path",
@@ -109,37 +134,39 @@ export const organizationStructuredData = {
   },
   hasOfferCatalog: {
     "@type": "OfferCatalog",
-    name: "Camping & Wellness Services",
+    name: "Camping & Adventure Services Nepal",
     itemListElement: [
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Camping Experience",
+          name: "Jungle Camping Experience",
           description:
-            "Premium camping facilities and outdoor adventures in Nepal",
+            "Premium jungle camping and wild camping facilities in Nepal's pristine forests",
         },
       },
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Wellness Retreat",
-          description: "Meditation, yoga, and nature therapy programs",
+          name: "Adventure Camping Near Kathmandu",
+          description:
+            "Best camping sites near Kathmandu for adventure and outdoor activities",
         },
       },
       {
         "@type": "Offer",
         itemOffered: {
           "@type": "Service",
-          name: "Adventure Activities",
-          description: "Outdoor adventures and nature-based activities",
+          name: "Family Camping Ground",
+          description:
+            "Safe and comfortable camping ground for families and groups in Nepal",
         },
       },
     ],
   },
   keywords:
-    "campsite nepal, camping nepal, nepal campsite, best campsite nepal, camping in nepal, wellness retreat nepal, adventure camping nepal",
+    "campsite nepal, camping site in nepal, camping ground nepal, camping sites near kathmandu, camp nepal, camping in jungle in nepal, nepal camping places, wild camping nepal, adventure camping nepal",
   foundingDate: "1995",
   areaServed: {
     "@type": "Country",
@@ -148,13 +175,14 @@ export const organizationStructuredData = {
   makesOffer: [
     {
       "@type": "Offer",
-      name: "Camping Services",
-      description: "Premium camping experiences in Nepal",
+      name: "Jungle Camping Services",
+      description:
+        "Premium jungle camping and wild camping experiences in Nepal",
     },
     {
       "@type": "Offer",
-      name: "Wellness Programs",
-      description: "Meditation, yoga, and wellness retreats",
+      name: "Adventure Camping Programs",
+      description: "Adventure camping and outdoor activities near Kathmandu",
     },
   ],
 };
@@ -163,10 +191,16 @@ export const websiteStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Campsite Nepal",
-  alternateName: ["Nepal Campsite", "Camping Nepal"],
+  alternateName: [
+    "Nepal Campsite",
+    "Camping Nepal",
+    "Camp Nepal",
+    "Camping Ground Nepal",
+    "Camping Sites Near Kathmandu",
+  ],
   url: process.env.NEXT_PUBLIC_APP_URL || "https://campsitenepal.com",
   description:
-    "Nepal's premier campsite and wellness retreat center offering camping, meditation, yoga, and adventure activities",
+    "Nepal's premier campsite and camping ground offering the best camping sites near Kathmandu, jungle camping, wild camping, and adventure activities",
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -176,7 +210,7 @@ export const websiteStructuredData = {
     "query-input": "required name=search_term_string",
   },
   keywords:
-    "campsite nepal, camping nepal, nepal campsite, best campsite nepal, camping in nepal",
+    "campsite nepal, camping site in nepal, camping ground nepal, camping sites near kathmandu, camp nepal, camping in jungle in nepal, nepal camping places, wild camping nepal",
   inLanguage: "en-US",
   copyrightYear: "2025",
   copyrightHolder: {

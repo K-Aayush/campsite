@@ -14,44 +14,44 @@ import { motion } from "framer-motion";
 const faqItems = [
   {
     icon: <HelpCircle className="w-6 h-6" />,
-    question: "What is Mayur Wellbeing?",
+    question: "What is Campsite Nepal?",
     answer:
-      "Mayur Wellbeing offers mindfulness and wellness programs, including meditation, yoga, and nature-based activities to promote holistic health.",
+      "Campsite Nepal is Nepal's premier camping ground offering the best camping sites near Kathmandu, jungle camping, wild camping, and adventure activities for all ages.",
     id: 1,
   },
   {
     icon: <MessageSquare className="w-6 h-6" />,
-    question: "What are your core programs?",
+    question: "What camping experiences do you offer?",
     answer:
-      "Our programs include Nature Education, Camping Together, and Social Wellbeing, designed to foster personal growth and community connection.",
+      "We offer jungle camping in Nepal, wild camping adventures, family camping, group camping, and adventure camping with various outdoor activities and facilities.",
     id: 2,
   },
   {
     icon: <AlertCircle className="w-6 h-6" />,
-    question: "What if I need to cancel a booking?",
+    question: "Can I cancel my camping booking?",
     answer:
-      "You can cancel bookings up to 48 hours in advance for a full refund. Contact our support team for assistance.",
+      "You can cancel camping bookings up to 48 hours in advance for a full refund. Contact our support team for assistance with your camping reservation.",
     id: 3,
   },
   {
     icon: <Square className="w-6 h-6" />,
-    question: "Are programs suitable for beginners?",
+    question: "Are camping programs suitable for beginners?",
     answer:
-      "Yes, our programs are designed for all levels, with guided sessions tailored to beginners and advanced participants alike.",
+      "Yes, our camping programs are designed for all levels, from beginner campers to experienced outdoor enthusiasts, with guided sessions and safety measures.",
     id: 4,
   },
   {
     icon: <User className="w-6 h-6" />,
-    question: "Who leads the sessions?",
+    question: "Who leads the camping activities?",
     answer:
-      "Our sessions are led by certified wellness experts with extensive experience in mindfulness, yoga, and outdoor education.",
+      "Our camping activities are led by certified outdoor experts with extensive experience in jungle camping, adventure camping, and wilderness safety in Nepal.",
     id: 5,
   },
   {
     icon: <Shield className="w-6 h-6" />,
-    question: "Is my personal information safe?",
+    question: "Is camping at your site safe?",
     answer:
-      "We prioritize your privacy with secure data handling and compliance with global privacy standards. See our Privacy Policy for details.",
+      "We prioritize safety with trained guides, emergency protocols, and secure camping facilities. Our campsite follows all safety standards for outdoor activities.",
     id: 6,
   },
 ];

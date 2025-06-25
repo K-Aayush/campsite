@@ -18,7 +18,7 @@ const SubHero = () => {
           >
             <Image
               src="/image.avif"
-              alt="Meditation pose"
+              alt="Best camping sites in Nepal - Campsite Nepal adventure camping"
               fill
               className="object-cover"
               priority
@@ -34,27 +34,25 @@ const SubHero = () => {
               className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-500"
               style={{ lineHeight: "1.2" }}
             >
-              A Sanctuary for Your
+              Nepal`s Premier Campsite &
               <br />
-              Mind, Body & Spirit
+              Adventure Camping Ground
             </h1>
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
-              Join thousands of people embracing mindfulness and relaxation.
-              Discover guided meditation and yoga sessions designed for all
-              levels.
+              Discover the best camping sites near Kathmandu. Experience jungle camping, wild camping, and adventure activities at Nepal`s top-rated campsite and camping ground.
             </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link
                 href="/services"
                 className="bg-primary-color hover:bg-primary-color/90 text-white px-8 py-3 rounded-full font-medium transition-colors"
               >
-                Book Now
+                Book Camping Now
               </Link>
               <Link
                 href="/blogs"
                 className="bg-white dark:bg-primary-tint text-primary-color border-2 border-primary-color dark:border-green-600 px-8 py-3 rounded-full font-medium hover:bg-primary-tint dark:hover:bg-primary-tint/90 transition-colors"
               >
-                Explore Activities
+                Explore Camping Activities
               </Link>
             </div>
           </motion.div>

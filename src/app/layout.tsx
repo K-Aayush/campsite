@@ -25,37 +25,53 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL || "https://campsitenepal.com"
   ),
   title: {
-    default: "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
+    default:
+      "Campsite Nepal - Best Camping Sites & Ground in Nepal | Camp Nepal",
     template: "%s | Campsite Nepal",
   },
   description:
-    "Experience Nepal's premier campsite and wellness retreat center. Offering camping, meditation, yoga, nature therapy, and adventure activities in the heart of Nepal. Book your transformative outdoor experience today.",
+    "Discover Nepal's premier campsite and camping ground. Experience the best camping sites near Kathmandu, jungle camping, wild camping, and adventure camping in Nepal. Book your camping experience today!",
   keywords: [
     "campsite nepal",
+    "camping site in nepal",
+    "camp site meaning in nepali",
+    "camping ground nepal",
+    "abc campsite nepal",
+    "camping sites near kathmandu",
+    "camp nepal",
+    "camping nepali",
+    "nepal camping places",
+    "campsite meaning in nepali",
+    "camp meaning in nepali",
     "camping nepal",
-    "nepal campsite",
-    "best campsite nepal",
+    "camping in jungle in nepal",
+    "camping near ktm",
+    "livenepal camping",
+    "camping meaning in nepali",
+    "camping vlog nepal",
+    "camping vlog nepali",
+    "nepal camping",
+    "camping site near by",
+    "wild camping site near me",
+    "camping sites in kathmandu",
     "camping in nepal",
-    "nepal camping sites",
+    "camping places in nepal",
+    "best campsite nepal",
+    "nepal adventure camping",
     "outdoor camping nepal",
-    "adventure camping nepal",
-    "wellness retreat nepal",
-    "meditation camp nepal",
-    "yoga retreat nepal",
-    "nature camping nepal",
-    "himalayan camping",
-    "nepal adventure camp",
-    "eco camping nepal",
     "family camping nepal",
     "group camping nepal",
-    "trekking camp nepal",
-    "wilderness camping nepal",
+    "eco camping nepal",
     "mountain camping nepal",
     "forest camping nepal",
-    "camping experience nepal",
-    "nepal outdoor activities",
+    "himalayan camping nepal",
     "camping holidays nepal",
     "camping vacation nepal",
+    "wilderness camping nepal",
+    "nature camping nepal",
+    "camping experience nepal",
+    "nepal outdoor activities",
+    "trekking camp nepal",
   ],
   authors: [{ name: "Campsite Nepal Team" }],
   creator: "Campsite Nepal",
@@ -76,15 +92,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: "Campsite Nepal",
-    title: "Campsite Nepal - Best Camping & Wellness Retreat Center in Nepal",
+    title: "Campsite Nepal - Best Camping Sites & Ground in Nepal | Camp Nepal",
     description:
-      "Discover Nepal's premier campsite offering camping, wellness retreats, meditation, yoga, and adventure activities. Experience the best outdoor camping in Nepal.",
+      "Discover Nepal's premier campsite and camping ground. Experience the best camping sites near Kathmandu, jungle camping, wild camping, and adventure camping in Nepal.",
     images: [
       {
         url: "/wellbeing-landing-image.jpeg",
         width: 1200,
         height: 630,
-        alt: "Campsite Nepal - Premier Camping and Wellness Retreat Center",
+        alt: "Campsite Nepal - Premier Camping Sites and Ground in Nepal",
       },
     ],
   },
@@ -92,9 +108,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@campsitenepal",
     creator: "@campsitenepal",
-    title: "Campsite Nepal - Best Camping & Wellness Retreat",
+    title: "Campsite Nepal - Best Camping Sites & Ground in Nepal",
     description:
-      "Experience Nepal's premier campsite with camping, wellness retreats, and adventure activities in the heart of Nepal.",
+      "Experience Nepal's premier campsite with the best camping sites near Kathmandu, jungle camping, and adventure activities in Nepal.",
     images: ["/wellbeing-landing-image.jpeg"],
   },
   icons: {
@@ -119,6 +135,9 @@ export const metadata: Metadata = {
     "geo.placename": "Nepal",
     "geo.position": "27.6772;85.3155",
     ICBM: "27.6772, 85.3155",
+    "camping-sites": "nepal",
+    "camping-ground": "kathmandu",
+    "camp-nepal": "adventure",
   },
 };
 
@@ -158,7 +177,19 @@ export default function RootLayout({
         <meta name="revisit-after" content="1 days" />
         <meta
           name="classification"
-          content="Travel, Tourism, Camping, Wellness"
+          content="Travel, Tourism, Camping, Campsite, Nepal"
+        />
+        <meta
+          name="camping-sites-nepal"
+          content="best campsite near kathmandu"
+        />
+        <meta
+          name="nepal-camping"
+          content="jungle camping, wild camping, adventure camping"
+        />
+        <meta
+          name="camp-nepal"
+          content="camping ground, camping places, outdoor activities"
         />
       </head>
       <body

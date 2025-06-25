@@ -16,24 +16,25 @@ export default function Hero() {
             className="text-center lg:text-left"
           >
             <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-500 pb-6">
-              Where Adventure, Nature and Well-being Come Together
+              Best Camping Sites & Ground in Nepal
             </h1>
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
-              Experience the perfect blend of outdoor adventure, natural beauty,
-              and personal growth at Hash One Campsite.
+              Experience jungle camping, wild camping, and adventure activities
+              at Nepal`s premier campsite. Discover the best camping sites near
+              Kathmandu and create unforgettable memories.
             </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link
                 href="/services"
                 className="bg-primary-color hover:bg-primary-color/80 text-white px-8 py-3 rounded-full font-medium transition-colors"
               >
-                Book Now
+                Book Camping Experience
               </Link>
               <Link
                 href="/blogs"
                 className="bg-white dark:bg-primary-tint text-primary-color border-2 border-primary-color dark:border-green-600 px-8 py-3 rounded-full font-medium hover:bg-primary-tint dark:hover:bg-primary-tint/90 transition-colors"
               >
-                Explore Activities
+                Explore Camping Activities
               </Link>
             </div>
           </motion.div>
@@ -46,7 +47,7 @@ export default function Hero() {
           >
             <Image
               src="/campingone.jpg"
-              alt="Camping Experience"
+              alt="Jungle camping and adventure camping at Campsite Nepal - Best camping ground near Kathmandu"
               fill
               className="object-cover"
               priority
