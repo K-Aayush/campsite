@@ -7,7 +7,6 @@ import "leaflet/dist/leaflet.css";
 
 const fixLeafletIcon = () => {
   if (typeof window !== "undefined") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const LAny = L as any;
     delete LAny.Icon.Default.prototype._getIconUrl;
     LAny.Icon.Default.mergeOptions({

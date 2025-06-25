@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Menu, X, User, Bell, LogOut, Moon, Sun } from "lucide-react";
+import { Menu, X, User, LogOut, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -102,24 +102,6 @@ export default function Navbar() {
               <Moon className="h-5 w-5" />
             )}
           </Button>
-          {isAuthenticated && (
-            <>
-              <Button
-                variant="ghost"
-                className="text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-800 rounded-full"
-                aria-label="Notifications"
-              >
-                <Bell size={20} />
-              </Button>
-              <Link
-                href="/my-bookings"
-                className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
-                aria-label="My bookings"
-              >
-                <User size={20} />
-              </Link>
-            </>
-          )}
           <Button
             variant="ghost"
             size="icon"
@@ -171,19 +153,19 @@ export default function Navbar() {
             </Button>
             {isAuthenticated ? (
               <>
-                <Button
+                {/* <Button
                   variant="ghost"
                   className="text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-800 rounded-full"
                   aria-label="Notifications"
                 >
                   <Bell size={20} />
-                </Button>
+                </Button> */}
                 <Link
                   href="/my-bookings"
-                  className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
+                  className="p-2 rounded-full bg-green-50 flex gap-2 items-center dark:bg-gray-800 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-700 transition-all duration-300"
                   aria-label="My bookings"
                 >
-                  <User size={20} />
+                  <User size={20} /> My-Bookings
                 </Link>
                 <Button
                   onClick={handleSignOut}

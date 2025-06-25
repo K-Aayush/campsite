@@ -4,19 +4,6 @@ import { db } from "../../../../../utils/db";
 
 export async function GET() {
   try {
-    const session = await getServerSession();
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (user?.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     // Try to get settings from database
     let settings = await db.settings.findFirst();
 

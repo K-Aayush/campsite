@@ -24,11 +24,11 @@ interface ContactSettings {
 const Footer: FC = () => {
   const pathName = usePathname();
   const [contactInfo, setContactInfo] = useState<ContactSettings>({
-    siteName: "Mayur Wellness",
-    siteDescription: "Where Adventure, Nature and Well-being Come Together",
-    contactEmail: "contact@mayurwellness.com",
-    contactPhone: "(123) 456-7890",
-    address: "123 Forest Path, Tranquil Valley, TV 45678",
+    siteName: "",
+    siteDescription: "",
+    contactEmail: "",
+    contactPhone: "",
+    address: "",
     socialMedia: {
       facebook: "",
       instagram: "",
@@ -65,38 +65,29 @@ const Footer: FC = () => {
     {
       label: "Facebook",
       icon: Facebook,
-      href: contactInfo.socialMedia.facebook || "#",
+      href: contactInfo.socialMedia.facebook,
     },
     {
       label: "Instagram",
       icon: Instagram,
-      href: contactInfo.socialMedia.instagram || "#",
+      href: contactInfo.socialMedia.instagram,
     },
     {
       label: "Twitter",
       icon: Twitter,
-      href: contactInfo.socialMedia.twitter || "#",
+      href: contactInfo.socialMedia.twitter,
     },
-  ];
+  ].filter((link) => link.href); // Only include links with valid URLs
 
   const footerSections = [
-    {
-      title: "Company",
-      links: [
-        { label: "About Us", href: "/about-us" },
-        { label: "Careers", href: "#" },
-        { label: "Blog", href: "/blogs" },
-        { label: "How we work", href: "#" },
-      ],
-    },
-    {
-      title: "Information",
-      links: [
-        { label: "Help/FAQ", href: "#" },
-        { label: "Press", href: "#" },
-        { label: "Partners", href: "#" },
-      ],
-    },
+    // {
+    //   title: "Information",
+    //   links: [
+    //     { label: "Help/FAQ", href: "#" },
+    //     { label: "Press", href: "#" },
+    //     { label: "Partners", href: "#" },
+    //   ],
+    // },
     {
       title: "Explore",
       links: headerData.map((item) => ({
@@ -104,11 +95,6 @@ const Footer: FC = () => {
         href: item.href,
       })),
     },
-  ];
-
-  const bottomLinks = [
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms & Conditions", href: "#" },
   ];
 
   return (
@@ -123,12 +109,13 @@ const Footer: FC = () => {
         <div className="absolute bottom-0 right-0 w-1/4 h-1/4 bg-green-200/5 dark:bg-green-500/5 rounded-full blur-4xl transform translate-x-2/3 translate-y-2/3" />
       </div>
       <div className="container mx-auto px-4 lg:max-w-screen-xl relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 md:gap-12 lg:gap-16 pb-12">
+        <div className="flex flex-col sm:flex-row  justify-between gap-8 lg:gap-16 pb-12">
+          {/* Left Column: Mayur Wellness Contact Information */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="col-span-1 sm:col-span-2"
+            className="flex flex-col"
           >
             <Logo />
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-6 mb-4 max-w-md">
@@ -155,15 +142,10 @@ const Footer: FC = () => {
                 <Link
                   key={index}
                   href={href}
-                  className={`p-2 rounded-full bg-green-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-green-600 dark:hover:bg-green-500 hover:text-white transition-all duration-200 hover:scale-110 ${
-                    href === "#" ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className="p-2 rounded-full bg-green-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-green-600 dark:hover:bg-green-500 hover:text-white transition-all duration-200 hover:scale-110"
                   aria-label={label}
-                  onClick={(e) => {
-                    if (href === "#") {
-                      e.preventDefault();
-                    }
-                  }}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <Icon size={20} />
                 </Link>
@@ -171,35 +153,38 @@ const Footer: FC = () => {
             </div>
           </motion.div>
 
-          {footerSections.map((section, index) => (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 * (index + 1) }}
-              key={index}
-            >
-              <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-6">
-                {section.title}
-              </h4>
-              <ul className="space-y-3">
-                {section.links.map((link, linkIndex) => (
-                  <li key={linkIndex}>
-                    <Link
-                      href={link.href}
-                      className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 text-sm transition-all duration-200"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+          {/* Right Column: Information and Explore */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex  sm:flex-row sm:gap-12 lg:gap-16"
+          >
+            {footerSections.map((section, index) => (
+              <div key={index} className="flex-1">
+                <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-6">
+                  {section.title}
+                </h4>
+                <ul className="space-y-3">
+                  {section.links.map((link, linkIndex) => (
+                    <li key={linkIndex}>
+                      <Link
+                        href={link.href}
+                        className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 text-sm transition-all duration-200"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </motion.div>
         </div>
 
-        <div className="border-t border-gray-200 dark:border-gray-700 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            © 2025 {contactInfo.siteName}. All Rights Reserved by{" "}
+        <div className="border-t border-gray-200 dark:border-gray-700 py-6 flex justify-center text-center items-center gap-4">
+          <p className="text-sm flex gap-1 text-center text-gray-600 dark:text-gray-400">
+            © 2025 {contactInfo.siteName}. All Rights Reserved by
             <Link
               href="https://nepatronix.org"
               className="text-green-600 dark:text-green-400 hover:underline"
@@ -207,17 +192,6 @@ const Footer: FC = () => {
               Nepatronix.org
             </Link>
           </p>
-          <div className="flex gap-4">
-            {bottomLinks.map((link, index) => (
-              <Link
-                key={index}
-                href={link.href}
-                className="text-sm text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
         </div>
       </div>
     </motion.footer>

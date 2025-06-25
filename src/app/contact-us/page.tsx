@@ -42,11 +42,11 @@ const ContactPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [contactInfo, setContactInfo] = useState<ContactSettings>({
-    siteName: "Mayur Wellness",
-    siteDescription: "Where Adventure, Nature and Well-being Come Together",
-    contactEmail: "contact@mayurwellness.com",
-    contactPhone: "(123) 456-7890",
-    address: "123 Forest Path, Tranquil Valley, TV 45678",
+    siteName: "",
+    siteDescription: "",
+    contactEmail: "",
+    contactPhone: "",
+    address: "",
     socialMedia: {
       facebook: "",
       instagram: "",

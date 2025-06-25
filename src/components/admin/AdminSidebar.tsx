@@ -15,9 +15,12 @@ import {
   Menu,
   X,
   Package,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 const sidebarItems = [
   {
@@ -60,6 +63,7 @@ const sidebarItems = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" });
@@ -67,13 +71,28 @@ export default function AdminSidebar() {
 
   const SidebarContent = () => (
     <>
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          Admin Panel
-        </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Mayur Wellness
-        </p>
+      <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+            Admin Panel
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Mayur Wellness
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full text-gray-600 dark:text-gray-300 hover:bg-green-50 dark:hover:bg-gray-800 cursor-pointer"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          {theme === "dark" ? (
+            <Sun className="h-5 w-5 text-orange-500" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
+        </Button>
       </div>
 
       <nav className="flex-1 p-4">

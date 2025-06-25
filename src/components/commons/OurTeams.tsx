@@ -8,17 +8,17 @@ const teamMembers = [
   {
     name: "Bibek Koirala",
     role: "Wellness Coach",
-    image: "/person.png",
+    image: "/anime1.jpg",
   },
   {
     name: "Sarah Johnson",
     role: "Yoga Instructor",
-    image: "/person.png",
+    image: "/anime2.jpg",
   },
   {
     name: "Michael Chen",
     role: "Mindfulness Expert",
-    image: "/person.png",
+    image: "/anime3.jpg",
   },
 ];
 
