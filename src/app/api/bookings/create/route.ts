@@ -106,14 +106,6 @@ export async function POST(req: Request) {
     const finalDepositAmount =
       depositAmount || (finalTotalAmount * service.depositPercentage) / 100;
 
-    // Set initial payment status based on payment method
-    let initialPaymentStatus = "PENDING";
-    if (paymentMethod === "FONE_PAY") {
-      initialPaymentStatus = "PENDING";
-    } else {
-      initialPaymentStatus = "PENDING_APPROVAL";
-    }
-
     const booking = await db.booking.create({
       data: {
         userId: user.id,
@@ -126,7 +118,7 @@ export async function POST(req: Request) {
         totalAmount: finalTotalAmount,
         depositAmount: finalDepositAmount,
         status: "PENDING",
-        paymentStatus: initialPaymentStatus,
+        paymentStatus: "PENDING",
         paymentMethod: paymentMethod,
         paymentNotes: phoneNumber ? `Phone: ${phoneNumber}` : null,
       },
