@@ -49,18 +49,11 @@ export async function GET() {
         icon: "💳",
       },
       {
-        name: "Cash",
+        name: "FonePay",
         value:
           paymentStats.find((stat) => stat.paymentMethod === "CASH")?._count
             .paymentMethod || 0,
-        icon: "💵",
-      },
-      {
-        name: "Bank Transfer",
-        value:
-          paymentStats.find((stat) => stat.paymentMethod === "BANK_TRANSFER")
-            ?._count.paymentMethod || 0,
-        icon: "🏦",
+        icon: "💳",
       },
     ];
 
