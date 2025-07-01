@@ -32,10 +32,7 @@ enum PaymentStatus {
 }
 
 enum PaymentMethod {
-  ESEWA
-  KHALTI
-  CASH
-  BANK_TRANSFER
+  FONE_PAY
 }
 
 model User {
