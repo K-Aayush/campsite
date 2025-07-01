@@ -24,9 +24,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ServiceFormValues, serviceSchema } from "../../../../schemas";
+import {
+  ServiceFormValues,
+  serviceSchema,
+  scheduleSchema,
+} from "../../../../schemas";
 import FileUpload from "@/components/admin/FileUpload";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Calendar, Clock, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface Service {
   id: string;
@@ -39,6 +51,13 @@ interface Service {
   category: string;
   packages: string | null;
   durations: string | null;
+  maxCapacity: number;
+  currentBookings: number;
+  status: string;
+  startDate: string | null;
+  endDate: string | null;
+  availableDates: string | null;
+  timeSlots: string | null;
 }
 
 interface Package {
@@ -52,6 +71,19 @@ interface Duration {
   label: string;
 }
 
+interface Schedule {
+  date: string;
+  startTime: string;
+  endTime: string;
+  maxCapacity: number;
+}
+
+interface TimeSlot {
+  startTime: string;
+  endTime: string;
+  maxCapacity: number;
+}
+
 export default function AdminServicesPage() {
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
@@ -62,6 +94,10 @@ export default function AdminServicesPage() {
   const [durations, setDurations] = useState<Duration[]>([
     { days: 1, label: "1 Day" },
   ]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [selectedDates, setSelectedDates] = useState<string[]>([]);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
@@ -72,6 +108,19 @@ export default function AdminServicesPage() {
       image: "",
       isBookable: true,
       depositPercentage: "20",
+      maxCapacity: "10",
+      startDate: "",
+      endDate: "",
+    },
+  });
+
+  const scheduleForm = useForm({
+    resolver: zodResolver(scheduleSchema),
+    defaultValues: {
+      date: "",
+      startTime: "",
+      endTime: "",
+      maxCapacity: "10",
     },
   });
 
@@ -147,6 +196,50 @@ export default function AdminServicesPage() {
     setDurations(updated);
   };
 
+  const addTimeSlot = () => {
+    setTimeSlots([
+      ...timeSlots,
+      { startTime: "", endTime: "", maxCapacity: 10 },
+    ]);
+  };
+
+  const removeTimeSlot = (index: number) => {
+    setTimeSlots(timeSlots.filter((_, i) => i !== index));
+  };
+
+  const updateTimeSlot = (index: number, field: keyof TimeSlot, value: any) => {
+    const updated = [...timeSlots];
+    updated[index] = { ...updated[index], [field]: value };
+    setTimeSlots(updated);
+  };
+
+  const addSchedule = (data: any) => {
+    const newSchedule: Schedule = {
+      date: data.date,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      maxCapacity: parseInt(data.maxCapacity),
+    };
+    setSchedules([...schedules, newSchedule]);
+    scheduleForm.reset();
+    setIsScheduleModalOpen(false);
+    showToast("success", { title: "Schedule added successfully" });
+  };
+
+  const removeSchedule = (index: number) => {
+    setSchedules(schedules.filter((_, i) => i !== index));
+  };
+
+  const addSelectedDate = (date: string) => {
+    if (!selectedDates.includes(date)) {
+      setSelectedDates([...selectedDates, date]);
+    }
+  };
+
+  const removeSelectedDate = (date: string) => {
+    setSelectedDates(selectedDates.filter((d) => d !== date));
+  };
+
   const onSubmit = async (data: ServiceFormValues) => {
     setLoading(true);
 
@@ -158,9 +251,13 @@ export default function AdminServicesPage() {
           ...data,
           price: parseFloat(data.price),
           depositPercentage: parseFloat(data.depositPercentage),
+          maxCapacity: parseInt(data.maxCapacity),
           image: imageUrl || data.image,
           packages: JSON.stringify(packages),
           durations: JSON.stringify(durations),
+          schedules: JSON.stringify(schedules),
+          timeSlots: JSON.stringify(timeSlots),
+          availableDates: JSON.stringify(selectedDates),
         }),
       });
 
@@ -171,6 +268,9 @@ export default function AdminServicesPage() {
       setImageUrl("");
       setPackages([{ name: "Basic", price: 0, features: [""] }]);
       setDurations([{ days: 1, label: "1 Day" }]);
+      setSchedules([]);
+      setTimeSlots([]);
+      setSelectedDates([]);
       fetchServices();
     } catch (error) {
       console.error(error);
@@ -198,6 +298,21 @@ export default function AdminServicesPage() {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "ACTIVE":
+        return "bg-green-500";
+      case "INACTIVE":
+        return "bg-gray-500";
+      case "SCHEDULED":
+        return "bg-blue-500";
+      case "COMPLETED":
+        return "bg-purple-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Manage Services</h1>
@@ -209,19 +324,55 @@ export default function AdminServicesPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Service name" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Service Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Service name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="education">
+                            Educational Adventures
+                          </SelectItem>
+                          <SelectItem value="camping">
+                            Camping Experiences
+                          </SelectItem>
+                          <SelectItem value="wellness">
+                            Wellness Retreat
+                          </SelectItem>
+                          <SelectItem value="general">General</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
@@ -237,41 +388,327 @@ export default function AdminServicesPage() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Base Price (NPR)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        {...field}
-                        placeholder="0.00"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Pricing and Capacity */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Base Price (NPR)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          placeholder="0.00"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              {/* Category Selection */}
-              <div>
-                <FormLabel>Category</FormLabel>
-                <Select defaultValue="general">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="education">
-                      Educational Adventures
-                    </SelectItem>
-                    <SelectItem value="camping">Camping Experiences</SelectItem>
-                    <SelectItem value="wellness">Wellness Retreat</SelectItem>
-                    <SelectItem value="general">General</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormField
+                  control={form.control}
+                  name="depositPercentage"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Deposit Percentage (%)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="1"
+                          {...field}
+                          placeholder="20"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="maxCapacity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Maximum Capacity</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="1"
+                          {...field}
+                          placeholder="10"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Service Dates */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Service Start Date (Optional)</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Service End Date (Optional)</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Available Dates */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <FormLabel>Available Dates (Optional)</FormLabel>
+                  <div className="flex gap-2">
+                    <Input
+                      type="date"
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          addSelectedDate(e.target.value);
+                          e.target.value = "";
+                        }
+                      }}
+                      className="w-auto"
+                    />
+                  </div>
+                </div>
+                {selectedDates.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedDates.map((date, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="flex items-center gap-2"
+                      >
+                        <Calendar className="h-3 w-3" />
+                        {new Date(date).toLocaleDateString()}
+                        <button
+                          type="button"
+                          onClick={() => removeSelectedDate(date)}
+                          className="ml-1 hover:text-red-500"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Time Slots */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <FormLabel>Time Slots (Optional)</FormLabel>
+                  <Button type="button" onClick={addTimeSlot} size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Time Slot
+                  </Button>
+                </div>
+
+                {timeSlots.map((slot, index) => (
+                  <Card key={index} className="p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                      <div>
+                        <FormLabel>Start Time</FormLabel>
+                        <Input
+                          type="time"
+                          value={slot.startTime}
+                          onChange={(e) =>
+                            updateTimeSlot(index, "startTime", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div>
+                        <FormLabel>End Time</FormLabel>
+                        <Input
+                          type="time"
+                          value={slot.endTime}
+                          onChange={(e) =>
+                            updateTimeSlot(index, "endTime", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div>
+                        <FormLabel>Max Capacity</FormLabel>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={slot.maxCapacity}
+                          onChange={(e) =>
+                            updateTimeSlot(
+                              index,
+                              "maxCapacity",
+                              parseInt(e.target.value) || 1
+                            )
+                          }
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeTimeSlot(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Schedules */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <FormLabel>Specific Schedules (Optional)</FormLabel>
+                  <Dialog
+                    open={isScheduleModalOpen}
+                    onOpenChange={setIsScheduleModalOpen}
+                  >
+                    <DialogTrigger asChild>
+                      <Button type="button" size="sm">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Schedule
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Schedule</DialogTitle>
+                      </DialogHeader>
+                      <Form {...scheduleForm}>
+                        <form
+                          onSubmit={scheduleForm.handleSubmit(addSchedule)}
+                          className="space-y-4"
+                        >
+                          <FormField
+                            control={scheduleForm.control}
+                            name="date"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Date</FormLabel>
+                                <FormControl>
+                                  <Input type="date" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={scheduleForm.control}
+                              name="startTime"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Start Time</FormLabel>
+                                  <FormControl>
+                                    <Input type="time" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={scheduleForm.control}
+                              name="endTime"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>End Time</FormLabel>
+                                  <FormControl>
+                                    <Input type="time" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          <FormField
+                            control={scheduleForm.control}
+                            name="maxCapacity"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Max Capacity</FormLabel>
+                                <FormControl>
+                                  <Input type="number" min="1" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <Button type="submit" className="w-full">
+                            Add Schedule
+                          </Button>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+
+                {schedules.length > 0 && (
+                  <div className="space-y-2">
+                    {schedules.map((schedule, index) => (
+                      <Card key={index} className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <Badge
+                              variant="outline"
+                              className="flex items-center gap-2"
+                            >
+                              <Calendar className="h-3 w-3" />
+                              {new Date(schedule.date).toLocaleDateString()}
+                            </Badge>
+                            <Badge
+                              variant="outline"
+                              className="flex items-center gap-2"
+                            >
+                              <Clock className="h-3 w-3" />
+                              {schedule.startTime} - {schedule.endTime}
+                            </Badge>
+                            <Badge
+                              variant="outline"
+                              className="flex items-center gap-2"
+                            >
+                              <Users className="h-3 w-3" />
+                              {schedule.maxCapacity} people
+                            </Badge>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => removeSchedule(index)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Packages Section */}
@@ -439,27 +876,6 @@ export default function AdminServicesPage() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="depositPercentage"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Deposit Percentage (%)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="1"
-                        {...field}
-                        placeholder="20"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <Button type="submit" disabled={loading} className="min-w-32">
                 {loading ? "Adding..." : "Add Service"}
               </Button>
@@ -468,6 +884,7 @@ export default function AdminServicesPage() {
         </CardContent>
       </Card>
 
+      {/* Services List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (
           <Card key={service.id}>
@@ -486,6 +903,24 @@ export default function AdminServicesPage() {
               <p className="font-bold mb-2">
                 Base Price: NPR {service.price.toLocaleString()}
               </p>
+
+              <div className="flex items-center gap-2 mb-2">
+                <Badge className={getStatusColor(service.status)}>
+                  {service.status}
+                </Badge>
+                <Badge variant="outline" className="flex items-center gap-1">
+                  <Users className="h-3 w-3" />
+                  {service.currentBookings}/{service.maxCapacity}
+                </Badge>
+              </div>
+
+              {service.startDate && service.endDate && (
+                <div className="text-xs text-gray-500 mb-2">
+                  <Calendar className="h-3 w-3 inline mr-1" />
+                  {new Date(service.startDate).toLocaleDateString()} -{" "}
+                  {new Date(service.endDate).toLocaleDateString()}
+                </div>
+              )}
 
               {service.packages && (
                 <div className="mb-2">
