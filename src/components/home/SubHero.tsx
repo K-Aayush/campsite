@@ -17,7 +17,7 @@ const SubHero = () => {
             className="relative h-[300px] lg:h-[500px] rounded-2xl overflow-hidden"
           >
             <Image
-              src="/image.avif"
+              src="/1.png"
               alt="Best camping sites in Nepal - Campsite Nepal adventure camping"
               fill
               className="object-cover"
@@ -39,7 +39,9 @@ const SubHero = () => {
               Adventure Camping Ground
             </h1>
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
-              Discover the best camping sites near Kathmandu. Experience jungle camping, wild camping, and adventure activities at Nepal`s top-rated campsite and camping ground.
+              Discover the best camping sites near Kathmandu. Experience jungle
+              camping, wild camping, and adventure activities at Nepal`s
+              top-rated campsite and camping ground.
             </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link

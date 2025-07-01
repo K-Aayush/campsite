@@ -46,7 +46,7 @@ export default function Hero() {
             className="relative h-[300px] lg:h-[500px] rounded-2xl overflow-hidden"
           >
             <Image
-              src="/campingone.jpg"
+              src="/2.png"
               alt="Jungle camping and adventure camping at Campsite Nepal - Best camping ground near Kathmandu"
               fill
               className="object-cover"
