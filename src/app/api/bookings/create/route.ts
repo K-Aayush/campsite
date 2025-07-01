@@ -30,6 +30,8 @@ export async function POST(req: Request) {
       depositAmount,
       phoneNumber,
       paymentMethod,
+      numberOfPeople = 1,
+      timeSlot,
     } = data;
 
     // Validate required fields
@@ -50,6 +52,14 @@ export async function POST(req: Request) {
     // Verify service exists and is bookable
     const service = await db.service.findUnique({
       where: { id: serviceId },
+      include: {
+        schedules: {
+          where: {
+            date: new Date(startDate),
+            isActive: true,
+          },
+        },
+      },
     });
 
     if (!service) {
@@ -63,7 +73,30 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check for date conflicts
+    // Check capacity
+    const schedule = service.schedules.find(
+      (s) => s.date.toDateString() === new Date(startDate).toDateString()
+    );
+
+    let availableCapacity = service.maxCapacity - service.currentBookings;
+    let scheduleToUpdate = null;
+
+    if (schedule) {
+      availableCapacity = schedule.maxCapacity - schedule.currentBookings;
+      scheduleToUpdate = schedule;
+    }
+
+    if (numberOfPeople > availableCapacity) {
+      return NextResponse.json(
+        {
+          error: "Not enough capacity available",
+          availableSpots: availableCapacity,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check for date conflicts with existing bookings
     const conflictingBooking = await db.booking.findFirst({
       where: {
         serviceId,
@@ -93,14 +126,14 @@ export async function POST(req: Request) {
       },
     });
 
-    if (conflictingBooking) {
+    if (conflictingBooking && !schedule) {
       return NextResponse.json(
         { error: "Service is already booked for the selected dates" },
         { status: 400 }
       );
     }
 
-    // Calculate final amounts - use service base price if no package
+    // Calculate final amounts
     const finalPackagePrice = packagePrice || service.price;
     const finalTotalAmount = totalAmount || finalPackagePrice * (duration || 1);
     const finalDepositAmount =
@@ -121,6 +154,8 @@ export async function POST(req: Request) {
         paymentStatus: "PENDING",
         paymentMethod: paymentMethod,
         paymentNotes: phoneNumber ? `Phone: ${phoneNumber}` : null,
+        numberOfPeople,
+        timeSlot,
       },
       include: {
         service: {
@@ -136,6 +171,28 @@ export async function POST(req: Request) {
         },
       },
     });
+
+    // Update service capacity
+    await db.service.update({
+      where: { id: serviceId },
+      data: {
+        currentBookings: {
+          increment: numberOfPeople,
+        },
+      },
+    });
+
+    // Update schedule capacity if applicable
+    if (scheduleToUpdate) {
+      await db.serviceSchedule.update({
+        where: { id: scheduleToUpdate.id },
+        data: {
+          currentBookings: {
+            increment: numberOfPeople,
+          },
+        },
+      });
+    }
 
     // Send notification email to admin
     try {
@@ -154,7 +211,6 @@ export async function POST(req: Request) {
       });
     } catch (emailError) {
       console.error("Failed to send admin notification:", emailError);
-      // Don't fail the booking if email fails
     }
 
     return NextResponse.json({
