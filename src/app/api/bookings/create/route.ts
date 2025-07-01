@@ -28,10 +28,19 @@ export async function POST(req: Request) {
       duration,
       totalAmount,
       depositAmount,
+      phoneNumber,
+      paymentMethod,
     } = data;
 
     // Validate required fields
-    if (!serviceId || !startDate || !endDate || !totalAmount) {
+    if (
+      !serviceId ||
+      !startDate ||
+      !endDate ||
+      !totalAmount ||
+      !phoneNumber ||
+      !paymentMethod
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -110,6 +119,8 @@ export async function POST(req: Request) {
         depositAmount: finalDepositAmount,
         status: "PENDING",
         paymentStatus: "PENDING",
+        paymentMethod: paymentMethod,
+        paymentNotes: phoneNumber ? `Phone: ${phoneNumber}` : null,
       },
       include: {
         service: {
@@ -138,6 +149,8 @@ export async function POST(req: Request) {
         endDate: booking.endDate,
         totalAmount: booking.totalAmount,
         depositAmount: booking.depositAmount,
+        phoneNumber: phoneNumber,
+        paymentMethod: paymentMethod,
       });
     } catch (emailError) {
       console.error("Failed to send admin notification:", emailError);
