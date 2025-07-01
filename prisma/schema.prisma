@@ -38,6 +38,13 @@ enum PaymentMethod {
   FONE_PAY
 }
 
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
+  SCHEDULED
+  COMPLETED
+}
+
 model User {
   id                    String                 @id @default(cuid()) @map("_id")
   name                  String?
@@ -82,19 +89,47 @@ model Wallet {
 }
 
 model Service {
-  id                String    @id @default(cuid()) @map("_id")
+  id                String  @id @default(cuid()) @map("_id")
   name              String
   description       String
   price             Float
   image             String?
-  isBookable        Boolean   @default(true)
-  depositPercentage Float     @default(20)
-  category          String    @default("general")
+  isBookable        Boolean @default(true)
+  depositPercentage Float   @default(20)
+  category          String  @default("general")
   packages          String?
   durations         String?
-  bookings          Booking[]
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+
+  // New scheduling and capacity fields
+  status          ServiceStatus @default(ACTIVE)
+  maxCapacity     Int           @default(10)
+  currentBookings Int           @default(0)
+  startDate       DateTime?
+  endDate         DateTime?
+  availableDates  String?
+  timeSlots       String?
+
+  bookings  Booking[]
+  schedules ServiceSchedule[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model ServiceSchedule {
+  id              String   @id @default(cuid()) @map("_id")
+  serviceId       String
+  date            DateTime
+  startTime       String
+  endTime         String
+  maxCapacity     Int
+  currentBookings Int      @default(0)
+  isActive        Boolean  @default(true)
+
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([serviceId, date, startTime])
 }
 
 model Blog {
@@ -139,8 +174,13 @@ model Booking {
   paymentMethod PaymentMethod?
   paymentProof  String?
   paymentNotes  String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+
+  // New fields for capacity tracking
+  numberOfPeople Int     @default(1)
+  timeSlot       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
