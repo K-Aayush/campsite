@@ -14,7 +14,7 @@ import { showToast } from "@/utils/Toast";
 interface QRPaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  paymentMethod: "FONEPAY" | null;
+  paymentMethod: "FONE_PAY" | "ESEWA" | "KHALTI" | null;
   amount: number;
   onPaymentComplete: (paymentProof: File) => void;
 }
@@ -30,13 +30,39 @@ const QRPaymentModal: React.FC<QRPaymentModalProps> = ({
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
 
   const paymentDetails = {
-    FONEPAY: {
-      name: "FONEPAY",
+    FONE_PAY: {
+      name: "FONE_PAY",
       qrCode: "/esewa-qr.png",
       accountId: "9841234567",
       instructions: [
         "Open your banking app",
         "Scan the QR code or enter your ID",
+        "Enter the exact amount shown below",
+        "Complete the payment",
+        "Take a screenshot of the payment confirmation",
+        "Upload the screenshot below",
+      ],
+    },
+    ESEWA: {
+      name: "eSewa",
+      qrCode: "/esewa-qr.png", // You'll need to add this QR code image
+      accountId: "9841234567",
+      instructions: [
+        "Open your eSewa app",
+        "Scan the QR code or enter the eSewa ID",
+        "Enter the exact amount shown below",
+        "Complete the payment",
+        "Take a screenshot of the payment confirmation",
+        "Upload the screenshot below",
+      ],
+    },
+    KHALTI: {
+      name: "Khalti",
+      qrCode: "/khalti-qr.png", // You'll need to add this QR code image
+      accountId: "9841234567",
+      instructions: [
+        "Open your Khalti app",
+        "Scan the QR code or enter the Khalti ID",
         "Enter the exact amount shown below",
         "Complete the payment",
         "Take a screenshot of the payment confirmation",
