@@ -100,7 +100,6 @@ model Service {
   packages          String?
   durations         String?
 
-  // New scheduling and capacity fields
   status          ServiceStatus @default(ACTIVE)
   maxCapacity     Int           @default(10)
   currentBookings Int           @default(0)
