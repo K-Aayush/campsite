@@ -320,7 +320,7 @@ export default function BookingCalendar() {
 
       {/* Booking Details Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[1280px] max-h-[90vh] overflow-y-auto custom-scrollbar">
           {selectedBooking && (
             <>
               <DialogHeader>
@@ -329,7 +329,7 @@ export default function BookingCalendar() {
                 </DialogTitle>
               </DialogHeader>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1  gap-6">
                 {/* Customer Information */}
                 <Card>
                   <CardHeader>
