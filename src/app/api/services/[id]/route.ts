@@ -53,59 +53,124 @@ export async function PUT(
     }
 
     const data = await request.json();
+    console.log("Received update data:", data);
 
-    // Parse packages if they exist
-    let packages = [];
-    if (data.packages && typeof data.packages === "string") {
-      try {
-        packages = JSON.parse(data.packages);
-      } catch (e) {
-        console.log(e);
-        packages = [];
-      }
-    } else if (Array.isArray(data.packages)) {
-      packages = data.packages;
+    // Validate required fields
+    if (!data.name || !data.description || data.price === undefined) {
+      return NextResponse.json(
+        { error: "Missing required fields: name, description, or price" },
+        { status: 400 }
+      );
     }
 
-    // Parse schedules if they exist
-    let schedules = [];
-    if (data.schedules && typeof data.schedules === "string") {
-      try {
-        schedules = JSON.parse(data.schedules);
-      } catch (e) {
-        console.error("Error parsing schedules:", e);
-        schedules = [];
-      }
-    } else if (Array.isArray(data.schedules)) {
-      schedules = data.schedules;
+    // Validate numeric fields
+    if (isNaN(data.price) || data.price < 0) {
+      return NextResponse.json(
+        { error: "Price must be a valid positive number" },
+        { status: 400 }
+      );
     }
 
+    if (
+      isNaN(data.depositPercentage) ||
+      data.depositPercentage < 0 ||
+      data.depositPercentage > 100
+    ) {
+      return NextResponse.json(
+        { error: "Deposit percentage must be between 0 and 100" },
+        { status: 400 }
+      );
+    }
+
+    if (isNaN(data.maxCapacity) || data.maxCapacity < 1) {
+      return NextResponse.json(
+        { error: "Max capacity must be at least 1" },
+        { status: 400 }
+      );
+    }
+
+    // Prepare update data
+    const updateData: any = {
+      name: data.name.trim(),
+      description: data.description.trim(),
+      price: data.price,
+      depositPercentage: data.depositPercentage,
+      maxCapacity: data.maxCapacity,
+      isBookable: Boolean(data.isBookable),
+      category: data.category || "general",
+    };
+
+    // Handle optional fields
+    if (data.image !== undefined) {
+      updateData.image = data.image || null;
+    }
+
+    if (data.startDate) {
+      updateData.startDate = new Date(data.startDate);
+    } else {
+      updateData.startDate = null;
+    }
+
+    if (data.endDate) {
+      updateData.endDate = new Date(data.endDate);
+    } else {
+      updateData.endDate = null;
+    }
+
+    // Handle packages
+    if (data.packages) {
+      try {
+        let packages = data.packages;
+        if (typeof packages === "string") {
+          packages = JSON.parse(packages);
+        }
+        updateData.packages = JSON.stringify(packages);
+      } catch (error) {
+        console.error("Error processing packages:", error);
+        updateData.packages = null;
+      }
+    } else {
+      updateData.packages = null;
+    }
+
+    // Handle durations
+    if (data.durations) {
+      try {
+        let durations = data.durations;
+        if (typeof durations === "string") {
+          durations = JSON.parse(durations);
+        }
+        updateData.durations = JSON.stringify(durations);
+      } catch (error) {
+        console.error("Error processing durations:", error);
+        updateData.durations = null;
+      }
+    } else {
+      updateData.durations = null;
+    }
+
+    console.log("Final update data:", updateData);
+
+    // Update the service
     const service = await db.service.update({
       where: { id: id },
-      data: {
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        image: data.image,
-        isBookable: data.isBookable,
-        depositPercentage: data.depositPercentage,
-        category: data.category || "general",
-        packages: JSON.stringify(packages),
-        durations: JSON.stringify(data.durations || 1),
-        maxCapacity: data.maxCapacity || 10,
-        startDate: data.startDate ? new Date(data.startDate) : null,
-        endDate: data.endDate ? new Date(data.endDate) : null,
-        availableDates: data.availableDates || null,
-        timeSlots: data.timeSlots || null,
-        schedules,
-      },
+      data: updateData,
     });
 
-    return NextResponse.json(service);
+    console.log("Updated service:", service);
+
+    return NextResponse.json({
+      success: true,
+      service,
+      message: "Service updated successfully",
+    });
   } catch (error) {
     console.error("Error updating service:", error);
     return NextResponse.json(
-      { error: "Failed to update service" },
+      {
+        error: "Failed to update service",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

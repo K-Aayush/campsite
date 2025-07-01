@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export type ServiceFormValues = z.infer<typeof serviceSchema>;
+export type ScheduleFormValues = z.infer<typeof scheduleSchema>;
 
 export const loginSchema = z.object({
   email: z
