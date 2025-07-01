@@ -31,15 +31,7 @@ import {
   ScheduleFormValues,
 } from "../../../../schemas";
 import FileUpload from "@/components/admin/FileUpload";
-import {
-  Plus,
-  Trash2,
-  Calendar,
-  Clock,
-  Users,
-  Edit,
-  Search,
-} from "lucide-react";
+import { Plus, Trash2, Calendar, Users, Edit, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import ServiceEditModal from "@/components/admin/ServiceEditModal";
@@ -278,10 +270,6 @@ export default function AdminServicesPage() {
     scheduleForm.reset();
     setIsScheduleModalOpen(false);
     showToast("success", { title: "Schedule added successfully" });
-  };
-
-  const removeSchedule = (index: number) => {
-    setSchedules(schedules.filter((_, i) => i !== index));
   };
 
   const addSelectedDate = (date: string) => {
@@ -652,63 +640,6 @@ export default function AdminServicesPage() {
                     </div>
                   </Card>
                 ))}
-              </div>
-
-              {/* Schedules */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <FormLabel>Specific Schedules (Optional)</FormLabel>
-                  <Button
-                    type="button"
-                    onClick={() => setIsScheduleModalOpen(true)}
-                    size="sm"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Schedule
-                  </Button>
-                </div>
-
-                {schedules.length > 0 && (
-                  <div className="space-y-2">
-                    {schedules.map((schedule, index) => (
-                      <Card key={index} className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Badge
-                              variant="outline"
-                              className="flex items-center gap-2"
-                            >
-                              <Calendar className="h-3 w-3" />
-                              {new Date(schedule.date).toLocaleDateString()}
-                            </Badge>
-                            <Badge
-                              variant="outline"
-                              className="flex items-center gap-2"
-                            >
-                              <Clock className="h-3 w-3" />
-                              {schedule.startTime} - {schedule.endTime}
-                            </Badge>
-                            <Badge
-                              variant="outline"
-                              className="flex items-center gap-2"
-                            >
-                              <Users className="h-3 w-3" />
-                              {schedule.maxCapacity} people
-                            </Badge>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => removeSchedule(index)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Packages Section */}
