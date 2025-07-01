@@ -29,10 +29,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ServiceFormValues, serviceSchema } from "../../../schemas";
+import {
+  ServiceFormValues,
+  serviceSchema,
+  scheduleSchema,
+  ScheduleFormValues,
+} from "../../../schemas";
 import FileUpload from "@/components/admin/FileUpload";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Calendar, Clock, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Package {
   name: string;
@@ -43,6 +49,19 @@ interface Package {
 interface Duration {
   days: number;
   label: string;
+}
+
+interface Schedule {
+  date: string;
+  startTime: string;
+  endTime: string;
+  maxCapacity: number;
+}
+
+interface TimeSlot {
+  startTime: string;
+  endTime: string;
+  maxCapacity: number;
 }
 
 interface Service {
@@ -84,6 +103,10 @@ export default function ServiceEditModal({
   const [durations, setDurations] = useState<Duration[]>([
     { days: 1, label: "1 Day" },
   ]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [selectedDates, setSelectedDates] = useState<string[]>([]);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
@@ -97,6 +120,16 @@ export default function ServiceEditModal({
       maxCapacity: "10",
       startDate: "",
       endDate: "",
+    },
+  });
+
+  const scheduleForm = useForm({
+    resolver: zodResolver(scheduleSchema),
+    defaultValues: {
+      date: "",
+      startTime: "",
+      endTime: "",
+      maxCapacity: "10",
     },
   });
 
@@ -149,6 +182,49 @@ export default function ServiceEditModal({
     }
   };
 
+  const parseTimeSlots = (timeSlotsString: string | null): TimeSlot[] => {
+    if (!timeSlotsString) return [];
+    try {
+      let parsed = JSON.parse(timeSlotsString);
+      if (typeof parsed === "string") {
+        parsed = JSON.parse(parsed);
+      }
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+      return parsed.filter(
+        (item): item is TimeSlot =>
+          typeof item === "object" &&
+          item !== null &&
+          typeof item.startTime === "string" &&
+          typeof item.endTime === "string" &&
+          typeof item.maxCapacity === "number"
+      );
+    } catch (e) {
+      console.error("Error parsing time slots:", e);
+      return [];
+    }
+  };
+
+  const parseAvailableDates = (
+    availableDatesString: string | null
+  ): string[] => {
+    if (!availableDatesString) return [];
+    try {
+      let parsed = JSON.parse(availableDatesString);
+      if (typeof parsed === "string") {
+        parsed = JSON.parse(parsed);
+      }
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+      return parsed.filter((item): item is string => typeof item === "string");
+    } catch (e) {
+      console.error("Error parsing available dates:", e);
+      return [];
+    }
+  };
+
   useEffect(() => {
     if (service && isOpen) {
       // Reset form with service data
@@ -170,7 +246,6 @@ export default function ServiceEditModal({
       // Parse and set packages
       const parsedPackages = parsePackages(service.packages);
       if (parsedPackages.length > 0) {
-        // Ensure all packages have valid features arrays
         const validPackages = parsedPackages.map((pkg) => ({
           ...pkg,
           features:
@@ -190,6 +265,17 @@ export default function ServiceEditModal({
       } else {
         setDurations([{ days: 1, label: "1 Day" }]);
       }
+
+      // Parse and set time slots
+      const parsedTimeSlots = parseTimeSlots(service.timeSlots);
+      setTimeSlots(parsedTimeSlots);
+
+      // Parse and set available dates
+      const parsedAvailableDates = parseAvailableDates(service.availableDates);
+      setSelectedDates(parsedAvailableDates);
+
+      // Initialize empty schedules (these would need to be fetched from API)
+      setSchedules([]);
     }
   }, [service, isOpen, form]);
 
@@ -249,6 +335,58 @@ export default function ServiceEditModal({
     setDurations(updated);
   };
 
+  const addTimeSlot = () => {
+    setTimeSlots([
+      ...timeSlots,
+      { startTime: "", endTime: "", maxCapacity: 10 },
+    ]);
+  };
+
+  const removeTimeSlot = (index: number) => {
+    setTimeSlots(timeSlots.filter((_, i) => i !== index));
+  };
+
+  const updateTimeSlot = (index: number, field: keyof TimeSlot, value: any) => {
+    const updated = [...timeSlots];
+    updated[index] = { ...updated[index], [field]: value };
+    setTimeSlots(updated);
+  };
+
+  const addSchedule = (
+    data: ScheduleFormValues,
+    event?: React.FormEvent<HTMLFormElement>
+  ) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    const newSchedule: Schedule = {
+      date: data.date,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      maxCapacity: parseInt(data.maxCapacity),
+    };
+    setSchedules([...schedules, newSchedule]);
+    scheduleForm.reset();
+    setIsScheduleModalOpen(false);
+    showToast("success", { title: "Schedule added successfully" });
+  };
+
+  const removeSchedule = (index: number) => {
+    setSchedules(schedules.filter((_, i) => i !== index));
+  };
+
+  const addSelectedDate = (date: string) => {
+    if (!selectedDates.includes(date)) {
+      setSelectedDates([...selectedDates, date]);
+    }
+  };
+
+  const removeSelectedDate = (date: string) => {
+    setSelectedDates(selectedDates.filter((d) => d !== date));
+  };
+
   const onSubmit = async (data: ServiceFormValues) => {
     if (!service) return;
 
@@ -279,6 +417,8 @@ export default function ServiceEditModal({
         category: data.category || "general",
         packages: JSON.stringify(validPackages),
         durations: JSON.stringify(validDurations),
+        timeSlots: JSON.stringify(timeSlots),
+        availableDates: JSON.stringify(selectedDates),
         startDate: data.startDate || null,
         endDate: data.endDate || null,
       };
@@ -318,12 +458,35 @@ export default function ServiceEditModal({
     setImageUrl("");
     setPackages([{ name: "Basic", price: 0, features: [""] }]);
     setDurations([{ days: 1, label: "1 Day" }]);
+    setTimeSlots([]);
+    setSelectedDates([]);
+    setSchedules([]);
     onClose();
+  };
+
+  const handleScheduleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      date: formData.get("date") as string,
+      startTime: formData.get("startTime") as string,
+      endTime: formData.get("endTime") as string,
+      maxCapacity: formData.get("maxCapacity") as string,
+    };
+
+    if (!data.date || !data.startTime || !data.endTime) {
+      showToast("error", { title: "Please fill all schedule fields" });
+      return;
+    }
+
+    addSchedule(data, e);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Service: {service?.name}</DialogTitle>
         </DialogHeader>
@@ -483,6 +646,238 @@ export default function ServiceEditModal({
                 )}
               />
             </div>
+
+            {/* Available Dates */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <FormLabel>Available Dates (Optional)</FormLabel>
+                <div className="flex gap-2">
+                  <Input
+                    type="date"
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        addSelectedDate(e.target.value);
+                        e.target.value = "";
+                      }
+                    }}
+                    className="w-auto"
+                  />
+                </div>
+              </div>
+              {selectedDates.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {selectedDates.map((date, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="flex items-center gap-2"
+                    >
+                      <Calendar className="h-3 w-3" />
+                      {new Date(date).toLocaleDateString()}
+                      <button
+                        type="button"
+                        onClick={() => removeSelectedDate(date)}
+                        className="ml-1 hover:text-red-500"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Time Slots */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <FormLabel>Time Slots (Optional)</FormLabel>
+                <Button type="button" onClick={addTimeSlot} size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Time Slot
+                </Button>
+              </div>
+
+              {timeSlots.map((slot, index) => (
+                <Card key={index} className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div>
+                      <FormLabel>Start Time</FormLabel>
+                      <Input
+                        type="time"
+                        value={slot.startTime}
+                        onChange={(e) =>
+                          updateTimeSlot(index, "startTime", e.target.value)
+                        }
+                      />
+                    </div>
+                    <div>
+                      <FormLabel>End Time</FormLabel>
+                      <Input
+                        type="time"
+                        value={slot.endTime}
+                        onChange={(e) =>
+                          updateTimeSlot(index, "endTime", e.target.value)
+                        }
+                      />
+                    </div>
+                    <div>
+                      <FormLabel>Max Capacity</FormLabel>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={slot.maxCapacity}
+                        onChange={(e) =>
+                          updateTimeSlot(
+                            index,
+                            "maxCapacity",
+                            parseInt(e.target.value) || 1
+                          )
+                        }
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeTimeSlot(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Schedules */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <FormLabel>Specific Schedules (Optional)</FormLabel>
+                <Button
+                  type="button"
+                  onClick={() => setIsScheduleModalOpen(true)}
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Schedule
+                </Button>
+              </div>
+
+              {schedules.length > 0 && (
+                <div className="space-y-2">
+                  {schedules.map((schedule, index) => (
+                    <Card key={index} className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Badge
+                            variant="outline"
+                            className="flex items-center gap-2"
+                          >
+                            <Calendar className="h-3 w-3" />
+                            {new Date(schedule.date).toLocaleDateString()}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="flex items-center gap-2"
+                          >
+                            <Clock className="h-3 w-3" />
+                            {schedule.startTime} - {schedule.endTime}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="flex items-center gap-2"
+                          >
+                            <Users className="h-3 w-3" />
+                            {schedule.maxCapacity} people
+                          </Badge>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removeSchedule(index)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Schedule Modal */}
+            {isScheduleModalOpen && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+                  <h3 className="text-lg font-semibold mb-4">Add Schedule</h3>
+                  <form
+                    onSubmit={handleScheduleFormSubmit}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        name="date"
+                        required
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          Start Time
+                        </label>
+                        <input
+                          type="time"
+                          name="startTime"
+                          required
+                          className="w-full p-2 border rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          End Time
+                        </label>
+                        <input
+                          type="time"
+                          name="endTime"
+                          required
+                          className="w-full p-2 border rounded-md"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Max Capacity
+                      </label>
+                      <input
+                        type="number"
+                        name="maxCapacity"
+                        min="1"
+                        defaultValue="10"
+                        required
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button type="submit" className="flex-1">
+                        Add Schedule
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsScheduleModalOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
 
             {/* Packages Section */}
             <div className="space-y-4">
