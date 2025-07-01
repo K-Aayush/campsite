@@ -63,7 +63,7 @@ interface Service {
 export default function BookServicePage() {
   const params = useParams();
   const router = useRouter();
-  const { data: session } = useSession();
+  const { status } = useSession();
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
@@ -82,7 +82,13 @@ export default function BookServicePage() {
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
 
   useEffect(() => {
-    if (!session) {
+    // Wait for session to load
+    if (status === "loading") {
+      return;
+    }
+
+    // Check if user is authenticated
+    if (status === "unauthenticated") {
       showToast("error", {
         title: "Please login first",
         description: "You need to be logged in to book a service",
@@ -91,8 +97,11 @@ export default function BookServicePage() {
       return;
     }
 
-    fetchService();
-  }, [params.id, session]);
+    // User is authenticated, fetch service
+    if (status === "authenticated") {
+      fetchService();
+    }
+  }, [params.id, status, router]);
 
   const fetchService = async () => {
     try {
@@ -315,7 +324,8 @@ export default function BookServicePage() {
     }
   };
 
-  if (loading) {
+  // Show loading while session is loading
+  if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-gray-800 pt-20">
         <div className="container mx-auto px-4 py-8">
@@ -680,7 +690,7 @@ export default function BookServicePage() {
                         onClick={() => handlePaymentMethodSelect("FONE_PAY")}
                         className="h-12 flex items-center gap-2"
                       >
-                        🏦 Fone Pay
+                        <CreditCard className="h-4 w-4" /> Fone Pay
                       </Button>
                     </div>
                   </div>
