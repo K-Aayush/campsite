@@ -31,11 +31,14 @@ import {
   MapPin,
   Phone,
   CreditCard,
+  AlertCircle,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import QRPaymentModal from "@/components/booking/QRPaymentModel";
+import { Badge } from "@/components/ui/badge";
 
 interface Package {
   name: string;
@@ -48,6 +51,23 @@ interface Duration {
   label: string;
 }
 
+interface TimeSlot {
+  startTime: string;
+  endTime: string;
+  maxCapacity: number;
+}
+
+interface Schedule {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  maxCapacity: number;
+  currentBookings: number;
+  availableSpots: number;
+  isAvailable: boolean;
+}
+
 interface Service {
   id: string;
   name: string;
@@ -58,6 +78,29 @@ interface Service {
   packages: string | null;
   durations: string | null;
   category: string;
+  maxCapacity: number;
+  currentBookings: number;
+  status: string;
+  startDate: string | null;
+  endDate: string | null;
+  availableDates: string | null;
+  timeSlots: string | null;
+}
+
+interface ServiceAvailability {
+  service: {
+    id: string;
+    name: string;
+    maxCapacity: number;
+    currentBookings: number;
+    status: string;
+    startDate: string | null;
+    endDate: string | null;
+    availableDates: string[];
+    timeSlots: TimeSlot[];
+  };
+  schedules: Schedule[];
+  totalAvailableSpots: number;
 }
 
 export default function BookServicePage() {
@@ -65,6 +108,9 @@ export default function BookServicePage() {
   const router = useRouter();
   const { status } = useSession();
   const [service, setService] = useState<Service | null>(null);
+  const [availability, setAvailability] = useState<ServiceAvailability | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
 
@@ -74,6 +120,11 @@ export default function BookServicePage() {
     null
   );
   const [startDate, setStartDate] = useState<Date>();
+
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(
+    null
+  );
+  const [numberOfPeople, setNumberOfPeople] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "ESEWA" | "KHALTI" | "FONE_PAY" | null
@@ -100,6 +151,7 @@ export default function BookServicePage() {
     // User is authenticated, fetch service
     if (status === "authenticated") {
       fetchService();
+      fetchAvailability();
     }
   }, [params.id, status, router]);
 
@@ -129,6 +181,18 @@ export default function BookServicePage() {
       router.push("/services");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvailability = async () => {
+    try {
+      const response = await fetch(`/api/services/${params.id}/availability`);
+      if (!response.ok) throw new Error("Failed to fetch availability");
+      const data = await response.json();
+      setAvailability(data);
+    } catch (error) {
+      console.error(error);
+      showToast("error", { title: "Failed to load availability data" });
     }
   };
 
@@ -195,7 +259,7 @@ export default function BookServicePage() {
     if (!service) return 0;
     const basePrice = selectedPackage ? selectedPackage.price : service.price;
     const duration = selectedDuration ? selectedDuration.days : 1;
-    return basePrice * duration;
+    return basePrice * duration * numberOfPeople;
   };
 
   const calculateDeposit = () => {
@@ -208,6 +272,42 @@ export default function BookServicePage() {
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + selectedDuration.days - 1);
     return endDate;
+  };
+
+  const getAvailableSchedulesForDate = (date: Date) => {
+    if (!availability) return [];
+    return availability.schedules.filter((schedule) => {
+      const scheduleDate = new Date(schedule.date);
+      return (
+        scheduleDate.toDateString() === date.toDateString() &&
+        schedule.isAvailable
+      );
+    });
+  };
+
+  const getAvailableCapacityForDate = (date: Date) => {
+    const schedules = getAvailableSchedulesForDate(date);
+    if (schedules.length > 0) {
+      return schedules.reduce(
+        (total, schedule) => total + schedule.availableSpots,
+        0
+      );
+    }
+    return availability ? availability.totalAvailableSpots : 0;
+  };
+
+  const isDateAvailable = (date: Date) => {
+    if (!availability) return false;
+
+    // Check if date is in available dates
+    if (availability.service.availableDates.length > 0) {
+      const dateString = date.toISOString().split("T")[0];
+      return availability.service.availableDates.includes(dateString);
+    }
+
+    // Check if date has available schedules
+    const availableSchedules = getAvailableSchedulesForDate(date);
+    return availableSchedules.length > 0;
   };
 
   const handlePaymentMethodSelect = (
@@ -262,6 +362,16 @@ export default function BookServicePage() {
       return;
     }
 
+    // Check capacity
+    const availableCapacity = getAvailableCapacityForDate(startDate);
+    if (numberOfPeople > availableCapacity) {
+      showToast("error", {
+        title: "Not enough capacity",
+        description: `Only ${availableCapacity} spots available for selected date`,
+      });
+      return;
+    }
+
     setBooking(true);
     try {
       const bookingResponse = await fetch("/api/bookings/create", {
@@ -282,6 +392,10 @@ export default function BookServicePage() {
           depositAmount: calculateDeposit(),
           phoneNumber: phoneNumber,
           paymentMethod: selectedPaymentMethod,
+          numberOfPeople: numberOfPeople,
+          timeSlot: selectedTimeSlot
+            ? `${selectedTimeSlot.startTime}-${selectedTimeSlot.endTime}`
+            : null,
         }),
       });
 
@@ -408,6 +522,14 @@ export default function BookServicePage() {
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         <span className="text-sm">4.8</span>
                       </div>
+                      <Badge
+                        variant={
+                          service.status === "ACTIVE" ? "default" : "secondary"
+                        }
+                        className="text-xs"
+                      >
+                        {service.status}
+                      </Badge>
                     </div>
                     <h2 className="text-3xl font-bold mb-2">{service.name}</h2>
                     <div className="flex items-center gap-4 text-sm">
@@ -417,17 +539,106 @@ export default function BookServicePage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <Users className="h-4 w-4" />
-                        <span>All levels welcome</span>
+                        <span>
+                          {availability?.totalAvailableSpots || 0} spots
+                          available
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <CardContent className="p-6">
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                     {service.description}
                   </p>
+
+                  {/* Availability Information */}
+                  {availability && (
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                      <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2 flex items-center gap-2">
+                        <Info className="h-4 w-4" />
+                        Availability Information
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300">
+                            Total Capacity:
+                          </span>
+                          <span className="ml-2 font-medium">
+                            {availability.service.maxCapacity}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300">
+                            Available Spots:
+                          </span>
+                          <span className="ml-2 font-medium">
+                            {availability.totalAvailableSpots}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300">
+                            Current Bookings:
+                          </span>
+                          <span className="ml-2 font-medium">
+                            {availability.service.currentBookings}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-blue-600 dark:text-blue-300">
+                            Status:
+                          </span>
+                          <span className="ml-2 font-medium">
+                            {availability.service.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
+
+              {/* Available Time Slots */}
+              {availability?.service.timeSlots &&
+                availability.service.timeSlots.length > 0 && (
+                  <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                    <CardHeader>
+                      <CardTitle className="text-2xl text-green-600 dark:text-green-400">
+                        Available Time Slots
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {availability.service.timeSlots.map((slot, index) => (
+                          <div
+                            key={index}
+                            onClick={() => setSelectedTimeSlot(slot)}
+                            className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                              selectedTimeSlot === slot
+                                ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                                : "border-gray-200 dark:border-gray-600 hover:border-green-300"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-green-600" />
+                                <span className="font-medium">
+                                  {slot.startTime} - {slot.endTime}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Users className="h-3 w-3 text-gray-500" />
+                                <span className="text-sm text-gray-500">
+                                  {slot.maxCapacity} max
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
               {/* Package Selection */}
               {displayPackages.length > 0 && (
@@ -608,11 +819,23 @@ export default function BookServicePage() {
                           mode="single"
                           selected={startDate}
                           onSelect={setStartDate}
-                          disabled={(date) => date < new Date()}
+                          disabled={(date) => {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            return date < today || !isDateAvailable(date);
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
                     </Popover>
+                    {startDate && (
+                      <div className="mt-2 text-sm">
+                        <span className="text-green-600 font-medium">
+                          {getAvailableCapacityForDate(startDate)} spots
+                          available
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {startDate && selectedDuration && (
@@ -630,6 +853,40 @@ export default function BookServicePage() {
                       </div>
                     </div>
                   )}
+
+                  <div>
+                    <Label className="text-base font-medium mb-3 block">
+                      Number of People <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <Input
+                        type="number"
+                        min="1"
+                        max={
+                          startDate
+                            ? getAvailableCapacityForDate(startDate)
+                            : availability?.totalAvailableSpots || 1
+                        }
+                        value={numberOfPeople}
+                        onChange={(e) =>
+                          setNumberOfPeople(parseInt(e.target.value) || 1)
+                        }
+                        className="pl-10 h-12"
+                        required
+                      />
+                    </div>
+                    {startDate &&
+                      numberOfPeople >
+                        getAvailableCapacityForDate(startDate) && (
+                        <div className="mt-2 flex items-center gap-2 text-red-600 text-sm">
+                          <AlertCircle className="h-4 w-4" />
+                          <span>
+                            Not enough spots available for selected date
+                          </span>
+                        </div>
+                      )}
+                  </div>
 
                   <div>
                     <Label className="text-base font-medium mb-3 block">
@@ -743,7 +1000,13 @@ export default function BookServicePage() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-400">
-                        Price per day:
+                        Number of People:
+                      </span>
+                      <span className="font-medium">{numberOfPeople}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Price per person/day:
                       </span>
                       <span className="font-medium">
                         NPR{" "}
@@ -753,6 +1016,17 @@ export default function BookServicePage() {
                         ).toLocaleString()}
                       </span>
                     </div>
+                    {selectedTimeSlot && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Time Slot:
+                        </span>
+                        <span className="font-medium">
+                          {selectedTimeSlot.startTime} -{" "}
+                          {selectedTimeSlot.endTime}
+                        </span>
+                      </div>
+                    )}
                     <div className="border-t pt-3">
                       <div className="flex justify-between text-lg font-bold">
                         <span>Total Amount:</span>
@@ -780,7 +1054,9 @@ export default function BookServicePage() {
                       ((selectedPaymentMethod === "ESEWA" ||
                         selectedPaymentMethod === "KHALTI" ||
                         selectedPaymentMethod === "FONE_PAY") &&
-                        !paymentProof)
+                        !paymentProof) ||
+                      (startDate &&
+                        numberOfPeople > getAvailableCapacityForDate(startDate))
                     }
                     className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 transition-all duration-300"
                   >
