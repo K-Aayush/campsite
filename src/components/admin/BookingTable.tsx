@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -14,6 +15,15 @@ import { showToast } from "@/utils/Toast";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Search, Filter } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Booking {
   id: string;
@@ -53,12 +63,21 @@ interface ApiResponse {
 
 export default function BookingTable() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>("all");
+  const [dateFilter, setDateFilter] = useState<string>("all");
 
   useEffect(() => {
     fetchBookings();
   }, []);
+
+  useEffect(() => {
+    filterBookings();
+  }, [searchTerm, statusFilter, paymentStatusFilter, dateFilter, bookings]);
 
   const fetchBookings = async () => {
     try {
@@ -76,6 +95,7 @@ export default function BookingTable() {
 
       if (data.success && Array.isArray(data.bookings)) {
         setBookings(data.bookings);
+        setFilteredBookings(data.bookings);
       } else {
         throw new Error("Invalid response format");
       }
@@ -91,6 +111,67 @@ export default function BookingTable() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterBookings = () => {
+    let filtered = [...bookings];
+
+    // Search filter
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (booking) =>
+          booking.user?.name?.toLowerCase().includes(term) ||
+          booking.user?.email?.toLowerCase().includes(term) ||
+          booking.service?.name?.toLowerCase().includes(term) ||
+          booking.packageName?.toLowerCase().includes(term) ||
+          booking.id.toLowerCase().includes(term)
+      );
+    }
+
+    // Status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((booking) => booking.status === statusFilter);
+    }
+
+    // Payment status filter
+    if (paymentStatusFilter !== "all") {
+      filtered = filtered.filter(
+        (booking) => booking.paymentStatus === paymentStatusFilter
+      );
+    }
+
+    // Date filter
+    if (dateFilter !== "all") {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      filtered = filtered.filter((booking) => {
+        const bookingDate = new Date(booking.createdAt);
+        const bookingDay = new Date(
+          bookingDate.getFullYear(),
+          bookingDate.getMonth(),
+          bookingDate.getDate()
+        );
+
+        switch (dateFilter) {
+          case "today":
+            return bookingDay.getTime() === today.getTime();
+          case "week":
+            const weekAgo = new Date(today);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            return bookingDay >= weekAgo;
+          case "month":
+            const monthAgo = new Date(today);
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            return bookingDay >= monthAgo;
+          default:
+            return true;
+        }
+      });
+    }
+
+    setFilteredBookings(filtered);
   };
 
   const handleStatusUpdate = async (bookingId: string, status: string) => {
@@ -182,6 +263,13 @@ export default function BookingTable() {
     }
   };
 
+  const clearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("all");
+    setPaymentStatusFilter("all");
+    setDateFilter("all");
+  };
+
   if (loading) {
     return (
       <div className="p-6">
@@ -206,10 +294,122 @@ export default function BookingTable() {
   }
 
   return (
-    <div className="p-6">
-      {bookings.length === 0 ? (
+    <div className="p-6 space-y-6">
+      {/* Search and Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Search & Filters
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search by customer name, email, service, package, or booking ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          {/* Filter Controls */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Status</label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="PENDING">Pending</SelectItem>
+                  <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  <SelectItem value="COMPLETED">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Payment Status
+              </label>
+              <Select
+                value={paymentStatusFilter}
+                onValueChange={setPaymentStatusFilter}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Payment Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Payment Statuses</SelectItem>
+                  <SelectItem value="PENDING">Pending</SelectItem>
+                  <SelectItem value="PENDING_APPROVAL">
+                    Pending Approval
+                  </SelectItem>
+                  <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                  <SelectItem value="REJECTED">Rejected</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Date Range
+              </label>
+              <Select value={dateFilter} onValueChange={setDateFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Dates" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Dates</SelectItem>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="week">Last 7 Days</SelectItem>
+                  <SelectItem value="month">Last 30 Days</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-end">
+              <Button
+                variant="outline"
+                onClick={clearFilters}
+                className="w-full"
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </div>
+
+          {/* Results Summary */}
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <span>
+              Showing {filteredBookings.length} of {bookings.length} bookings
+            </span>
+            {(searchTerm ||
+              statusFilter !== "all" ||
+              paymentStatusFilter !== "all" ||
+              dateFilter !== "all") && (
+              <span className="text-blue-600">Filters applied</span>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Bookings Table */}
+      {filteredBookings.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-600">No bookings found</p>
+          <p className="text-gray-600">
+            {searchTerm ||
+            statusFilter !== "all" ||
+            paymentStatusFilter !== "all" ||
+            dateFilter !== "all"
+              ? "No bookings found matching your filters"
+              : "No bookings found"}
+          </p>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -227,7 +427,7 @@ export default function BookingTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {bookings.map((booking) => (
+              {filteredBookings.map((booking) => (
                 <TableRow key={booking.id}>
                   <TableCell>
                     <div>

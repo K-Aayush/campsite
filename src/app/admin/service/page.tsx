@@ -30,7 +30,15 @@ import {
   scheduleSchema,
 } from "../../../../schemas";
 import FileUpload from "@/components/admin/FileUpload";
-import { Plus, Trash2, Calendar, Clock, Users } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Calendar,
+  Clock,
+  Users,
+  Edit,
+  Search,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -39,6 +47,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import ServiceEditModal from "@/components/admin/ServiceEditModal";
+
+interface Package {
+  name: string;
+  price: number;
+  features: string[];
+}
+
+interface Duration {
+  days: number;
+  label: string;
+}
 
 interface Service {
   id: string;
@@ -60,17 +80,6 @@ interface Service {
   timeSlots: string | null;
 }
 
-interface Package {
-  name: string;
-  price: number;
-  features: string[];
-}
-
-interface Duration {
-  days: number;
-  label: string;
-}
-
 interface Schedule {
   date: string;
   startTime: string;
@@ -87,6 +96,8 @@ interface TimeSlot {
 export default function AdminServicesPage() {
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
+  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [packages, setPackages] = useState<Package[]>([
     { name: "Basic", price: 0, features: [""] },
@@ -98,6 +109,8 @@ export default function AdminServicesPage() {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [editingService, setEditingService] = useState<Service | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
@@ -128,12 +141,30 @@ export default function AdminServicesPage() {
     fetchServices();
   }, []);
 
+  useEffect(() => {
+    // Filter services based on search term
+    if (searchTerm.trim() === "") {
+      setFilteredServices(services);
+    } else {
+      const filtered = services.filter(
+        (service) =>
+          service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          service.description
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          service.category.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredServices(filtered);
+    }
+  }, [searchTerm, services]);
+
   const fetchServices = async () => {
     try {
       const response = await fetch("/api/services");
       if (!response.ok) throw new Error("Failed to fetch services");
       const data = await response.json();
       setServices(data);
+      setFilteredServices(data);
     } catch (error) {
       console.error(error);
       showToast("error", { title: "Failed to fetch services" });
@@ -298,6 +329,11 @@ export default function AdminServicesPage() {
     }
   };
 
+  const handleEdit = (service: Service) => {
+    setEditingService(service);
+    setIsEditModalOpen(true);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "ACTIVE":
@@ -315,7 +351,20 @@ export default function AdminServicesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Manage Services</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Manage Services</h1>
+
+        {/* Search Bar */}
+        <div className="relative w-96">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search services by name, description, or category..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
 
       <Card>
         <CardHeader>
@@ -885,76 +934,109 @@ export default function AdminServicesPage() {
       </Card>
 
       {/* Services List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {services.map((service) => (
-          <Card key={service.id}>
-            <CardContent className="p-4">
-              {service.image && (
-                <img
-                  src={service.image}
-                  alt={service.name}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
-              )}
-              <h3 className="font-semibold mb-2">{service.name}</h3>
-              <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                {service.description}
-              </p>
-              <p className="font-bold mb-2">
-                Base Price: NPR {service.price.toLocaleString()}
-              </p>
+      <div className="space-y-4">
+        <h2 className="text-2xl font-semibold">
+          All Services ({filteredServices.length})
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredServices.map((service) => (
+            <Card key={service.id}>
+              <CardContent className="p-4">
+                {service.image && (
+                  <img
+                    src={service.image}
+                    alt={service.name}
+                    className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+                )}
+                <h3 className="font-semibold mb-2">{service.name}</h3>
+                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                  {service.description}
+                </p>
+                <p className="font-bold mb-2">
+                  Base Price: NPR {service.price.toLocaleString()}
+                </p>
 
-              <div className="flex items-center gap-2 mb-2">
-                <Badge className={getStatusColor(service.status)}>
-                  {service.status}
-                </Badge>
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <Users className="h-3 w-3" />
-                  {service.currentBookings}/{service.maxCapacity}
-                </Badge>
-              </div>
-
-              {service.startDate && service.endDate && (
-                <div className="text-xs text-gray-500 mb-2">
-                  <Calendar className="h-3 w-3 inline mr-1" />
-                  {new Date(service.startDate).toLocaleDateString()} -{" "}
-                  {new Date(service.endDate).toLocaleDateString()}
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className={getStatusColor(service.status)}>
+                    {service.status}
+                  </Badge>
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    {service.currentBookings}/{service.maxCapacity}
+                  </Badge>
                 </div>
-              )}
 
-              {service.packages && (
-                <div className="mb-2">
-                  <p className="text-sm font-medium">Packages:</p>
-                  {JSON.parse(service.packages).map(
-                    (pkg: any, index: number) => (
-                      <p key={index} className="text-xs text-gray-500">
-                        {pkg.name}: NPR {pkg.price}
-                      </p>
-                    )
-                  )}
-                </div>
-              )}
+                {service.startDate && service.endDate && (
+                  <div className="text-xs text-gray-500 mb-2">
+                    <Calendar className="h-3 w-3 inline mr-1" />
+                    {new Date(service.startDate).toLocaleDateString()} -{" "}
+                    {new Date(service.endDate).toLocaleDateString()}
+                  </div>
+                )}
 
-              <div className="flex items-center justify-between">
-                <div>
-                  {!service.isBookable && (
-                    <span className="inline-block bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded">
-                      Not Available
-                    </span>
-                  )}
+                {service.packages && (
+                  <div className="mb-2">
+                    <p className="text-sm font-medium">Packages:</p>
+                    {JSON.parse(service.packages).map(
+                      (pkg: any, index: number) => (
+                        <p key={index} className="text-xs text-gray-500">
+                          {pkg.name}: NPR {pkg.price}
+                        </p>
+                      )
+                    )}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    {!service.isBookable && (
+                      <span className="inline-block bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded">
+                        Not Available
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(service)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDelete(service.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(service.id)}
-                >
-                  Delete
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {filteredServices.length === 0 && searchTerm && (
+          <div className="text-center py-8">
+            <p className="text-gray-500">
+              No services found matching {searchTerm}
+            </p>
+          </div>
+        )}
       </div>
+
+      {/* Edit Service Modal */}
+      <ServiceEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingService(null);
+        }}
+        service={editingService}
+        onServiceUpdated={fetchServices}
+      />
     </div>
   );
 }
