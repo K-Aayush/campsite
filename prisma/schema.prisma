@@ -32,6 +32,9 @@ enum PaymentStatus {
 }
 
 enum PaymentMethod {
+  ESEWA
+  KHALTI
+  CASH
   FONE_PAY
 }
 
