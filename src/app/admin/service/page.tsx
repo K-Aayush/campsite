@@ -28,6 +28,7 @@ import {
   ServiceFormValues,
   serviceSchema,
   scheduleSchema,
+  ScheduleFormValues,
 } from "../../../../schemas";
 import FileUpload from "@/components/admin/FileUpload";
 import {
@@ -244,7 +245,11 @@ export default function AdminServicesPage() {
     setTimeSlots(updated);
   };
 
-  const addSchedule = (data: any) => {
+  const addSchedule = (
+    data: ScheduleFormValues,
+    event?: React.FormEvent<HTMLFormElement>
+  ) => {
+    event?.stopPropagation();
     const newSchedule: Schedule = {
       date: data.date,
       startTime: data.startTime,
@@ -651,7 +656,9 @@ export default function AdminServicesPage() {
                       </DialogHeader>
                       <Form {...scheduleForm}>
                         <form
-                          onSubmit={scheduleForm.handleSubmit(addSchedule)}
+                          onSubmit={scheduleForm.handleSubmit((data, event) =>
+                            addSchedule(data, event)
+                          )}
                           className="space-y-4"
                         >
                           <FormField

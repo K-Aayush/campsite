@@ -100,6 +100,55 @@ export default function ServiceEditModal({
     },
   });
 
+  const parsePackages = (packagesString: string | null): Package[] => {
+    if (!packagesString) return [];
+    try {
+      let parsed = JSON.parse(packagesString);
+      if (typeof parsed === "string") {
+        parsed = JSON.parse(parsed);
+      }
+      if (!Array.isArray(parsed)) {
+        console.error("Parsed packages is not an array:", parsed);
+        return [];
+      }
+      return parsed.filter(
+        (item): item is Package =>
+          typeof item === "object" &&
+          item !== null &&
+          typeof item.name === "string" &&
+          typeof item.price === "number" &&
+          Array.isArray(item.features)
+      );
+    } catch (e) {
+      console.error("Error parsing packages:", e);
+      return [];
+    }
+  };
+
+  const parseDurations = (durationsString: string | null): Duration[] => {
+    if (!durationsString) return [];
+    try {
+      let parsed = JSON.parse(durationsString);
+      if (typeof parsed === "string") {
+        parsed = JSON.parse(parsed);
+      }
+      if (!Array.isArray(parsed)) {
+        console.error("Parsed durations is not an array:", parsed);
+        return [];
+      }
+      return parsed.filter(
+        (item): item is Duration =>
+          typeof item === "object" &&
+          item !== null &&
+          typeof item.days === "number" &&
+          typeof item.label === "string"
+      );
+    } catch (e) {
+      console.error("Error parsing durations:", e);
+      return [];
+    }
+  };
+
   useEffect(() => {
     if (service && isOpen) {
       // Reset form with service data
@@ -118,28 +167,28 @@ export default function ServiceEditModal({
 
       setImageUrl(service.image || "");
 
-      // Parse packages
-      if (service.packages) {
-        try {
-          const parsedPackages = JSON.parse(service.packages);
-          if (Array.isArray(parsedPackages) && parsedPackages.length > 0) {
-            setPackages(parsedPackages);
-          }
-        } catch (e) {
-          console.error("Error parsing packages:", e);
-        }
+      // Parse and set packages
+      const parsedPackages = parsePackages(service.packages);
+      if (parsedPackages.length > 0) {
+        // Ensure all packages have valid features arrays
+        const validPackages = parsedPackages.map((pkg) => ({
+          ...pkg,
+          features:
+            Array.isArray(pkg.features) && pkg.features.length > 0
+              ? pkg.features
+              : [""],
+        }));
+        setPackages(validPackages);
+      } else {
+        setPackages([{ name: "Basic", price: 0, features: [""] }]);
       }
 
-      // Parse durations
-      if (service.durations) {
-        try {
-          const parsedDurations = JSON.parse(service.durations);
-          if (Array.isArray(parsedDurations) && parsedDurations.length > 0) {
-            setDurations(parsedDurations);
-          }
-        } catch (e) {
-          console.error("Error parsing durations:", e);
-        }
+      // Parse and set durations
+      const parsedDurations = parseDurations(service.durations);
+      if (parsedDurations.length > 0) {
+        setDurations(parsedDurations);
+      } else {
+        setDurations([{ days: 1, label: "1 Day" }]);
       }
     }
   }, [service, isOpen, form]);
@@ -206,28 +255,59 @@ export default function ServiceEditModal({
     setLoading(true);
 
     try {
+      // Validate packages - remove empty packages
+      const validPackages = packages
+        .filter((pkg) => pkg.name.trim() !== "" && pkg.price >= 0)
+        .map((pkg) => ({
+          ...pkg,
+          features: pkg.features.filter((feature) => feature.trim() !== ""),
+        }));
+
+      // Validate durations
+      const validDurations = durations.filter(
+        (duration) => duration.days > 0 && duration.label.trim() !== ""
+      );
+
+      const updateData = {
+        name: data.name,
+        description: data.description,
+        price: parseFloat(data.price),
+        depositPercentage: parseFloat(data.depositPercentage),
+        maxCapacity: parseInt(data.maxCapacity),
+        image: imageUrl || data.image,
+        isBookable: data.isBookable,
+        category: data.category || "general",
+        packages: JSON.stringify(validPackages),
+        durations: JSON.stringify(validDurations),
+        startDate: data.startDate || null,
+        endDate: data.endDate || null,
+      };
+
+      console.log("Sending update data:", updateData);
+
       const response = await fetch(`/api/services/${service.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          price: parseFloat(data.price),
-          depositPercentage: parseFloat(data.depositPercentage),
-          maxCapacity: parseInt(data.maxCapacity),
-          image: imageUrl || data.image,
-          packages: JSON.stringify(packages),
-          durations: JSON.stringify(durations),
-        }),
+        body: JSON.stringify(updateData),
       });
 
-      if (!response.ok) throw new Error("Failed to update service");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update service");
+      }
+
+      const result = await response.json();
+      console.log("Update result:", result);
 
       showToast("success", { title: "Service updated successfully" });
       onServiceUpdated();
       onClose();
     } catch (error) {
-      console.error(error);
-      showToast("error", { title: "Failed to update service" });
+      console.error("Update error:", error);
+      showToast("error", {
+        title: "Failed to update service",
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     } finally {
       setLoading(false);
     }
@@ -245,7 +325,7 @@ export default function ServiceEditModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Service</DialogTitle>
+          <DialogTitle>Edit Service: {service?.name}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
