@@ -131,6 +131,8 @@ export const sendBookingNotificationToAdmin = async ({
   endDate,
   totalAmount,
   depositAmount,
+  phoneNumber,
+  paymentMethod,
 }: {
   bookingId: string;
   userName: string;
@@ -141,6 +143,8 @@ export const sendBookingNotificationToAdmin = async ({
   endDate: Date;
   totalAmount: number;
   depositAmount: number;
+  phoneNumber?: string;
+  paymentMethod?: string;
 }) => {
   const adminEmail = process.env.ADMIN_EMAIL || "admin@mayurwellness.com";
 
@@ -157,12 +161,14 @@ export const sendBookingNotificationToAdmin = async ({
         <p><strong>End Date:</strong> ${endDate.toLocaleDateString()}</p>
         <p><strong>Total Amount:</strong> NPR ${totalAmount.toLocaleString()}</p>
         <p><strong>Deposit Amount:</strong> NPR ${depositAmount.toLocaleString()}</p>
+        ${paymentMethod ? `<p><strong>Payment Method:</strong> ${paymentMethod}</p>` : ""}
       </div>
 
       <div style="background-color: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <h3 style="color: #333; margin-top: 0;">Customer Information</h3>
         <p><strong>Name:</strong> ${userName}</p>
         <p><strong>Email:</strong> ${userEmail}</p>
+        ${phoneNumber ? `<p><strong>Phone:</strong> ${phoneNumber}</p>` : ""}
       </div>
 
       <div style="text-align: center; margin: 30px 0;">

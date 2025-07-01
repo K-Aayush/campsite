@@ -108,10 +108,10 @@ export async function POST(req: Request) {
 
     // Set initial payment status based on payment method
     let initialPaymentStatus = "PENDING";
-    if (paymentMethod === "CASH") {
-      initialPaymentStatus = "PENDING"; 
+    if (paymentMethod === "FONE_PAY") {
+      initialPaymentStatus = "PENDING";
     } else {
-      initialPaymentStatus = "PENDING_APPROVAL"; 
+      initialPaymentStatus = "PENDING_APPROVAL";
     }
 
     const booking = await db.booking.create({
