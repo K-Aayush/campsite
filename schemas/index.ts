@@ -63,4 +63,30 @@ export const serviceSchema = z.object({
     }
   ),
   category: z.string().optional(),
+  maxCapacity: z.string().refine(
+    (val) => {
+      const num = parseInt(val);
+      return !isNaN(num) && num > 0;
+    },
+    {
+      message: "Max capacity must be a positive number",
+    }
+  ),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
+
+export const scheduleSchema = z.object({
+  date: z.string().min(1, "Date is required"),
+  startTime: z.string().min(1, "Start time is required"),
+  endTime: z.string().min(1, "End time is required"),
+  maxCapacity: z.string().refine(
+    (val) => {
+      const num = parseInt(val);
+      return !isNaN(num) && num > 0;
+    },
+    {
+      message: "Max capacity must be a positive number",
+    }
+  ),
 });
