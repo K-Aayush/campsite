@@ -41,13 +41,7 @@ import {
   Search,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import ServiceEditModal from "@/components/admin/ServiceEditModal";
 
 interface Package {
@@ -245,11 +239,35 @@ export default function AdminServicesPage() {
     setTimeSlots(updated);
   };
 
+  const handleScheduleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      date: formData.get("date") as string,
+      startTime: formData.get("startTime") as string,
+      endTime: formData.get("endTime") as string,
+      maxCapacity: formData.get("maxCapacity") as string,
+    };
+
+    if (!data.date || !data.startTime || !data.endTime) {
+      showToast("error", { title: "Please fill all schedule fields" });
+      return;
+    }
+
+    addSchedule(data, e);
+  };
+
   const addSchedule = (
     data: ScheduleFormValues,
     event?: React.FormEvent<HTMLFormElement>
   ) => {
-    event?.stopPropagation();
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     const newSchedule: Schedule = {
       date: data.date,
       startTime: data.startTime,
@@ -640,88 +658,14 @@ export default function AdminServicesPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <FormLabel>Specific Schedules (Optional)</FormLabel>
-                  <Dialog
-                    open={isScheduleModalOpen}
-                    onOpenChange={setIsScheduleModalOpen}
+                  <Button
+                    type="button"
+                    onClick={() => setIsScheduleModalOpen(true)}
+                    size="sm"
                   >
-                    <DialogTrigger asChild>
-                      <Button type="button" size="sm">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Schedule
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Add Schedule</DialogTitle>
-                      </DialogHeader>
-                      <Form {...scheduleForm}>
-                        <form
-                          onSubmit={scheduleForm.handleSubmit((data, event) =>
-                            addSchedule(data, event)
-                          )}
-                          className="space-y-4"
-                        >
-                          <FormField
-                            control={scheduleForm.control}
-                            name="date"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Date</FormLabel>
-                                <FormControl>
-                                  <Input type="date" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                              control={scheduleForm.control}
-                              name="startTime"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Start Time</FormLabel>
-                                  <FormControl>
-                                    <Input type="time" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={scheduleForm.control}
-                              name="endTime"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>End Time</FormLabel>
-                                  <FormControl>
-                                    <Input type="time" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          <FormField
-                            control={scheduleForm.control}
-                            name="maxCapacity"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Max Capacity</FormLabel>
-                                <FormControl>
-                                  <Input type="number" min="1" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <Button type="submit" className="w-full">
-                            Add Schedule
-                          </Button>
-                        </form>
-                      </Form>
-                    </DialogContent>
-                  </Dialog>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Schedule
+                  </Button>
                 </div>
 
                 {schedules.length > 0 && (
@@ -939,6 +883,75 @@ export default function AdminServicesPage() {
           </Form>
         </CardContent>
       </Card>
+
+      {/* Schedule Modal */}
+      {isScheduleModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Add Schedule</h3>
+            <form onSubmit={handleScheduleFormSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  required
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Start Time
+                  </label>
+                  <input
+                    type="time"
+                    name="startTime"
+                    required
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    End Time
+                  </label>
+                  <input
+                    type="time"
+                    name="endTime"
+                    required
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Max Capacity
+                </label>
+                <input
+                  type="number"
+                  name="maxCapacity"
+                  min="1"
+                  defaultValue="10"
+                  required
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button type="submit" className="flex-1">
+                  Add Schedule
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsScheduleModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Services List */}
       <div className="space-y-4">
