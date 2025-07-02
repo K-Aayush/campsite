@@ -297,17 +297,47 @@ export default function BookServicePage() {
   };
 
   const isDateAvailable = (date: Date) => {
-    if (!availability) return false;
+    if (!availability || !service) return false;
 
-    // Check if date is in available dates
-    if (availability.service.availableDates.length > 0) {
-      const dateString = date.toISOString().split("T")[0];
-      return availability.service.availableDates.includes(dateString);
+    // Don't allow past dates
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date < today) return false;
+
+    // Check service status
+    if (service.status !== "ACTIVE") return false;
+
+    // Check if service has specific start/end dates
+    if (service.startDate && service.endDate) {
+      const startDate = new Date(service.startDate);
+      const endDate = new Date(service.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+
+      if (date < startDate || date > endDate) return false;
     }
 
-    // Check if date has available schedules
+    // Check if there are specific available dates
+    if (
+      availability.service.availableDates &&
+      availability.service.availableDates.length > 0
+    ) {
+      const dateString = date.toISOString().split("T")[0];
+      const isInAvailableDates =
+        availability.service.availableDates.includes(dateString);
+      if (!isInAvailableDates) return false;
+    }
+
+    // Check if there are schedules for this date
     const availableSchedules = getAvailableSchedulesForDate(date);
-    return availableSchedules.length > 0;
+    if (availability.schedules.length > 0) {
+      // If there are schedules, the date must have at least one available schedule
+      return availableSchedules.length > 0;
+    }
+
+    // If no specific schedules, check general availability
+    const availableCapacity = getAvailableCapacityForDate(date);
+    return availableCapacity > 0;
   };
 
   const handlePaymentMethodSelect = (
@@ -819,11 +849,7 @@ export default function BookServicePage() {
                           mode="single"
                           selected={startDate}
                           onSelect={setStartDate}
-                          disabled={(date) => {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            return date < today || !isDateAvailable(date);
-                          }}
+                          disabled={(date) => !isDateAvailable(date)}
                           initialFocus
                         />
                       </PopoverContent>
