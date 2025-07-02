@@ -74,7 +74,12 @@ export async function GET(
 
     if (service.availableDates) {
       try {
-        availableDates = JSON.parse(service.availableDates);
+        const parsed = JSON.parse(service.availableDates);
+        if (Array.isArray(parsed)) {
+          availableDates = parsed.filter(
+            (date) => date && typeof date === "string"
+          );
+        }
       } catch (e) {
         console.error("Error parsing available dates:", e);
       }
@@ -82,7 +87,10 @@ export async function GET(
 
     if (service.timeSlots) {
       try {
-        timeSlots = JSON.parse(service.timeSlots);
+        const parsed = JSON.parse(service.timeSlots);
+        if (Array.isArray(parsed)) {
+          timeSlots = parsed;
+        }
       } catch (e) {
         console.error("Error parsing time slots:", e);
       }

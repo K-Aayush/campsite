@@ -149,6 +149,47 @@ export async function PUT(
       updateData.durations = null;
     }
 
+    // Handle time slots
+    if (data.timeSlots) {
+      try {
+        let timeSlots = data.timeSlots;
+        if (typeof timeSlots === "string") {
+          timeSlots = JSON.parse(timeSlots);
+        }
+        updateData.timeSlots = JSON.stringify(timeSlots);
+      } catch (error) {
+        console.error("Error processing time slots:", error);
+        updateData.timeSlots = null;
+      }
+    } else {
+      updateData.timeSlots = null;
+    }
+
+    // Handle available dates - CRITICAL FIX
+    if (data.availableDates) {
+      try {
+        let availableDates = data.availableDates;
+        if (typeof availableDates === "string") {
+          availableDates = JSON.parse(availableDates);
+        }
+        // Ensure it's an array and filter out empty values
+        if (Array.isArray(availableDates)) {
+          const validDates = availableDates.filter(
+            (date) => date && typeof date === "string"
+          );
+          updateData.availableDates =
+            validDates.length > 0 ? JSON.stringify(validDates) : null;
+        } else {
+          updateData.availableDates = null;
+        }
+      } catch (error) {
+        console.error("Error processing available dates:", error);
+        updateData.availableDates = null;
+      }
+    } else {
+      updateData.availableDates = null;
+    }
+
     console.log("Final update data:", updateData);
 
     // Update the service

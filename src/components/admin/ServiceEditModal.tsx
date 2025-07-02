@@ -363,10 +363,13 @@ export default function ServiceEditModal({
         image: imageUrl || data.image,
         isBookable: data.isBookable,
         category: data.category || "general",
-        packages: JSON.stringify(validPackages),
-        durations: JSON.stringify(validDurations),
-        timeSlots: JSON.stringify(timeSlots),
-        availableDates: JSON.stringify(selectedDates),
+        packages:
+          validPackages.length > 0 ? JSON.stringify(validPackages) : null,
+        durations:
+          validDurations.length > 0 ? JSON.stringify(validDurations) : null,
+        timeSlots: timeSlots.length > 0 ? JSON.stringify(timeSlots) : null,
+        availableDates:
+          selectedDates.length > 0 ? JSON.stringify(selectedDates) : null,
         startDate: data.startDate || null,
         endDate: data.endDate || null,
       };
