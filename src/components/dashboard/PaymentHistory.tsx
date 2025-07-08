@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Chart as ChartJS,
   BarElement,
+  BarController,
   CategoryScale,
   LinearScale,
   Title,
@@ -18,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // Register Chart.js components
 ChartJS.register(
+  BarController,
   BarElement,
   CategoryScale,
   LinearScale,
