@@ -21,7 +21,7 @@ const fixLeafletIcon = () => {
 };
 
 function LocationMap() {
-  const position: LatLngTuple = [27.6772, 85.3155];
+  const position: LatLngTuple = [27.692450475510864, 85.48402533818495];
 
   useEffect(() => {
     fixLeafletIcon();
@@ -41,9 +41,7 @@ function LocationMap() {
       <Marker position={position}>
         <Popup>
           <div>
-            <h3 className="font-bold text-lg">Mayur Wellness Camp</h3>
-            <p>123 Forest Path Road</p>
-            <p>Tranquil Valley</p>
+            <h3 className="font-bold text-lg">Hash one campsite</h3>
           </div>
         </Popup>
       </Marker>

@@ -18,11 +18,11 @@ const OurVideos = () => {
           className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700"
         >
           <iframe
-            className="w-full h-full"
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-            title="Our Story Video"
-            allowFullScreen
-            aria-label="Our Story YouTube video"
+            width="100%"
+            height="100%"
+            src="https://www.youtube.com/embed/Oa_igMMATAs?si=Y6CKeeyDKswaYr1J"
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           />
         </motion.div>
         <motion.div

@@ -15,13 +15,19 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
             className="text-center lg:text-left"
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-500 pb-6">
-              Best Camping Sites & Ground in Nepal
+            <h1 className="text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-500 pb-6">
+              Nepal’s Leading Youth & Scout Camping Destination Adventure,
+              Learning & Leadership in Nature
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
-              Experience jungle camping, wild camping, and adventure activities
-              at Nepal`s premier campsite. Discover the best camping sites near
-              Kathmandu and create unforgettable memories.
+            <p className="text-sm md:text-lg text-gray-600 dark:text-gray-300 mb-8">
+              Welcome to HashOne Campsite—Nepal’s premier ground for scout
+              camps, youth training, and jungle adventures. Just a short drive
+              from Kathmandu, our site offers safe and exciting experiences like
+              wild camping, night treks, team challenges, and more. Perfect for
+              schools, scout groups, and youth organizations, HashOne is
+              designed to build confidence, leadership, and real-world
+              skills—all in the heart of nature. Explore. Grow. Lead. Create
+              unforgettable memories at Nepal’s best youth-focused camping site.
             </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link

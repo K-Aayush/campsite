@@ -96,11 +96,11 @@ const WellnessOption: React.FC<WellnessOptionProps> = ({
 const WellnessJourney = () => {
   const options = [
     {
-      title: "Jungle Camping Adventure",
+      title: "Youth Camp Experience",
       image: "/children-education-two.avif",
       startingFrom: 3500,
       description:
-        "Experience wild camping and jungle camping in Nepal's pristine forests",
+        "Discover wild adventures and deep-forest camping in Nepal’s untouched wilderness.",
       features: [
         "Guided jungle camping expeditions",
         "Wildlife spotting and nature walks",
@@ -109,10 +109,11 @@ const WellnessJourney = () => {
       ],
     },
     {
-      title: "Adventure Camping Near Kathmandu",
+      title: "Seniors Nature Wellness Retreat",
       image: "/campingthree.avif",
       startingFrom: 5000,
-      description: "Best camping sites near Kathmandu for outdoor adventures",
+      description:
+        "Gentle nature immersion and peaceful outdoor living for seniors in Nepal’s serene landscapes",
       features: [
         "Premium camping ground facilities",
         "Group camping and team activities",
