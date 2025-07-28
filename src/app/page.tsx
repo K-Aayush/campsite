@@ -5,7 +5,7 @@ import MainLayoutWrapper from "@/components/commons/MainLayoutWrapper";
 import OurVideos from "@/components/home/OurVideos";
 import SubHero from "@/components/home/SubHero";
 import FaqQuestionAnswer from "@/components/faqs/FaqQuestionAnswers";
-import OurExperts from "@/components/home/OurExperts";
+// import OurExperts from "@/components/home/OurExperts";
 import StayConnected from "@/components/home/StayConnected";
 import HomeContentCard from "@/components/home/HomeContentCard";
 import { Metadata } from "next";
@@ -207,7 +207,7 @@ export default function Home() {
         >
           <FaqQuestionAnswer />
         </HomeContentCard>
-        <OurExperts />
+        {/* <OurExperts /> */}
         <StayConnected />
       </MainLayoutWrapper>
     </>

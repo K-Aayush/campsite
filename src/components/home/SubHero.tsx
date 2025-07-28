@@ -34,14 +34,20 @@ const SubHero = () => {
               className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-500"
               style={{ lineHeight: "1.2" }}
             >
-              Nepal`s Premier Campsite &
+              Nepal’s Nature-Based
               <br />
-              Adventure Camping Ground
+              Wellness Retreat for Seniors
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
-              Discover the best camping sites near Kathmandu. Experience jungle
-              camping, wild camping, and adventure activities at Nepal`s
-              top-rated campsite and camping ground.
+            <p className="text-sm md:text-lg text-gray-600 dark:text-gray-300 mb-8">
+              Located in the peaceful hills of Bhaktapur, we offer a unique
+              blend of old age wellness and youth camping—a first of its kind in
+              Nepal. At Mayur Wellness, seniors enjoy nature therapy, gentle
+              movement, peaceful walks, and community support in a safe, healing
+              environment. Right next door, HashOne Campsite welcomes scouts and
+              youth groups for outdoor training, jungle camping, and leadership
+              development. This is more than a retreat—it&apos;s a shared space
+              where generations thrive. Affordable. Safe. Purpose-driven.
+              Reimagine wellness, rediscover nature.
             </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link

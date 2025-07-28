@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Wifi, Flame, Navigation, Leaf, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import MapWrapper from "./MapWrapper";
-import OurTeams from "../commons/OurTeams";
+// import OurTeams from "../commons/OurTeams";
 import FaqQuestionAnswer from "../faqs/FaqQuestionAnswers";
 import { motion } from "framer-motion";
 
@@ -57,12 +57,6 @@ const facilities = [
       <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
     ),
   },
-  {
-    name: "On-site Natural Spring",
-    icon: (
-      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-    ),
-  },
 ];
 
 const AboutUs = () => {
@@ -85,23 +79,42 @@ const AboutUs = () => {
                 A Haven for Mindful Living
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mb-4 text-base">
-                Mayur Wellness Camp was born from a vision to create a sanctuary
-                where people can escape modern distractions and reconnect with
-                nature, community, and mindfulness.
+                HashOne Campsite & Mayur Wellness is a nature-based retreat
+                built with purpose—started by a group of passionate youths who
+                saw two major issues in Nepal: the increasing trend of young
+                people leaving the country, and the isolation and neglect faced
+                by our elderly population at home.
               </p>
               <p className="text-gray-600 dark:text-gray-400 mb-4 text-base">
-                Founded in 1995, our 25-acre campsite is a carefully curated
-                space designed for wellness and rejuvenation.
+                Located in the peaceful hills of Bhaktapur, our center offers a
+                safe, affordable, and meaningful destination for both youth and
+                seniors. HashOne Campsite is designed for scouts, students, and
+                adventurers—providing outdoor training, survival skills, and
+                leadership development in a secure, natural environment. Just
+                steps away, Mayur Wellness provides a quiet, nurturing space for
+                elderly guests, with activities focused on healing, mindfulness,
+                and companionship.
+              </p>
+              <p className="text-gray-600 dark:text-gray-400 text-base mb-4">
+                More than just a retreat, our initiative promotes local
+                entrepreneurship and generates employment for the community—from
+                guides and wellness practitioners to hospitality and logistics
+                teams.
               </p>
               <p className="text-gray-600 dark:text-gray-400 text-base">
-                Our mission is to foster transformative experiences that nurture
-                mind, body, and soul through nature immersion and mindfulness
-                practices.
+                We believe in creating a balanced society where every generation
+                has a space to grow, connect, and heal—right here in Nepal.
+                Through this project, we aim to inspire young people to stay,
+                build, and give back—while honoring the wisdom of those who came
+                before us.
+              </p>
+              <p className="text-gray-600 dark:text-gray-400 text-base">
+                Join us in living this vision.
               </p>
             </div>
-            <div className="relative rounded-lg overflow-hidden h-[400px] shadow-md">
+            <div className="relative rounded-lg overflow-hidden h-full shadow-md">
               <Image
-                src="/campsite.jpg"
+                src="/about.jpg"
                 alt="Peaceful campsite setting"
                 fill
                 className="object-cover transition-transform duration-300 hover:scale-105"
@@ -136,19 +149,18 @@ const AboutUs = () => {
                         Address
                       </h4>
                       <p className="text-gray-600 dark:text-gray-400 text-sm">
-                        Mayur Wellness Camp
+                        Mayur Wellness | HashOne Campsite
                         <br />
-                        123 Forest Path
-                        <br />
-                        Tranquil Valley, TV 45678
+                        Bagheshwori-07, Bhaktapur
                       </p>
                     </div>
                     <div>
                       <h4 className="font-medium text-gray-800 dark:text-gray-100 mb-2">
-                        By Car
+                        By Car/Bike
                       </h4>
                       <p className="text-gray-600 dark:text-gray-400 text-sm">
-                        2 hours from Downtown Metro Area.
+                        1 hours from Ratnapark Area Take Alternative route to
+                        Nagarkot-Jitput-Kalamasi road.
                         <br />
                         Ample parking available.
                       </p>
@@ -158,8 +170,9 @@ const AboutUs = () => {
                         Public Transport
                       </h4>
                       <p className="text-gray-600 dark:text-gray-400 text-sm">
-                        Take the Valley Line train to Valley Station, then our
-                        free shuttle (9 AM–6 PM hourly).
+                        Take the Kathmandu-Bhaktapur Bus (kamalbinyak Buspark),
+                        then Nargarkot-Kalamasi Bus (Hourly from Nagarkot
+                        Buspark).
                       </p>
                     </div>
                   </div>
@@ -198,12 +211,12 @@ const AboutUs = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6"
+            className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6"
           >
             {[
-              { src: "/eco-friendly.jpg", alt: "Eco-friendly facilities" },
+              { src: "/hashonechildren.jpg", alt: "Eco-friendly facilities" },
               { src: "/garden.jpg", alt: "Organic garden" },
-              { src: "/meditation.jpg", alt: "Meditation space" },
+              { src: "/meditationspace.jpg", alt: "Meditation space" },
             ].map((image, index) => (
               <div
                 key={index}
@@ -221,12 +234,12 @@ const AboutUs = () => {
           </motion.div>
         </AboutContentCard>
 
-        <AboutContentCard
+        {/* <AboutContentCard
           header="Our Team"
           description="Meet the dedicated individuals crafting transformative wellness experiences."
         >
           <OurTeams />
-        </AboutContentCard>
+        </AboutContentCard> */}
 
         <AboutContentCard
           header="Frequently Asked Questions"
