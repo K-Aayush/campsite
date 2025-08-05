@@ -3,7 +3,10 @@ import { db } from "../../../../../utils/db";
 
 export async function GET() {
   try {
-    const blogs = await db.blog.findMany({});
+    const blogs = await db.blog.findMany({
+      where: { published: true },
+      orderBy: { createdAt: "desc" },
+    });
     return NextResponse.json(blogs);
   } catch (error) {
     console.error("Error fetching blogs:", error);
