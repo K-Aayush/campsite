@@ -1,6 +1,5 @@
 import MainLayoutWrapper from "@/components/commons/MainLayoutWrapper";
 import React from "react";
-import { db } from "../../../utils/db";
 import BlogGrid from "@/components/blogs/BlogGrid";
 import { Metadata } from "next";
 import { generateStructuredData } from "@/lib/seo";
@@ -45,13 +44,35 @@ export const metadata: Metadata = {
   },
 };
 
+// Force dynamic rendering to avoid stale data
+export const dynamic = "force-dynamic";
+
 const Page = async () => {
   try {
-    const blogs =
-      (await db.blog.findMany({
-        where: { published: true },
-        orderBy: { createdAt: "desc" },
-      })) || [];
+    // Fetch blogs from the API
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/blogs`,
+      {
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch blogs: ${response.statusText}`);
+    }
+
+    const blogs = await response.json();
+
+    // Validate blogs is an array
+    if (!Array.isArray(blogs)) {
+      throw new Error("Invalid response: Blogs is not an array");
+    }
+
+    console.log(
+      "Fetched blogs from API:",
+      blogs.length,
+      blogs.map((b) => ({ id: b.id, title: b.title }))
+    );
 
     const blogStructuredData = generateStructuredData("Blog", {
       name: "Mayur Wellness Blog",
@@ -71,8 +92,8 @@ const Page = async () => {
         headline: blog.title,
         description: blog.description,
         url: `${process.env.NEXT_PUBLIC_APP_URL}/blogs/${blog.slug}`,
-        datePublished: blog.createdAt.toISOString(),
-        dateModified: blog.updatedAt.toISOString(),
+        datePublished: blog.createdAt,
+        dateModified: blog.updatedAt,
         author: {
           "@type": "Organization",
           name: "Mayur Wellness",
@@ -127,7 +148,7 @@ const Page = async () => {
       </>
     );
   } catch (error) {
-    console.error("Error fetching blogs:", error);
+    console.error("Error fetching blogs from API:", error);
     return (
       <div className="pt-16">
         <MainLayoutWrapper
@@ -135,9 +156,7 @@ const Page = async () => {
           description="An error occurred while fetching blogs."
         >
           <div className="container mx-auto px-4">
-            <p className="text-red-600">
-              Failed to load blogs. Please try again later.
-            </p>
+            <p className="text-red-600 text-center">Blogs Not Found...</p>
           </div>
         </MainLayoutWrapper>
       </div>

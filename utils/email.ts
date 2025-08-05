@@ -4,7 +4,7 @@ import { Resend } from "resend";
 import nodemailer from "nodemailer";
 
 // === Config ===
-const USE_RESEND = process.env.USE_RESEND === "true"; // toggle via env
+const USE_RESEND = process.env.USE_RESEND === "true";
 const domain = process.env.NEXT_PUBLIC_APP_URL;
 
 // === Resend Setup ===
